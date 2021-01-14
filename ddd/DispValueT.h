@@ -40,7 +40,8 @@ enum DispValueType {
     Reference,			// C++ Reference.  2 children.
     Sequence,			// Sequence of values.
     List,			// List of values.  Last member may be text.
-    Text			// Multi-line text.  Last member of a list.
+    Text,			// Multi-line text.  Last member of a list.
+    UserCommand                 // text output of user command
 };
 
 std::ostream& operator<<(std::ostream& os, DispValueType type);

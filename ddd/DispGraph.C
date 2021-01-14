@@ -687,7 +687,7 @@ void DispGraph::disp_node_disabledHP (void*,
 	    disp_graph->no_disabled = false;
 	    disp_graph->handlers.call(NoDisabled, disp_graph, (void*)false);
 	}
-	if (disp_graph->no_enabled = (disp_graph->count_all(Enabled) == 0))
+	if ((disp_graph->no_enabled = (disp_graph->count_all(Enabled) == 0)))
 	    disp_graph->handlers.call(NoEnabled, disp_graph, (void*)true);
     }
     else {
@@ -695,7 +695,7 @@ void DispGraph::disp_node_disabledHP (void*,
 	    disp_graph->no_enabled = false;
 	    disp_graph->handlers.call(NoEnabled, disp_graph, (void*)false);
 	}
-	if (disp_graph->no_disabled = (disp_graph->count_all(Disabled) == 0))
+	if ((disp_graph->no_disabled = (disp_graph->count_all(Disabled) == 0)))
 	    disp_graph->handlers.call(NoDisabled, disp_graph, (void*)true);
     }
 }

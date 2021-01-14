@@ -651,6 +651,7 @@ Box *DispBox::_create_value_box(const DispValue *dv, const DispValue *parent)
 
     case List:
     case Struct:
+    case UserCommand:
     {
 	const _XtString collapsed_value = (dv->type() == List ? 
 				  "collapsed_list_value" :

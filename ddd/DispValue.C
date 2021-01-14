@@ -194,6 +194,7 @@ bool DispValue::sequence_pending(const string& value,
 	case Struct:
 	case Reference:
 	case Array:
+        case UserCommand:
 	    // In a composite, we always read everything up to the
 	    // final delimiter.
 	    return false;
@@ -314,12 +315,13 @@ void DispValue::init(DispValue *parent, int depth, string& value,
     }
 
     mytype = given_type;
-    if (mytype == UnknownType && 
-	(parent == 0 || parent->type() == List) && print_name.empty())
+    if (mytype == UnknownType && (parent == 0 || parent->type() == List || parent->type() == UserCommand) && print_name.empty())
 	mytype = Text;
-    if (mytype == UnknownType && parent == 0 && is_user_command(print_name))
-	mytype = List;
-    if (mytype == UnknownType)
+    else if (print_name.contains("info locals") || print_name.contains("info args"))
+        mytype = List;
+    else if (parent == 0 && is_user_command(print_name))
+	mytype = UserCommand;
+    else
 	mytype = determine_type(value);
 
     bool ignore_repeats = (parent != 0 && parent->type() == Array);
@@ -351,6 +353,24 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 	std::clog << mytype << ": " << quote(_value) << "\n";
 #endif
 	perl_type = '$';
+	break;
+    }
+
+    case UserCommand:
+    {
+	while (!value.empty())
+	{
+            DispValue *dv = parse_child(depth, value, myfull_name, "");
+
+            _children += dv;
+            
+	    if (background(value.length()))
+	    {
+		init(parent, depth, value);
+		return;
+	    }
+            
+        }
 	break;
     }
 
@@ -642,8 +662,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 		    }
 		}
 
-		DispValue *dv = 
-		    parse_child(depth, value, myfull_name, member_name);
+		DispValue *dv = parse_child(depth, value, myfull_name, member_name);
 		_children += dv;
 
 		baseclass_prefix = saved_baseclass_prefix;
@@ -697,15 +716,13 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 		    full_name = member_prefix + member_name + member_suffix;
 		}
 
-		DispValue *child = 
-		    parse_child(depth, value, full_name, member_name);
+		DispValue *child = parse_child(depth, value, full_name, member_name);
 
 		if (child->type() == Text)
 		{
 		    // Found a text as child - child value must be empty
 		    string empty = "";
-		    _children += 
-			parse_child(depth, empty, full_name, member_name);
+		    _children += parse_child(depth, empty, full_name, member_name);
 
 		    string v = child->value();
 		    strip_space(v);
