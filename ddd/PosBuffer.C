@@ -668,7 +668,9 @@ void PosBuffer::filter_gdb(string& answer)
 	// here to properly handle up/down commands 
 	int at_index = answer.index(" at ");
 	int br_index = answer.index("Break");
-	if ( (at_index > 0) && (br_index < 0) )
+        int fi_index = answer.index(" file ");
+        int te_index = answer.index("Temporary");
+	if ( (at_index > 0) && (br_index < 0) && (fi_index < 0) && (te_index < 0))
 	{
 	    int nl_index = 
 		answer.index('\n', at_index - answer.length() - 1) + 1;
