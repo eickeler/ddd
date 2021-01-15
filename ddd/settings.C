@@ -797,8 +797,7 @@ void process_show(const string& command, string value, bool init)
 	{
 	    // Save current state in undo buffer
 	    std::ostringstream command;
-	    get_setting(command, gdb->type(), XtName(button), 
-			settings_values[button]);
+	    get_setting(command, gdb->type(), XtName(button), settings_values[button]);
 	    undo_buffer.add_command(string(command));
 	}
 
@@ -1637,8 +1636,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 		{
 		    // Generic command or `set variable' - list `set'
 		    // subcommands
-		    add_settings(form, row, max_width, 
-				 type, entry_filter, set_command);
+		    add_settings(form, row, max_width, type, entry_filter, set_command);
 		    return;
 		}
 
@@ -1646,8 +1644,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 		if (is_set && value.freq('\n') > 1 && type != MAKE)
 		{
 		    // Generic command - list `set' subcommands
-		    add_settings(form, row, max_width,
-				 type, entry_filter, set_command);
+		    add_settings(form, row, max_width, type, entry_filter, set_command);
 		    return;
 		}
 
@@ -1917,8 +1914,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
     {
 	// `set check'
 	arg = 0;
-	Widget menu = verify(XmCreatePulldownMenu(form, 
-						  XMST("menu"), args, arg));
+	Widget menu = verify(XmCreatePulldownMenu(form, XMST("menu"), args, arg));
 
 	// Possible options are contained in the help string
 	string options = cached_gdb_question("help " + set_command);
@@ -2216,18 +2212,15 @@ static void add_button(Widget form, int& row, Dimension& max_width,
     switch (e_type)
     {
     case SignalEntry:
-	XtAddCallback(help, XmNactivateCallback, 
-		      HelpOnSignalCB, XtPointer(label));
+	XtAddCallback(help, XmNactivateCallback, HelpOnSignalCB, XtPointer(label));
 	break;
 
     case ThemeEntry:
-	XtAddCallback(help, XmNactivateCallback, 
-		      HelpOnThemeCB, XtPointer(label));
+	XtAddCallback(help, XmNactivateCallback, HelpOnThemeCB, XtPointer(label));
 	break;
 
     default:
-	XtAddCallback(help, XmNactivateCallback, 
-		      HelpOnThisCB, XtPointer(entry));
+	XtAddCallback(help, XmNactivateCallback, HelpOnThisCB, XtPointer(entry));
 	break;
     }
 
@@ -2309,6 +2302,10 @@ static void add_separator(Widget form, int& row)
     row++;
 }
 
+const char *infoRejectList[] = {" copying ", " display ", " extensions ", " files ", " functions ",
+    " guile ", " handle ", " macro ", " mem ", " os ", " pretty-printer ", " probes ", " proc ", "program", "record", "scope", 
+    " set ", " sources ", " symbol ", " type-printers ", " unwinder ", " vtbl ", " warranty ", " xmethod ", ""};
+
 // Add buttons
 static void add_settings(Widget form, int& row, Dimension& max_width,
 			 DebuggerType type, EntryType entry_filter,
@@ -2375,8 +2372,7 @@ static void add_settings(Widget form, int& row, Dimension& max_width,
     if (type == GDB && entry_filter == SignalEntry)
     {
 	// Add an entry for `handle all'
-	add_button(form, row, max_width, type, entry_filter,
-		   "all\tYes\tYes\tYes\tAll Signals");
+	add_button(form, row, max_width, type, entry_filter, "all\tYes\tYes\tYes\tAll Signals");
 	// add_separator(form, row);
     }
 
@@ -2386,7 +2382,20 @@ static void add_settings(Widget form, int& row, Dimension& max_width,
 	{
 	    string line = commands.before('\n');
 	    commands    = commands.after('\n');
-	    add_button(form, row, max_width, type, entry_filter, line);
+            bool reject = false;
+            if (gdb_class=="info")
+            {
+                for (int i=0; infoRejectList[i][0]!='\0'; ++i)
+                {
+                    if (line.contains(infoRejectList[i]))
+                    {
+                        reject = true;
+                        break;
+                    }
+                }
+            }
+            if (reject==false)
+                add_button(form, row, max_width, type, entry_filter, line);
 	}
     }
     else
@@ -2796,10 +2805,8 @@ static Widget create_panel(DebuggerType type, SettingsType stype)
 	if (type == GDB)
 	{
 	    last_row = row;
-	    add_button(form, row, max_width, type, TextFieldEntry, 
-		       get_help_line("dir", type));
-	    add_button(form, row, max_width, type, TextFieldEntry, 
-		       get_help_line("path", type));
+	    add_button(form, row, max_width, type, TextFieldEntry, get_help_line("dir", type));
+	    add_button(form, row, max_width, type, TextFieldEntry, get_help_line("path", type));
 	    if (row != last_row)
 		add_separator(form, row);
 	}
@@ -2808,8 +2815,7 @@ static Widget create_panel(DebuggerType type, SettingsType stype)
 	break;
 
     case INFOS:
-	add_settings(form, row, max_width, type, 
-		     DisplayToggleButtonEntry, "info");
+	add_settings(form, row, max_width, type, DisplayToggleButtonEntry, "info");
 	break;
 
     case SIGNALS:

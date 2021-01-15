@@ -2041,8 +2041,11 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 #ifdef LC_ALL
     // Let DDD locales be controlled by the locale-specific
     // environment variables -- especially $LANG.
-    XtSetLanguageProc(NULL, NULL, NULL);
-    setlocale(LC_ALL, "");
+    
+    // ddd cannot handle UTF-8. As workaround we use the latin1 charset 
+    // and try to map UTF-8 characters on this set.
+    setlocale(LC_ALL, "C.ISO-8859-1");
+    //XtSetLanguageProc(NULL, NULL, NULL); // do not call XtSetLanguageProc, the default seems to be latin1
 #endif
 
     // Save environment for restart.
@@ -2983,8 +2986,8 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	gdbCloseCodeWindowCB(gdb_w, 0, 0);
     }
 
-    if ((!app_data.separate_source_window && have_source_window() || 
-	 !app_data.separate_data_window && have_data_window()) &&
+    if (((!app_data.separate_source_window && have_source_window()) || 
+	 (!app_data.separate_data_window && have_data_window())) &&
 	(!app_data.debugger_console || app_data.tty_mode))
     {
 	// We don't need the debugger console, since we have a TTY.
@@ -3958,7 +3961,7 @@ Boolean ddd_setup_done(XtPointer)
 	fix_status_size();
 
 	if (running_shells() == 0 ||
-	    app_data.annotate && running_shells() == 1)
+	    (app_data.annotate && running_shells() == 1))
 	{
 	    // We have no shell (yet).  Be sure to popup at least one shell.
 	    if (app_data.annotate)
@@ -4245,7 +4248,7 @@ void update_options()
 
     set_toggle(set_toolbars_at_bottom_w, app_data.toolbars_at_bottom);
     set_sensitive(set_toolbars_at_bottom_w, separate ||
-		  !app_data.button_images && !app_data.button_captions);
+		  (!app_data.button_images && !app_data.button_captions));
 
     set_toggle(set_tool_buttons_in_toolbar_w,      app_data.command_toolbar);
     set_toggle(set_tool_buttons_in_command_tool_w, !app_data.command_toolbar);
@@ -4286,8 +4289,7 @@ void update_options()
 
     source_view->set_display_line_numbers(app_data.display_line_numbers);
     source_view->set_display_glyphs(app_data.display_glyphs);
-    source_view->set_disassemble(gdb->type() == GDB || gdb->type() == PYDB
-				 && app_data.disassemble);
+    source_view->set_disassemble(gdb->type() == GDB || (gdb->type() == PYDB && app_data.disassemble));
     source_view->set_all_registers(app_data.all_registers);
     source_view->set_tab_width(app_data.tab_width);
     source_view->set_indent(app_data.indent_source, app_data.indent_code);
@@ -7499,10 +7501,13 @@ static void setup_environment()
     // Set the type of the execution tty.
     switch (gdb->type())
     {
+    case GDB:
+        // reset the internationalization in gdb to allow the correct interpretation of the answers from gdg
+        put_environment("LANG", "");
+    // fallthrough
     case BASH:
     case DBG:
     case DBX:
-    case GDB:
     case MAKE:
     case PERL:
 	// The debugger console has few capabilities.
