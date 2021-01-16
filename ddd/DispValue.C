@@ -315,14 +315,17 @@ void DispValue::init(DispValue *parent, int depth, string& value,
     }
 
     mytype = given_type;
-    if (mytype == UnknownType && (parent == 0 || parent->type() == List || parent->type() == UserCommand) && print_name.empty())
-	mytype = Text;
-    else if (print_name.contains("info locals") || print_name.contains("info args"))
-        mytype = List;
-    else if (parent == 0 && is_user_command(print_name))
-	mytype = UserCommand;
-    else
-	mytype = determine_type(value);
+    if (mytype == UnknownType)
+    {
+        if ((parent == 0 || parent->type() == List || parent->type() == UserCommand) && print_name.empty())
+            mytype = Text;
+        else if (print_name.contains("info locals") || print_name.contains("info args"))
+            mytype = List;
+        else if (parent == 0 && is_user_command(print_name))
+            mytype = UserCommand;
+        else
+            mytype = determine_type(value);
+    }
 
     bool ignore_repeats = (parent != 0 && parent->type() == Array);
 
