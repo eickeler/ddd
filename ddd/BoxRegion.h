@@ -61,6 +61,15 @@ public:
 	_origin(r._origin), _space(r._space)
     {}
 
+    // Operators
+    BoxRegion& operator = (const BoxRegion& r)
+    {
+        _origin  = r._origin; 
+        _space = r._space;
+        
+        return *this;
+    }
+
     // Resources
     BoxPoint& origin()                    { return _origin; }
     BoxCoordinate& origin(BoxDimension d) { return _origin[d]; }

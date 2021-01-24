@@ -122,7 +122,7 @@ bool AgentManager::childStatusChange()
 
 	if (pid > 0 && waitpid(pid, &status, WNOHANG) == pid)
 	{
-	    c->callHandlers(_Died, (void *)status);
+	    c->callHandlers(_Died, (void *)((intptr_t)status));
 	    gotit = true;
 	}
     }

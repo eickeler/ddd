@@ -59,7 +59,8 @@ public:
     {
 	point[X] = point[Y] = NoCoordinate;
     }
-    BoxPoint(const BoxPoint& p) 
+    
+    BoxPoint(const BoxPoint& p) : point{p.point[X], p.point[Y]}
     {
 	point[X] = p.point[X];
 	point[Y] = p.point[Y];
@@ -72,6 +73,14 @@ public:
     }
 
     // Operators
+    BoxPoint& operator = (const BoxPoint& p)
+    {
+	point[X] = p.point[X];
+	point[Y] = p.point[Y];
+        
+        return *this;
+    }
+    
     BoxPoint operator + (const BoxPoint& p) const
     {
 	if (isValid() && p.isValid())

@@ -512,7 +512,7 @@ static Widget create_tictactoe(Widget parent)
 	buttons[i] = XmCreatePushButton(board, XMST("field"), args, arg);
 	XtManageChild(buttons[i]);
 	XtAddCallback(buttons[i], XmNactivateCallback, 
-		      MakeMoveCB, XtPointer(i));
+		      MakeMoveCB, XtPointer(intptr_t(i)));
     }
     XtManageChild(board);
 

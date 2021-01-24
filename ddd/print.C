@@ -337,7 +337,7 @@ void PrintAgainCB(Widget w, XtPointer client_data, XtPointer)
 	    Delay::register_shell(confirm_overwrite_dialog);
 	    XtAddCallback(confirm_overwrite_dialog, 
 			  XmNokCallback, PrintAgainCB, 
-			  XtPointer((int)(long)client_data | 2));
+			  XtPointer(intptr_t((int)(long)client_data | 2)));
 	    XtAddCallback(confirm_overwrite_dialog, 
 			  XmNhelpCallback, ImmediateHelpCB, 0);
 

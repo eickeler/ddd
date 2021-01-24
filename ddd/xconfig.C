@@ -119,7 +119,7 @@ static const _XtString xlibdir(Display *display, bool verbose = false)
 
     char buffer[PATH_MAX];
     buffer[0] = '\0';
-    fgets(buffer, sizeof(buffer), fp);
+    (void)! fgets(buffer, sizeof(buffer), fp);
     pclose(fp);
 
     int len = strlen(buffer);

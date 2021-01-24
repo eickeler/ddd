@@ -824,6 +824,9 @@ Box *DispBox::create_value_box (const DispValue *dv,
 	case Simple:
 	case Text:
 	case Pointer:
+        case STLVector:
+        case STLList:
+        case UserCommand:
 	    break;
 
 	case UnknownType:

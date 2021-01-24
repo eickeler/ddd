@@ -298,15 +298,15 @@ void AsyncAgent::terminate(bool onExit)
 
 	if (terminateTimeOut() >= 0)
 	    XtAppAddTimeOut(appContext(), terminateTimeOut() * 1000,
-			    terminateProcess, XtPointer(pid()));
+			    terminateProcess, XtPointer(intptr_t(pid())));
 
 	if (hangupTimeOut() >= 0)
 	    XtAppAddTimeOut(appContext(), hangupTimeOut() * 1000,
-			    hangupProcess, XtPointer(pid()));
+			    hangupProcess, XtPointer(intptr_t(pid())));
 
 	if (killTimeOut() >= 0)
 	    XtAppAddTimeOut(appContext(), killTimeOut() * 1000,
-			    killProcess, XtPointer(pid()));
+			    killProcess, XtPointer(intptr_t(pid())));
 
 	// Inhibit further communication
 	hasNewStatus(-1);

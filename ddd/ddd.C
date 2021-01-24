@@ -5468,7 +5468,7 @@ static void BlinkCB(XtPointer client_data, XtIntervalId *id)
     {
 	blink_timer = XtAppAddTimeOut(XtWidgetToApplicationContext(led_w),
 				      app_data.busy_blink_rate, BlinkCB,
-				      XtPointer(int(!set)));
+				      XtPointer(intptr_t(!set)));
     }
 }
 
@@ -5824,7 +5824,7 @@ struct WhenReadyInfo {
 	}
 	else
 	{
-	    memcpy(cbs.event, c.event, sizeof(cbs.event));
+	    memcpy(cbs.event, c.event, sizeof(XEvent));
 	    cbs.event = &event;
 	}
     }
@@ -7214,7 +7214,7 @@ static void check_log(const string& logname, DebuggerType& type)
     std::ifstream log(logname.chars());
     if (log.bad())
     {
-	(void) fopen(logname.chars(), "r");
+	(void)! fopen(logname.chars(), "r");
 	perror(logname.chars());
 	exit(EXIT_FAILURE);
     }

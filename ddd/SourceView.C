@@ -786,7 +786,7 @@ void SourceView::clearJumpBP(const string& msg, void *data)
     {
 	// Delete all recently created breakpoints
 	XtAppAddTimeOut(XtWidgetToApplicationContext(source_text_w),
-			0, clearBP, XtPointer(i));
+			0, clearBP, XtPointer(intptr_t(i)));
     }
 }
 
@@ -827,7 +827,7 @@ void SourceView::temp_n_cont(const string& a, Widget w)
 	// Make sure the temporary breakpoint is deleted after `cont'
 	Command c("cont", w);
 	c.callback = clearJumpBP;
-	c.data     = XtPointer(old_max_breakpoint_number_seen);
+	c.data     = XtPointer(intptr_t(old_max_breakpoint_number_seen));
 	gdb_command(c);
 	break;
     }
@@ -920,7 +920,7 @@ bool SourceView::move_pc(const string& a, Widget w)
 	last_jump_address = a;
 	Command c(gdb->jump_command(address), w);
 	c.callback = clearJumpBP;
-	c.data     = XtPointer(old_max_breakpoint_number_seen);
+	c.data     = XtPointer(intptr_t(old_max_breakpoint_number_seen));
 	gdb_command(c);
 
 	return true;
@@ -7274,7 +7274,7 @@ void SourceView::setup_where_line(string& line)
 #if RUNTIME_REGEX
 	static regex rxarglist("[(][^0-9][^)]*[)]");
 #endif
-	int start = index(line, rxarglist, "(");
+	int start = index(line, rxarglist, "(", -1); // fix bug #33350: Threads window discards function name
 	if (start > 0)
 	{
 	    int end = line.index(')', -1);

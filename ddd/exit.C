@@ -1284,7 +1284,7 @@ static void debug_ddd(bool core_dumped)
 
     term_command += " " + sh_quote(gdb_command) + " &";
     const string s1 = sh_command(term_command, true); 
-    system(s1.chars());
+    (void)! system(s1.chars());
 }
 
 // Insert `where' info into LOG

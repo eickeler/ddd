@@ -222,7 +222,7 @@ bool is_core_file(const string& file_name)
     if (fp != 0)
     {
 	char line[PATH_MAX];
-	fgets(line, sizeof(line), fp);
+	(void)! fgets(line, sizeof(line), fp);
 	pclose(fp);
 
 	string out(line);

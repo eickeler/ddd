@@ -348,11 +348,11 @@ void BreakPoint::process_gdb(string& info_output)
 	    // Read enabled flag (`y' or `n')
 	    // We discard this: I don't think GDB allows these flags to
 	    // be set individually.
-	    bool myenabled2;
-	    if (info_output.contains('y', 0))
-		myenabled2 = true;
-	    else if (info_output.contains('n', 0))
-		myenabled2 = false;
+// 	    bool myenabled2;
+// 	    if (info_output.contains('y', 0))
+// 		myenabled2 = true;
+// 	    else if (info_output.contains('n', 0))
+// 		myenabled2 = false;
 	    info_output = info_output.after(rxblanks_or_tabs);
 
 	    // Read address
@@ -818,28 +818,28 @@ bool BreakPoint::update(string& info_output,
 	// the breakpoint could have multiple locations.
 	if (new_bp.locn[0].address() != locn[0].address())
 	{
-	    std::cerr << "\007**** BREAKPOINT ADDRESS CHANGED\007\n";
+	    //std::cerr << "\007**** BREAKPOINT ADDRESS CHANGED\007\n";
 	    changed = myaddress_changed = true;
 	    locn[0].myaddress = new_bp.locn[0].address();
 	}
 
 	if (new_bp.locn[0].func() != locn[0].func())
 	{
-	    std::cerr << "\007**** BREAKPOINT FUNCTION CHANGED\007\n";
+	    //std::cerr << "\007**** BREAKPOINT FUNCTION CHANGED\007\n";
 	    changed = myposition_changed = true;
 	    locn[0].myfunc = new_bp.locn[0].func();
 	}
 
 	if (new_bp.locn[0].file_name() != locn[0].file_name())
 	{
-	    std::cerr << "\007**** BREAKPOINT FILENAME CHANGED\007\n";
+	    //std::cerr << "\007**** BREAKPOINT FILENAME CHANGED\007\n";
 	    changed = myposition_changed = myfile_changed = true;
 	    locn[0].myfile_name = new_bp.locn[0].file_name();
 	}
 
 	if (new_bp.locn[0].line_nr() != locn[0].line_nr())
 	{
-	    std::cerr << "\007**** BREAKPOINT LINE CHANGED\007\n";
+	    //std::cerr << "\007**** BREAKPOINT LINE CHANGED\007\n";
 	    changed = myposition_changed = true;
 	    locn[0].myline_nr = new_bp.locn[0].line_nr();
 	}

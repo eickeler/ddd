@@ -540,7 +540,7 @@ void DDDWWWPageCB(Widget, XtPointer, XtPointer)
     cmd.gsub("@URL@", url);
     cmd += " &";
     cmd = sh_command(cmd, true);
-    system(cmd.chars());
+    (void)! system(cmd.chars());
 }
 
 

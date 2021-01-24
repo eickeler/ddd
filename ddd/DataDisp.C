@@ -2150,7 +2150,7 @@ void DataDisp::graph_detailAct (Widget w, XEvent *,
     if (params != 0 && num_params != 0 && *num_params >= 1)
 	depth = atoi(params[0]);
 
-    toggleDetailCB(w, XtPointer(depth), 0);
+    toggleDetailCB(w, XtPointer(intptr_t(depth)), 0);
 }
 
 void DataDisp::graph_rotateAct (Widget w, XEvent*, String*, Cardinal*)
@@ -2607,6 +2607,7 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 
 	case Text:
 	case Reference:
+        case UserCommand:
 	    break;
 
 	case Pointer:

@@ -119,7 +119,7 @@ const char *hostname()
 	if (fp != 0)
 	{
 	    buffer[0] = '\0';
-	    fscanf(fp, "%s", buffer);
+	    (void)! fscanf(fp, "%s", buffer);
 	}
 	pclose(fp);
     }

@@ -388,8 +388,8 @@ Ddd*plot3dSettings:   set border
 !      + works just as Gnuplot users expect
 !      - swallowing interferes with some window managers such as MWM.
 !
-! Default is `xlib' due to problems with MWM.
-Ddd*plotTermType: xlib
+! Default is `x11' due to problems with xlib.
+Ddd*plotTermType: x11
 
 ! The time (in ms) to wait for notification that the swallowed plot window
 ! has been created.  After this time has passed, DDD searches the plot window

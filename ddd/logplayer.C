@@ -105,7 +105,7 @@ static string last_output;
 
 static void put(const string& s)
 {
-    write(STDOUT_FILENO, s.chars(), s.length());
+    (void)! write(STDOUT_FILENO, s.chars(), s.length());
     last_output += s;
 
 #if HAVE_TCDRAIN || defined(tcdrain)
@@ -126,7 +126,7 @@ void logplayer(const string& logname)
     static std::ifstream log(logname.chars());
     if (log.bad())
     {
-	(void) fopen(logname.chars(), "r");
+	(void)! fopen(logname.chars(), "r");
 	perror(logname.chars());
 	exit(EXIT_FAILURE);
     }
