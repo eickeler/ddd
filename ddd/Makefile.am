@@ -809,9 +809,9 @@ LEX_OUTPUT_ROOT = @LEX_OUTPUT_ROOT@
 # VSL parsers.
 $(srcdir)/vsl-lex.C: $(srcdir)/vsl-lex.L
 	$(LEX) $(LFLAGS) $(srcdir)/vsl-lex.L
-	$(SHELL) $(LEXTOCXX) -prefix vsl
-	$(MV) $(LEX_OUTPUT_ROOT).cc $@
-	$(RM) $(LEX_OUTPUT_ROOT).c
+#	$(SHELL) $(LEXTOCXX) -prefix vsl
+#	$(MV) $(LEX_OUTPUT_ROOT).cc $@
+#	$(RM) $(LEX_OUTPUT_ROOT).c
 
 $(srcdir)/vsl-gramma.h $(srcdir)/vsl-gramma.C: $(srcdir)/vsl-gramma.Y \
 	$(YACCTOCXX) $(YACCTOCXX).bison $(YACCTOCXX).h $(YACCTOCXX).sun
