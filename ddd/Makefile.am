@@ -871,7 +871,7 @@ $(srcdir)/ddd.info.txt.gz: $(srcdir)/ddd.info.txt
 
 $(srcdir)/ddd.info.txt.gz.C: $(srcdir)/ddd.info.txt.gz
 	$(MAKE) stringify$(EXEEXT)
-	-./stringify < $? > $@~ && $(MV) $@~ $@
+	-./stringify$(EXEEXT) < $? > $@~ && $(MV) $@~ $@
 
 # License.
 $(srcdir)/COPYING.gz: $(srcdir)/../COPYING
@@ -879,7 +879,7 @@ $(srcdir)/COPYING.gz: $(srcdir)/../COPYING
 
 $(srcdir)/COPYING.gz.C: $(srcdir)/COPYING.gz
 	$(MAKE) stringify$(EXEEXT)
-	-./stringify < $? > $@~ && $(MV) $@~ $@
+	-./stringify$(EXEEXT) < $? > $@~ && $(MV) $@~ $@
 
 # News.
 $(srcdir)/NEWS.gz: $(srcdir)/../NEWS
@@ -887,7 +887,7 @@ $(srcdir)/NEWS.gz: $(srcdir)/../NEWS
 
 $(srcdir)/NEWS.gz.C: $(srcdir)/NEWS.gz
 	$(MAKE) stringify$(EXEEXT)
-	-./stringify < $? > $@~ && $(MV) $@~ $@
+	-./stringify$(EXEEXT) < $? > $@~ && $(MV) $@~ $@
 
 show.$(OBJEXT): COPYING.gz.C NEWS.gz.C ddd.info.txt.gz.C
 
@@ -901,7 +901,7 @@ configinfo.C: USERINFO.txt $(srcdir)/config-info
 # If `~/.ddd_userinfo' exists, use this file as personal identification.
 USERINFO.txt: userinfo$(EXEEXT)
 	-(cat $$HOME/.ddd_userinfo 2> /dev/null || \
-	./userinfo || echo '(unknown)') > $@~ && $(MV) $@~ $@
+	./userinfo$(EXEEXT) || echo '(unknown)') > $@~ && $(MV) $@~ $@
 	@$(ECHO) ""
 	@$(ECHO) "Please check your name and e-mail address:"
 	@$(ECHO) ""
