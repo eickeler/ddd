@@ -1,6 +1,6 @@
 /* $Id$ -*- C++ -*- */
 /* VSL grammar */
-%name-prefix "vsl"
+%define api.prefix {vsl}
 %output "vsl-gramma.C"
 
 %{

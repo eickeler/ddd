@@ -165,7 +165,7 @@ dnl Yacc.
 dnl
 AC_PROG_YACC
 AC_MSG_CHECKING([for ${YACC} flags])
-YFLAGS=""
+YFLAGS="-Wno-yacc"
 AC_MSG_RESULT([${YFLAGS}])
 AC_SUBST(YFLAGS)dnl
 dnl

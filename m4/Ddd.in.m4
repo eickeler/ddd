@@ -1,6 +1,6 @@
 ! $Id$
 ! DDD Resource File.  DO NOT INSTALL THIS FILE!  See below for details.
-include(ifdef(`srcdir',srcdir()/macros.m4,macros.m4))dnl
+include(ifdef(`srcdir',srcdir()/../m4/macros.m4,macros.m4))dnl
 DDD_APP_WARNING
 ! @configure_input@
 Ddd*appDefaultsVersion: @VERSION@

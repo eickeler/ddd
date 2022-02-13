@@ -27,7 +27,7 @@ dnl
 dnl M4 setup
 dnl --------
 dnl
-include(ifdef(`srcdir',srcdir()/colors.m4,colors.m4))dnl
+include(ifdef(`srcdir',srcdir()/../m4/colors.m4,colors.m4))dnl
 dnl
 dnl
 dnl Typesetting

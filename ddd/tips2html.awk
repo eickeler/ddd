@@ -40,7 +40,7 @@ BEGIN {
     }
 
 # Handle comments
-/^\#.*/  { next }
+/^#.*/   { next }
 /^!.*/   { seen = 1; next }
 
 # Pass `include' unchanged, for M4

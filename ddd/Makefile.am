@@ -719,7 +719,6 @@ ddd_LDADD = $(RPATH) $(ALL_X_LIBS) $(ALL_LIBS)
 vsl_LDADD = $(RPATH) $(ALL_X_LIBS) $(ALL_LIBS)
 X_INCLUDE = @X_CFLAGS@
 AM_CPPFLAGS = -I$(srcdir)/.. $(X_INCLUDE)
-m4dir=$(srcdir)/../m4
 
 # -----------------------------------------------------------------------------
 # DDD Application Defaults.
@@ -731,26 +730,27 @@ Ddd.ad.h: Ddd $(srcdir)/ad2c.sed
 	$(CAT) Ddd | $(DELETE_CR) | \
 	$(SED) -n -f $(srcdir)/ad2c.sed > $@~ && $(MV) $@~ $@
 
-$(srcdir)/Ddd.in: $(m4dir)/Ddd.in.m4 $(m4dir)/tips.m4 \
-	$(m4dir)/macros.m4 $(m4dir)/colors.m4 
+$(srcdir)/Ddd.in: $(srcdir)/../m4/Ddd.in.m4 $(srcdir)/../m4/tips.m4 \
+	$(srcdir)/../m4/macros.m4 $(srcdir)/../m4/colors.m4 
 	( \
 	( \
-		echo "define(m4dir, \`$(m4dir)')dnl"; \
-		echo "include(m4dir()/Ddd.in.m4)dnl" \
+		echo "define(srcdir, \`$(srcdir)')dnl"; \
+		echo "include(srcdir()/../m4/Ddd.in.m4)dnl" \
 	) | $(M4); \
         ( \
-		echo "define(m4dir, \`$(m4dir)')dnl"; \
-		echo "include(m4dir()/tips.m4)dnl" \
+		echo "define(srcdir, \`$(srcdir)')dnl"; \
+		echo "include(srcdir()/../m4/tips.m4)dnl" \
 	) | $(M4); \
 	) | $(DELETE_CR) > $@~ && $(MV) $@~ $@
 
-$(m4dir)/tips.m4: $(srcdir)/../TIPS $(srcdir)/tips2m4.awk
-	$(AWK) -f $(srcdir)/tips2m4.awk $(srcdir)/../TIPS > $(m4dir)/tips.m4
+$(srcdir)/../m4/tips.m4: $(srcdir)/../TIPS $(srcdir)/tips2m4.awk
+	$(AWK) -f $(srcdir)/tips2m4.awk $(srcdir)/../TIPS | $(DELETE_CR) \
+	    > $@~ && $(MV) $@~ $@
 
 $(srcdir)/tips.html: $(srcdir)/../TIPS
 	( \
 		echo "define(srcdir, \`$(srcdir)')dnl"; \
-		echo "define(macros, \`$(m4dir)/html.m4')dnl"; \
+		echo "define(macros, \`$(srcdir)/../m4/html.m4')dnl"; \
 		echo "include(srcdir()/../TIPS)dnl" \
 	) | $(M4) | $(AWK) -f $(srcdir)/tips2html.awk | \
 	$(SED) 's/\\133/\[/g' | $(SED) 's/\\135/\]/g' | \
@@ -769,10 +769,10 @@ vsldir  = $(srcdir)/../vsllib
 
 VSL_CPP = $(CPP) -I$(vsldir) -I$(prefix)/lib/vsl-include
 
-$(vsldir)/ddd.vsl: $(m4dir)/ddd.vsl.m4 $(m4dir)/colors.m4
+$(vsldir)/ddd.vsl: $(srcdir)/../m4/ddd.vsl.m4 $(srcdir)/../m4/colors.m4
 	( \
-		echo "define(m4dir, \`$(m4dir)')dnl"; \
-		echo "include(m4dir()/ddd.vsl.m4)dnl" \
+		echo "define(srcdir, \`$(srcdir)')dnl"; \
+		echo "include(srcdir()/../m4/ddd.vsl.m4)dnl" \
 	) | $(M4) | $(DELETE_CR) > $@~ && $(MV) $@~ $@
 
 VSLSRC = \
@@ -813,13 +813,13 @@ $(srcdir)/vsl-lex.C: $(srcdir)/vsl-lex.L
 #	$(MV) $(LEX_OUTPUT_ROOT).cc $@
 #	$(RM) $(LEX_OUTPUT_ROOT).c
 
-$(srcdir)/vsl-gramma.h $(srcdir)/vsl-gramma.C: $(srcdir)/vsl-gramma.Y \
+$(srcdir)/vsl-gramma.H $(srcdir)/vsl-gramma.C: $(srcdir)/vsl-gramma.Y \
 	$(YACCTOCXX) $(YACCTOCXX).bison $(YACCTOCXX).h $(YACCTOCXX).sun
 	$(YACC) $(YFLAGS) -d $(srcdir)/vsl-gramma.Y
 
 VSLRead.$(OBJEXT): \
 	$(srcdir)/vsl-lex.C \
-	$(srcdir)/vsl-gramma.h \
+	$(srcdir)/vsl-gramma.H \
 	$(srcdir)/vsl-gramma.C
 
 # DDD regexp parsers.
@@ -2050,14 +2050,14 @@ dddapp_DATA = Ddd
 PROG_STUFF = $(LEXTOCXX).flex $(LEXTOCXX).sun \
 	     vsl-lex.L $(LEXTOCXX) vsl-lex.C \
 	     $(YACCTOCXX).bison $(YACCTOCXX).sun \
-	     vsl-gramma.Y $(YACCTOCXX) yacctoC.h vsl-gramma.h vsl-gramma.C \
+	     vsl-gramma.Y $(YACCTOCXX) yacctoC.h vsl-gramma.H vsl-gramma.C \
 	     rxscan.L rxscan.C \
-             $(srcdir)/../TIPS $(m4dir)/tips.m4 \
+             $(srcdir)/../TIPS $(srcdir)/../m4/tips.m4 \
 	     $(srcdir)/tips2m4.awk $(srcdir)/tips.html \
-	     $(m4dir)/macros.m4 $(m4dir)/colors.m4 \
-             $(m4dir)/Ddd.in.m4 $(srcdir)/Ddd.in \
+	     $(srcdir)/../m4/macros.m4 $(srcdir)/../m4/colors.m4 \
+             $(srcdir)/../m4/Ddd.in.m4 $(srcdir)/Ddd.in \
 	     host.h.in $(srcdir)/vsl2c.sed \
-             $(m4dir)/ddd.vsl.m4 $(vsldir)/ddd.vsl $(srcdir)/ddd.vsl.h \
+             $(srcdir)/../m4/ddd.vsl.m4 $(vsldir)/ddd.vsl $(srcdir)/ddd.vsl.h \
              root.h.in $(srcdir)/COPYING.gz $(srcdir)/NEWS.gz \
              $(srcdir)/COPYING.gz.C $(srcdir)/NEWS.gz.C \
 	     $(srcdir)/ddd.info.txt.gz.C $(srcdir)/ddd.info \
@@ -2094,9 +2094,9 @@ MOSTLYCLEANFILES = ddd.au ddd.cm ddd.cms ddd.en ddd.fl ddd.fls ddd.lb ddd.lbs \
 # Have `make maintainer-clean' remove _all_ derived files.
 MAINTAINERCLEANFILES = Ddd.in ddd.vsl.h ddd.info.txt.gz gfdl.texinfo \
 	NEWS.gz.C ddd.info.txt.gz.C ddd.info \
-	NEWS.gz ddd.info.txt $(m4dir)/tips.m4 gpl.texinfo vsl-lex.C \
+	NEWS.gz ddd.info.txt tips.m4 gpl.texinfo vsl-lex.C \
 	COPYING.gz config.h.in config.texi vsl-gramma.C \
-	vsl-gramma.h xlibdir.C trailer.str tips.html \
+	vsl-gramma.H xlibdir.C trailer.str tips.html \
 	COPYING.gz.C header.str version.h rxscan.C \
 	ddd/PICS/*.gif \
 	ddd/PICS/*.jpg \

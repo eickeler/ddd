@@ -96,18 +96,7 @@ struct VSLVarDefinition {
     VSLNode *args;
 };
 
-// GNU C++ complains about the declaration of VSLSTYPE, so leave it alone
-#ifdef __GNUG__
-#define VSLSTYPE _xy_VSLSTYPE
-#define _VSLSTYPE _xy_underscore_VSLSTYPE
-#define vsllval  _xy_vsllval
 #include "vsl-gramma.H"
-#undef vsllval
-#undef _VSLSTYPE
-#undef VSLSTYPE
-#else
-#include "vsl-gramma.H"
-#endif
 
 #define ASSERT(ignore)
 
