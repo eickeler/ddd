@@ -132,9 +132,10 @@ extern int raise(int sig);
 extern "C" int pclose(FILE *stream);
 #endif
 
-static void ddd_signal(int sig...);
-static void ddd_fatal(int sig...);
-static bool ddd_dump_core(int sig...);
+static void ddd_signal(int sig);
+static void ddd_fatal(int sig);
+static bool ddd_dump_core(int sig);
+static void wrap_ddd_dump_core(int sig);
 static void debug_ddd(bool core_dumped = true);
 
 // True if GDB is about to exit
@@ -289,7 +290,7 @@ void ddd_install_fatal(const char * /* program_name */)
 #endif
 
 #ifdef SIGUSR1
-    signal(SIGUSR1, SignalProc(ddd_dump_core));
+    signal(SIGUSR1, SignalProc(wrap_ddd_dump_core));
 #endif
 }
 
@@ -395,7 +396,7 @@ void ddd_show_signal(int sig)
 }
 
 // Signal handler: clean up and re-raise signal
-static void ddd_signal(int sig...)
+static void ddd_signal(int sig)
 {
     ddd_cleanup();
     signal(sig, SignalProc(SIG_DFL));
@@ -571,7 +572,7 @@ void get_core_pattern(int signal)
 }
 
 // Fatal signal handler: issue error message and re-raise signal
-static void ddd_fatal(int sig...)
+static void ddd_fatal(int sig)
 {
     // IF YOU GET HERE WHILE DEBUGGING DDD, READ THIS
     // ----------------------------------------------
@@ -649,7 +650,7 @@ static void ddd_fatal(int sig...)
 //-----------------------------------------------------------------------------
 
 // Dump core using SIG; return true iff child
-static bool ddd_dump_core(int sig...)
+static bool ddd_dump_core(int sig)
 {
     unlink("core");
 
@@ -693,11 +694,16 @@ static bool ddd_dump_core(int sig...)
     if (sig == SIGUSR1)
     {
 	// Re-install handler (for SVR4 and others)
-	signal(sig, SignalProc(ddd_dump_core));
+	signal(sig, SignalProc(wrap_ddd_dump_core));
     }
 #endif // defined(SIGUSR1)
 
     return false;
+}
+
+static void wrap_ddd_dump_core(int sig)
+{
+    ddd_dump_core(sig);
 }
 
 void DDDDumpCoreCB(Widget, XtPointer, XtPointer)
