@@ -37,7 +37,6 @@ char show_rcsid[] =
 #include "SmartC.h"
 #include "build.h"
 #include "config.h"
-#include "configinfo.h"
 #include "cook.h"
 #include "ddd.h"
 #include "gdbinit.h"
@@ -423,12 +422,6 @@ static void show_configuration(std::ostream& os, bool version_only)
 	s.after("core");
 #endif
     os << s;
-
-    string cinfo = config_info;
-    cinfo = cinfo.before("\n");
-    strip_space(cinfo);
-
-    os << cinfo << "\n";
 }
 
 void show_version(std::ostream& os)

@@ -388,7 +388,6 @@ DDD_SRC = \
 	comm-manag.h \
 	complete.C   \
 	complete.h   \
-	configinfo.h \
 	ctrl.C       \
 	ctrl.h       \
 	data.C       \
@@ -571,7 +570,6 @@ DDD_SRC = \
 
 # Automatically generated source files which should not be distributed.
 nodist_ddd_SOURCES = \
-	configinfo.C \
 	build.h      \
 	host.h       \
 	root.h       \
@@ -686,7 +684,7 @@ CXXSTUFF = @CXXSTUFF@ @X_PERMISSIVE@
 CXXFLAGS = $(CXXOPT) $(CXXDEBUG) $(CXXWARNINGS) $(CXXSTUFF)
 
 bin_PROGRAMS = ddd
-noinst_PROGRAMS = stringify userinfo ctest cxxtest vsl
+noinst_PROGRAMS = stringify ctest cxxtest vsl
 ddd_SOURCES = ddd.C \
 	$(BASE_SRC) \
 	$(TEMPLATE_SRC) \
@@ -699,7 +697,6 @@ ddd_SOURCES = ddd.C \
 	$(DDD_SRC)
 
 stringify_SOURCES = stringify.C
-userinfo_SOURCES  = userinfo.C
 ctest_SOURCES     = ctest.c
 cxxtest_SOURCES   = cxxtest.C
 vsl_SOURCES       = vsl.C \
@@ -886,26 +883,6 @@ $(srcdir)/NEWS.gz.C: $(srcdir)/NEWS.gz
 	-./stringify$(EXEEXT) < $? > $@~ && $(MV) $@~ $@
 
 show.$(OBJEXT): COPYING.gz.C NEWS.gz.C ddd.info.txt.gz.C
-
-
-# Configuration info stuff
-configinfo.C: USERINFO.txt $(srcdir)/config-info
-	$(SHELL) $(srcdir)/config-info $(srcdir)/USERINFO.txt USERINFO.txt > $@~ && \
-	$(MV) $@~ $@
-
-
-# If `~/.ddd_userinfo' exists, use this file as personal identification.
-USERINFO.txt: userinfo$(EXEEXT)
-	-(cat $$HOME/.ddd_userinfo 2> /dev/null || \
-	./userinfo$(EXEEXT) || echo '(unknown)') > $@~ && $(MV) $@~ $@
-	@$(ECHO) ""
-	@$(ECHO) "Please check your name and e-mail address:"
-	@$(ECHO) ""
-	@$(CAT) $@
-	@$(ECHO) ""
-	@$(ECHO) "This information will be compiled into $(DDD)."
-	@$(ECHO) "If it is not correct, please edit $@ and re-compile."
-	@$(ECHO) ""
 
 
 # EPS code stuff.
@@ -2070,7 +2047,7 @@ DIST_STUFF = $(srcdir)/header.ps $(srcdir)/trailer.ps \
 	     $(docdir)/ddd.pdf \
 	     $(docdir)/ddd-themes.pdf \
 	     $(docdir)/ddd-paper.ps \
-	     $(htmldir)/ddd.html $(srcdir)/ad2c.sed $(srcdir)/config-info \
+	     $(htmldir)/ddd.html $(srcdir)/ad2c.sed \
 	     style.css $(srcdir)/fix-html.sed \
 	     $(srcdir)/unumlaut.sed ddd.desktop
 
@@ -2081,8 +2058,8 @@ EXTRA_DIST = $(PROG_STUFF) $(DIST_STUFF) $(IMAGES)
 ddd.$(OBJEXT): $(PROG_STUFF)
 
 # These should not go into the distribution.
-DISTCLEANFILES = build.h host.h root.h ../config.cache USERINFO.txt \
-	$(top_builddir)/ddd/stamp-h $(man_MANS) configinfo.C \
+DISTCLEANFILES = build.h host.h root.h ../config.cache \
+	$(top_builddir)/ddd/stamp-h $(man_MANS) \
 	version.h Ddd.ad.h
 
 # `make mostlyclean' should also remove these temporary Texinfo files.
