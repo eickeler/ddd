@@ -1546,10 +1546,12 @@ static void add_button(Widget form, int& row, Dimension& max_width,
     bool is_set = true;		// Command sets a value
     bool is_add = false;	// Command adds a value
 
+
+    e_type = entry_filter;
+
     if (entry_filter == ThemeEntry)
     {
 	set_command = show_command = line;
-	e_type = entry_filter;
 	doc = vsldoc(line, DispBox::vsllib_path);
 	if (doc.empty())		   // No documentation:
 	    doc = basename(line.chars());  // Use base name of file instead
