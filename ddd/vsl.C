@@ -251,7 +251,7 @@ int main(int argc, char *argv[])
 	// Build themes
 	StringArray themes;
 	for (int i = 2; i < argc; i++)
-	    themes += argv[i];
+	    themes.push_back(argv[i]);
 	lib.set_theme_list(themes);
 	assert(lib.OK());
 

@@ -29,9 +29,9 @@
 #define _DDD_EdgeAnnotationPointerArray_h
 
 #include "EdgeA.h"
-#include "VarArray.h"
+#include <vector>
 
-typedef VarArray<EdgeAnnotation *> EdgeAnnotationPointerArray;
+typedef std::vector<EdgeAnnotation *> EdgeAnnotationPointerArray;
 
 #endif // _DDD_EdgeAnnotationPointerArray_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

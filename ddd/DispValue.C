@@ -45,7 +45,6 @@ char DispValue_rcsid[] =
 #include "AppData.h"
 #include "DispNode.h"
 #include "DispValueA.h"
-#include "DynArray.h"
 #include "GDBAgent.h"
 #include "PlotAgent.h"
 #include "assert.h"
@@ -173,7 +172,7 @@ DispValue::DispValue (const DispValue& dv)
 {
     for (int i = 0; i < dv.nchildren(); i++)
     {
-	_children += dv.child(i)->dup();
+	_children.push_back(dv.child(i)->dup());
     }
 
     if (dv.cached_box() != 0)
@@ -367,7 +366,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 	{
             DispValue *dv = parse_child(depth, value, myfull_name, "");
 
-            _children += dv;
+            _children.push_back(dv);
             
 	    if (background(value.length()))
 	    {
@@ -421,7 +420,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 	string vtable_entries = read_vtable_entries(value);
 	if (!vtable_entries.empty())
 	{
-	    _children += parse_child(depth, vtable_entries, myfull_name);
+	    _children.push_back(parse_child(depth, vtable_entries, myfull_name));
 	}
 
 	// Read the array elements.  Assume that the type is the
@@ -444,7 +443,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 					add_member_name(base, member_name), 
 					member_name, member_type);
 	    member_type = dv->type();
-	    _children += dv;
+	    _children.push_back(dv);
 
 	    int repeats = read_repeats(value);
 
@@ -460,7 +459,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 			parse_child(depth, val, 
 				    add_member_name(base, member_name),
 				    member_name, member_type);
-		    _children += repeated_dv;
+		    _children.push_back(repeated_dv);
 		}
 	    }
 	    else
@@ -616,13 +615,13 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 		    for (int i = 0; i < dv->nchildren(); i++)
 		    {
 			DispValue *dv2 = dv->child(i)->link();
-			_children += dv2;
+			_children.push_back(dv2);
 		    }
 		    dv->unlink();
 		}
 		else
 		{
-		    _children += dv;
+		    _children.push_back(dv);
 		}
 
 		more_values = read_multiple_values && read_struct_next(value);
@@ -668,7 +667,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 		}
 
 		DispValue *dv = parse_child(depth, value, myfull_name, member_name);
-		_children += dv;
+		_children.push_back(dv);
 
 		baseclass_prefix = saved_baseclass_prefix;
 
@@ -727,16 +726,16 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 		{
 		    // Found a text as child - child value must be empty
 		    string empty = "";
-		    _children += parse_child(depth, empty, full_name, member_name);
+		    _children.push_back(parse_child(depth, empty, full_name, member_name));
 
 		    string v = child->value();
 		    strip_space(v);
 		    if (!v.empty())
-			_children += child;
+			_children.push_back(child);
 		}
 		else
 		{
-		    _children += child;
+		    _children.push_back(child);
 		}
 
 		more_values = read_multiple_values && read_struct_next(value);
@@ -756,7 +755,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 	else if (mytype == List && !value.empty())
 	{
 	    // Add remaining value as text
-	    _children += parse_child(depth, value, "");
+	    _children.push_back(parse_child(depth, value, ""));
 	}
 
 	if (found_struct_begin)
@@ -790,8 +789,8 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 
 	string addr = gdb->address_expr(myfull_name);
 
-	_children += parse_child(depth, ref, addr, myfull_name, Pointer);
-	_children += parse_child(depth, value, myfull_name);
+	_children.push_back(parse_child(depth, ref, addr, myfull_name, Pointer));
+	_children.push_back(parse_child(depth, value, myfull_name));
 
 	if (background(value.length()))
 	{
@@ -818,21 +817,21 @@ void DispValue::init(DispValue *parent, int depth, string& value,
                 para = value.before(sep);
                 value = value.after(sep);
                 string emptyvalue = " ";
-                _children += parse_child(depth, para, myfull_name, Text);
-                _children += parse_child(depth, emptyvalue, myfull_name, Text);
+                _children.push_back(parse_child(depth, para, myfull_name, Text));
+                _children.push_back(parse_child(depth, emptyvalue, myfull_name, Text));
             }
             else
             {
                 value = value.after(sep);
-                _children += parse_child(depth, para, myfull_name, Text);
-                _children += parse_child(depth, value, myfull_name, Array);
+                _children.push_back(parse_child(depth, para, myfull_name, Text));
+                _children.push_back(parse_child(depth, value, myfull_name, Array));
             }
         }
         else
         {
             string emptyvalue = " ";
-            _children += parse_child(depth, value, myfull_name, Text);
-            _children += parse_child(depth, emptyvalue, myfull_name, Text);
+            _children.push_back(parse_child(depth, value, myfull_name, Text));
+            _children.push_back(parse_child(depth, emptyvalue, myfull_name, Text));
             
         }
 
@@ -859,8 +858,8 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 	sep = value.index('{');
 	value = value.after(sep);
 
-	_children += parse_child(depth, para, myfull_name, Text);
-	_children += parse_child(depth, value, myfull_name, List);
+	_children.push_back(parse_child(depth, para, myfull_name, Text));
+	_children.push_back(parse_child(depth, value, myfull_name, List));
 
 	if (background(value.length()))
 	{
@@ -919,7 +918,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 	    }
 	    else
 	    {
-		_children += dv;
+		_children.push_back(dv);
 	    }
 	}
 
@@ -1331,7 +1330,7 @@ DispValue *DispValue::_update(DispValue *source,
 		for (int i = 0; c == 0 && i < nchildren(); i++)
 		{
 		    bool processed = false;
-		    for (int k = 0; k < processed_children.size(); k++)
+		    for (int k = 0; k < int(processed_children.size()); k++)
 		    {
 			if (child(i) == processed_children[k])
 			    processed = true;
@@ -1344,7 +1343,7 @@ DispValue *DispValue::_update(DispValue *source,
 			c = child(i)->update(source->child(j),
 					     was_changed,
 					     was_initialized);
-			processed_children += child(i);
+			processed_children.push_back(child(i));
 		    }
 		}
 
@@ -1354,7 +1353,7 @@ DispValue *DispValue::_update(DispValue *source,
 		    c = source->child(j)->link();
 		}
 
-		new_children += c;
+		new_children.push_back(c);
 	    }
 	    _children = new_children;
 	    was_changed = was_initialized = true;

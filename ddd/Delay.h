@@ -32,8 +32,8 @@
 #include <X11/Intrinsic.h>
 
 #include "TypeInfo.h"
-#include "VarArray.h"
 #include "assert.h"
+#include <vector>
 
 // _Delay defines a delay for a specific widget only
 class _Delay {
@@ -59,8 +59,8 @@ public:
     virtual ~_Delay();
 };
 
-typedef VarArray<Widget>   WidgetArray;
-typedef VarArray<_Delay *> DelayArray;
+typedef std::vector<Widget>   WidgetArray;
+typedef std::vector<_Delay *> DelayArray;
 
 // Delay also defines delays for all registered shells
 class Delay: public _Delay {

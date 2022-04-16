@@ -127,7 +127,6 @@ TEMPLATE_SRC = \
 	StringSA.h   \
 	StringSAA.h  \
 	TextPosA.h   \
-	VarArray.h   \
 	VoidArray.h  \
 	WidgetSA.h
 
@@ -527,7 +526,6 @@ DDD_SRC = \
 	DispValueA.h \
 	DispValueT.C \
 	DispValueT.h \
-	DynArray.h   \
 	EntryType.h  \
 	GDBAgent.C   \
 	GDBAgent.h   \
@@ -1963,8 +1961,6 @@ $(buildpicdir)/dddback.jpg: $(icondir)/dddback.xpm
 
 $(buildpicdir)/dddback.png: $(icondir)/dddback.xpm
 	$(CONVERT) -quality 100 $(icondir)/dddback.xpm $@
-
-
 
 # -----------------------------------------------------------------------------
 # Configuration.

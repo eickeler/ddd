@@ -29,9 +29,9 @@
 #define _DDD_GraphNodePointerArray_h
 
 #include "GraphNode.h"
-#include "VarArray.h"
+#include <vector>
 
-typedef VarArray<GraphNode *> GraphNodePointerArray;
+typedef std::vector<GraphNode *> GraphNodePointerArray;
 
 #endif // _DDD_GraphNodePointerArray_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

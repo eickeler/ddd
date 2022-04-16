@@ -795,28 +795,28 @@ public:
     inline static void enable_bp(int nr, Widget origin = 0)
     {
 	IntArray nrs;
-	nrs += nr;
+	nrs.push_back(nr);
 	enable_bps(nrs, origin);
     }
 
     inline static void disable_bp(int nr, Widget origin = 0)
     {
 	IntArray nrs;
-	nrs += nr;
+	nrs.push_back(nr);
 	disable_bps(nrs, origin);
     }
 
     inline static void delete_bp(int nr, Widget origin = 0)
     {
 	IntArray nrs;
-	nrs += nr;
+	nrs.push_back(nr);
 	delete_bps(nrs, origin);
     }
 
     inline static void edit_bp(int nr, Widget origin = 0)
     {
 	IntArray nrs;
-	nrs += nr;
+	nrs.push_back(nr);
 	edit_bps(nrs, origin);
     }
 
@@ -827,7 +827,7 @@ public:
 				       Widget origin = 0)
     {
 	IntArray nrs;
-	nrs += nr;
+	nrs.push_back(nr);
 	set_bp_commands(nrs, commands, origin);
     }
 

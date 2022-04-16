@@ -41,7 +41,6 @@ char file_rcsid[] =
 #include "HelpCB.h"
 #include "SmartC.h"
 #include "SourceView.h"
-#include "VarArray.h"
 #include "Command.h"
 #include "basename.h"
 #include "cook.h"
@@ -131,7 +130,7 @@ static void SyncFiltersCB(Widget dialog, XtPointer, XtPointer)
     current_file_filter = _current_file_filter;
     XtFree(_current_file_filter);
 
-    for (int i = 0; i < file_filters.size(); i++)
+    for (int i = 0; i < int(file_filters.size()); i++)
     {
 	if (file_dialogs[i] != dialog)
 	{
@@ -157,7 +156,7 @@ static void FilterAllCB(Widget dialog, XtPointer client_data,
 	
     // std::clog << "dialog = " << longName(dialog) << "\n";
 
-    for (int i = 0; i < file_dialogs.size(); i++)
+    for (int i = 0; i < int(file_dialogs.size()); i++)
     {
 	if (file_dialogs[i] != dialog)
 	{
@@ -216,7 +215,7 @@ static Widget file_dialog(Widget w, const string& name,
     XtAddCallback(dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
 
     Widget filter = XmFileSelectionBoxGetChild(dialog, XmDIALOG_FILTER_TEXT);
-    file_filters += filter;
+    file_filters.push_back(filter);
     if (!current_file_filter.empty())
 	XmTextSetString(filter, XMST(current_file_filter.chars()));
     XtAddCallback(filter, XmNvalueChangedCallback, SyncFiltersCB, 0);
@@ -226,7 +225,7 @@ static Widget file_dialog(Widget w, const string& name,
     XtAddCallback(filter_button, XmNactivateCallback, FilterAllCB, 0);
     XtAddCallback(dialog, XmNunmapCallback, ClearStatusCB, 0);
 
-    file_dialogs += dialog;
+    file_dialogs.push_back(dialog);
 
     return dialog;
 }
@@ -257,7 +256,7 @@ void process_cd(const string& pwd)
 {
     current_file_filter = pwd + "/*";
 
-    for (int i = 0; i < file_filters.size(); i++)
+    for (int i = 0; i < int(file_filters.size()); i++)
     {
 	if (file_filters[i] != 0)
 	{
@@ -1014,7 +1013,7 @@ static void getPIDs(Widget selectionList, IntArray& disp_nrs)
 
 	int p = ps_pid(item);
 	if (p > 0)
-	    disp_nrs += p;
+	    disp_nrs.push_back(p);
     }
 }
 
@@ -1040,10 +1039,10 @@ static void sortProcesses(StringArray& a)
     int h = 1;
     do {
 	h = h * 3 + 1;
-    } while (h <= a.size());
+    } while (h <= int(a.size()));
     do {
 	h /= 3;
-	for (int i = h; i < a.size(); i++)
+	for (int i = h; i < int(a.size()); i++)
 	{
 	    string v = a[i];
 	    int j;
@@ -1117,7 +1116,7 @@ static void update_processes(Widget processes, bool keep_selection)
 	if (c == '\n')
 	{
 	    if (first_line || valid_ps_line(line, app_data.ps_command))
-		all_process_list += line;
+		all_process_list.push_back(line);
 #if 0
 	    else
 		std::clog << "Excluded: " << line << "\n";
@@ -1142,7 +1141,7 @@ static void update_processes(Widget processes, bool keep_selection)
 
     pclose(fp);
     sortProcesses(all_process_list);
-    DynIntArray pids(all_process_list.size());
+    VarIntArray pids(all_process_list.size());
 
     // If GDB cannot send a signal to the process, we cannot debug it.
     // Try a `kill -0' (via GDB, as it may be setuid) and filter out
@@ -1154,7 +1153,7 @@ static void update_processes(Widget processes, bool keep_selection)
 	kill = "/usr/bin/kill -0"; // Bypass built-in SUN DBX command
 
     int i;
-    for (i = 0; i < all_process_list.size(); i++)
+    for (i = 0; i < int(all_process_list.size()); i++)
     {
 	pids[i] = ps_pid(all_process_list[i]);
 	if (pids[i])
@@ -1189,7 +1188,7 @@ static void update_processes(Widget processes, bool keep_selection)
 	if (i >= 0)
 	{
 	    int bad_pid = atoi(kill_result.chars() + i);
-	    for (int k = 0; k < all_process_list.size(); k++)
+	    for (int k = 0; k < int(all_process_list.size()); k++)
 	    {
 		if (pids[k] != 0 && pids[k] == bad_pid)
 		{
@@ -1204,13 +1203,13 @@ static void update_processes(Widget processes, bool keep_selection)
     }
 
     StringArray process_list;
-    for (i = 0; i < all_process_list.size(); i++)
+    for (i = 0; i < int(all_process_list.size()); i++)
 	if (all_process_list[i] != NO_GDB_ANSWER)
-	    process_list += all_process_list[i];
+	    process_list.push_back(all_process_list[i]);
 
     // Now set the selection.
     bool *selected = new bool[process_list.size()];
-    for (i = 0; i < process_list.size(); i++)
+    for (i = 0; i < int(process_list.size()); i++)
 	selected[i] = false;
 
     int pos = -1;
@@ -1221,9 +1220,9 @@ static void update_processes(Widget processes, bool keep_selection)
 	IntArray selection;
 	getPIDs(processes, selection);
 
-	for (i = 0; i < selection.size(); i++)
+	for (i = 0; i < int(selection.size()); i++)
 	{
-	    for (int j = 0; j < process_list.size(); j++)
+	    for (int j = 0; j < int(process_list.size()); j++)
 		if (selection[i] == ps_pid(process_list[j]))
 		{
 		    if (pos < 0)
@@ -1239,7 +1238,7 @@ static void update_processes(Widget processes, bool keep_selection)
 	ProgramInfo info;
 
 	// Check for current pid; if found, highlight it.
-	for (i = 0; pos < 0 && i < process_list.size(); i++)
+	for (i = 0; pos < 0 && i < int(process_list.size()); i++)
 	{
 	    if (info.pid != 0 && ps_pid(process_list[i]) == info.pid)
 		pos = i;
@@ -1250,7 +1249,7 @@ static void update_processes(Widget processes, bool keep_selection)
 	    // Not found? Try leftmost occurrence of process base name.
 	    string current_base = basename(info.file.chars());
 	    int leftmost = INT_MAX;
-	    for (i = 0; i < process_list.size(); i++)
+	    for (i = 0; i < int(process_list.size()); i++)
 	    {
 		int occurrence = process_list[i].index(current_base);
 		if (occurrence >= 0 && occurrence < leftmost 
@@ -1266,7 +1265,7 @@ static void update_processes(Widget processes, bool keep_selection)
     if (pos >= 0)
 	selected[pos] = true;
 
-    setLabelList(processes, process_list.values(),
+    setLabelList(processes, process_list.data(),
 		 selected, process_list.size(), true, false);
 
     if (pos >= 0)
@@ -1406,7 +1405,7 @@ static void get_items(Widget selectionList, StringArray& itemids)
 	string item(_item);
 	XtFree(_item);
 
-	itemids += item;
+	itemids.push_back(item);
     }
 }
 
@@ -1452,10 +1451,10 @@ static void update_classes(Widget classes)
 
     // Now set the selection.
     bool *selected = new bool[classes_list.size()];
-    for (int i = 0; i < classes_list.size(); i++)
+    for (int i = 0; i < int(classes_list.size()); i++)
 	selected[i] = false;
 
-    setLabelList(classes, classes_list.values(),
+    setLabelList(classes, classes_list.data(),
 		 selected, classes_list.size(), false, false);
 
     delete[] selected;
@@ -1532,7 +1531,7 @@ void get_gdb_sources(StringArray& sources_list)
 	    string line = ans.before('\n');
 	    ans = ans.after('\n');
 	    
-	    sources_list += line;
+	    sources_list.push_back(line);
 	}
 
 	smart_sort(sources_list);
@@ -1546,12 +1545,12 @@ static void uniq(StringArray& a1, StringArray& a2)
     StringArray b1;
     StringArray b2;
 
-    for (int i = 0; i < a1.size(); i++)
+    for (int i = 0; i < int(a1.size()); i++)
     {
 	if (i == 0 || a1[i - 1] != a1[i])
 	{
-	    b1 += a1[i];
-	    b2 += a2[i];
+	    b1.push_back(a1[i]);
+	    b2.push_back(a2[i]);
 	}
     }
     
@@ -1568,10 +1567,10 @@ static void sort(StringArray& a1, StringArray& a2)
     int h = 1;
     do {
 	h = h * 3 + 1;
-    } while (h <= a1.size());
+    } while (h <= int(a1.size()));
     do {
 	h /= 3;
-	for (int i = h; i < a1.size(); i++)
+	for (int i = h; i < int(a1.size()); i++)
 	{
 	    string v1 = a1[i];
 	    string v2 = a2[i];
@@ -1598,13 +1597,13 @@ static void filter_sources(StringArray& labels, StringArray& sources,
     StringArray new_labels;
     StringArray new_sources;
 
-    for (int i = 0; i < labels.size(); i++)
+    for (int i = 0; i < int(labels.size()); i++)
     {
 	if (glob_match(pattern.chars(), labels[i].chars(), 0) ||
 	    glob_match(pattern.chars(), sources[i].chars(), 0))
 	{
-	    new_labels  += labels[i];
-	    new_sources += sources[i];
+	    new_labels.push_back(labels[i]);
+	    new_sources.push_back(sources[i]);
 	}
     }
 
@@ -1638,10 +1637,10 @@ static void update_sources(Widget sources, Widget filter)
 
     // Now set the selection.
     bool *selected = new bool[labels.size()];
-    for (int i = 0; i < labels.size(); i++)
+    for (int i = 0; i < int(labels.size()); i++)
 	selected[i] = false;
 
-    setLabelList(sources, labels.values(),
+    setLabelList(sources, labels.data(),
 		 selected, labels.size(), false, false);
 
     delete[] selected;
@@ -1725,7 +1724,7 @@ void gdbOpenRecentCB(Widget, XtPointer client_data, XtPointer)
     StringArray recent_files;
     get_recent(recent_files);
 
-    if (index >= 0 && index < recent_files.size())
+    if (index >= 0 && index < int(recent_files.size()))
     {
 	string file = recent_files[index];
 	open_file(file);

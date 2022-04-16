@@ -29,7 +29,7 @@
 #define _DDD_UndoBufferEntry_h
 
 #include "StringSA.h"
-#include "VarArray.h"
+#include <vector>
 #include "bool.h"
 
 // Special value keys
@@ -94,7 +94,7 @@ public:
     int allocation() const;
 };
 
-typedef VarArray<UndoBufferEntry> UndoBufferArray;
+typedef std::vector<UndoBufferEntry> UndoBufferArray;
 
 #endif // _DDD_UndoBufferEntry_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

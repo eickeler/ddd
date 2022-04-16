@@ -109,7 +109,7 @@ StringArray ThemeManager::themes(const string& expr) const
     for (StringThemePatternAssocIter i(map); i.ok(); i = i.next())
     {
 	if (i.value().active() && i.value().matches(expr))
-	    ret += i.key();
+	    ret.push_back(i.key());
     }
 
 #if LOG_THEMES
@@ -128,7 +128,7 @@ StringArray ThemeManager::themes() const
     StringArray ret;
 
     for (StringThemePatternAssocIter i(map); i.ok(); i = i.next())
-	ret += i.key();
+	ret.push_back(i.key());
 
     return ret;
 }

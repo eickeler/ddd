@@ -521,7 +521,7 @@ void start_gdb(bool config)
 	else
 	{
 	    // Process right now
-	    cmds += command;
+	    cmds.push_back(command);
 	}
 	init = init.after('\n');
     }
@@ -532,110 +532,110 @@ void start_gdb(bool config)
     switch (gdb->type())
     {
     case GDB:
-	cmds += "info line";	// Fails if no symbol table is loaded.
-	cmds += "list";		// But works just fine after a `list'.
-	cmds += "info line";
+	cmds.push_back("info line");	// Fails if no symbol table is loaded.
+	cmds.push_back("list");		// But works just fine after a `list'.
+	cmds.push_back("info line");
 	extra_data->refresh_initial_line = true;
-	cmds += "output " + print_cookie;
+	cmds.push_back("output " + print_cookie);
 	extra_data->config_output = true;
-	cmds += "show language";
+	cmds.push_back("show language");
 	extra_data->config_program_language = true;
-	cmds += "show version";
+	cmds.push_back("show version");
 	extra_data->config_gdb_version = true;
-	cmds += "pwd";
+	cmds.push_back("pwd");
 	extra_data->refresh_pwd = true;
-	cmds += "info breakpoints";
+	cmds.push_back("info breakpoints");
 	extra_data->refresh_breakpoints = true;
-	cmds += "show history filename";
+	cmds.push_back("show history filename");
 	extra_data->refresh_history_filename = true;
-	cmds += "show history size";
+	cmds.push_back("show history size");
 	extra_data->refresh_history_size = true;
 	break;
 
     case DBX:
 	extra_data->refresh_initial_line = true;
-	cmds += "file";
-	cmds += "line";
+	cmds.push_back("file");
+	cmds.push_back("line");
 
 	if (config)
 	{
-	    cmds += "frame";
+	    cmds.push_back("frame");
 	    extra_data->config_frame = true;
-	    cmds += "func";
+	    cmds.push_back("func");
 	    extra_data->config_func = true;
-	    cmds += "file";
+	    cmds.push_back("file");
 	    extra_data->config_file = true;
-	    cmds += "dbxenv run_io";
+	    cmds.push_back("dbxenv run_io");
 	    extra_data->config_run_io = true;
-	    cmds += "print -r " + print_cookie;
+	    cmds.push_back("print -r " + print_cookie);
 	    extra_data->config_print_r = true;
-	    cmds += "where -h";
+	    cmds.push_back("where -h");
 	    extra_data->config_where_h = true;
-	    cmds += "display";
+	    cmds.push_back("display");
 	    extra_data->config_display = true;
-	    cmds += "clear";
+	    cmds.push_back("clear");
 	    extra_data->config_clear = true;
-	    cmds += "help handler";
+	    cmds.push_back("help handler");
 	    extra_data->config_handler = true;
-	    cmds += "help attach";
+	    cmds.push_back("help attach");
 	    extra_data->config_attach = true;
-	    cmds += "help addproc";
+	    cmds.push_back("help addproc");
 	    extra_data->config_addproc = true;
-	    cmds += "pwd";
+	    cmds.push_back("pwd");
 	    extra_data->config_pwd = true;
-	    cmds += "help setenv";
+	    cmds.push_back("help setenv");
 	    extra_data->config_setenv = true;
-	    cmds += "help edit";
+	    cmds.push_back("help edit");
 	    extra_data->config_edit = true;
-	    cmds += "help make";
+	    cmds.push_back("help make");
 	    extra_data->config_make = true;
-	    cmds += "help regs";
+	    cmds.push_back("help regs");
 	    extra_data->config_regs = true;
-	    cmds += "print \"" DDD_NAME "\"";
+	    cmds.push_back("print \"" DDD_NAME "\"");
 	    extra_data->config_named_values = true;
-	    cmds += "help when";
+	    cmds.push_back("help when");
 	    extra_data->config_when_semicolon = true;
-	    cmds += "delete " + print_cookie + " " + print_cookie;
+	    cmds.push_back("delete " + print_cookie + " " + print_cookie);
 	    extra_data->config_delete_comma = true;
-	    cmds += "help run";
+	    cmds.push_back("help run");
 	    extra_data->config_err_redirection = true;
-	    cmds += "help givenfile";
+	    cmds.push_back("help givenfile");
 	    extra_data->config_givenfile = true;
-	    cmds += "help cont";
+	    cmds.push_back("help cont");
 	    extra_data->config_cont_sig = true;
-	    cmds += "help examine";
+	    cmds.push_back("help examine");
 	    extra_data->config_examine = true;
-	    cmds += "help rerun";
+	    cmds.push_back("help rerun");
 	    extra_data->config_rerun = true;
-	    cmds += "language";
+	    cmds.push_back("language");
 	    extra_data->config_program_language = true;
 	}
 
-	cmds += "sh pwd";
+	cmds.push_back("sh pwd");
 	extra_data->refresh_pwd = true;
 	if (!gdb->isSunDBX())
 	{
-	  cmds += "file";
+	  cmds.push_back("file");
 	  extra_data->refresh_file = true;
-	  cmds += "list";
+	  cmds.push_back("list");
 	  extra_data->refresh_line = true;
 	}
-	cmds += "status";
+	cmds.push_back("status");
 	extra_data->refresh_breakpoints = true;
 	break;
 
     case XDB:
-	cmds += "L";
+	cmds.push_back("L");
 	extra_data->refresh_initial_line = true;
 
 	if (config)
 	{
-	    cmds += "tm";
+	    cmds.push_back("tm");
 	    extra_data->config_xdb = true;
 	}
-	cmds += "!pwd";
+	cmds.push_back("!pwd");
 	extra_data->refresh_pwd = true;
-	cmds += "lb";
+	cmds.push_back("lb");
 	extra_data->refresh_breakpoints = true;
 	break;
 
@@ -648,17 +648,17 @@ void start_gdb(bool config)
 	// All of these start immediately with execution.
 	cmd_data->new_exec_pos = true;
 
-	cmds += gdb->pwd_command();
+	cmds.push_back(gdb->pwd_command());
 	extra_data->refresh_pwd = true;
-	cmds += "L";
+	cmds.push_back("L");
 	extra_data->refresh_breakpoints = true;
 	break;
 
     case DBG:
 	extra_data->refresh_initial_line = true;
-	cmds += "pwd";
+	cmds.push_back("pwd");
 	extra_data->refresh_pwd = true;
-	cmds += "info breakpoints";
+	cmds.push_back("info breakpoints");
 	extra_data->refresh_breakpoints = true;
 	break;
 
@@ -666,23 +666,23 @@ void start_gdb(bool config)
 	// All of these start immediately with execution.
 	cmd_data->new_exec_pos = true;
 
-	cmds += gdb->pwd_command();
+	cmds.push_back(gdb->pwd_command());
 	extra_data->refresh_pwd = true;
-	cmds += "info break";
+	cmds.push_back("info break");
 	extra_data->refresh_breakpoints = true;
 	break;
 
     case PYDB:
 	cmd_data->new_exec_pos = false;
-	cmds += gdb->pwd_command();
+	cmds.push_back(gdb->pwd_command());
 	extra_data->refresh_pwd = true;
-	cmds += "info break";
+	cmds.push_back("info break");
 	extra_data->refresh_breakpoints = true;
 	break;
     }
 
     while (dummy.size() < cmds.size())
-	dummy += (void *)0;
+	dummy.push_back((void *)0);
 
     bool extra_registered;
     gdb->start_plus (partial_answer_received,
@@ -1640,25 +1640,25 @@ void send_gdb_command(string cmd, Widget origin,
     case GDB:
 	if (extra_data->refresh_initial_line)
 	{
-	    cmds += "info line";	// Fails if no symbol table is loaded.
-	    cmds += "list";		// But works just fine after a `list'.
-	    cmds += "info line";
+	    cmds.push_back("info line");	// Fails if no symbol table is loaded.
+	    cmds.push_back("list");		// But works just fine after a `list'.
+	    cmds.push_back("info line");
 	}
 	if (extra_data->refresh_pwd)
-	    cmds += gdb->pwd_command();
+	    cmds.push_back(gdb->pwd_command());
 	assert(!extra_data->refresh_class_path);
 	assert(!extra_data->refresh_file);
 	assert(!extra_data->refresh_line);
 	if (extra_data->refresh_breakpoints)
-	    cmds += "info breakpoints";
+	    cmds.push_back("info breakpoints");
 	if (extra_data->refresh_where)
-	    cmds += gdb->where_command();
+	    cmds.push_back(gdb->where_command());
 	if (extra_data->refresh_frame)
-	    cmds += gdb->frame_command();
+	    cmds.push_back(gdb->frame_command());
 	if (extra_data->refresh_registers)
-	    cmds += source_view->refresh_registers_command();
+	    cmds.push_back(source_view->refresh_registers_command());
 	if (extra_data->refresh_threads)
-	    cmds += "info threads";
+	    cmds.push_back("info threads");
 	if (extra_data->refresh_data)
 	    extra_data->n_refresh_data = 
 		data_disp->add_refresh_data_commands(cmds);
@@ -1666,47 +1666,47 @@ void send_gdb_command(string cmd, Widget origin,
 	    extra_data->n_refresh_user = 
 		data_disp->add_refresh_user_commands(cmds);
 	if (extra_data->refresh_disp_info)
-	    cmds += gdb->info_display_command();
+	    cmds.push_back(gdb->info_display_command());
 	if (extra_data->refresh_history_filename)
-	    cmds += "show history filename";
+	    cmds.push_back("show history filename");
 	if (extra_data->refresh_history_size)
-	    cmds += "show history size";
+	    cmds.push_back("show history size");
 	if (extra_data->refresh_setting)
-	    cmds += show_command(cmd, gdb->type());
+	    cmds.push_back(show_command(cmd, gdb->type()));
 	if (extra_data->refresh_handle)
 	{
 	    string sig = cmd.after(rxwhite);
 	    sig = sig.before(rxwhite);
 	    if (sig == "all")
 		sig = "";
-	    cmds += "info handle " + sig;
+	    cmds.push_back("info handle " + sig);
 	}
 	break;
 
     case DBX:
 	if (extra_data->refresh_initial_line) {
-	    cmds += "file";
-	    cmds += "line";
+	    cmds.push_back("file");
+	    cmds.push_back("line");
 	}
 	if (extra_data->refresh_pwd)
-	    cmds += gdb->pwd_command();
+	    cmds.push_back(gdb->pwd_command());
 	assert(!extra_data->refresh_class_path);
 	if (extra_data->refresh_file)
-	    cmds += "file";
+	    cmds.push_back("file");
 	if (extra_data->refresh_line)
-	    cmds += "list";
+	    cmds.push_back("list");
 	if (extra_data->refresh_breakpoints)
-	    cmds += "status";
+	    cmds.push_back("status");
 	if (extra_data->refresh_where)
-	    cmds += gdb->where_command();
+	    cmds.push_back(gdb->where_command());
 	if (extra_data->refresh_frame)
-	    cmds += gdb->frame_command();
+	    cmds.push_back(gdb->frame_command());
 	if (extra_data->refresh_registers)
-	    cmds += source_view->refresh_registers_command();
+	    cmds.push_back(source_view->refresh_registers_command());
 	if (gdb->isSunDBX())
 	{
 	    if (extra_data->refresh_threads)
-	       cmds += "threads";
+	       cmds.push_back("threads");
 	} else
 	    assert(!extra_data->refresh_threads);
 	if (extra_data->refresh_data)
@@ -1716,28 +1716,28 @@ void send_gdb_command(string cmd, Widget origin,
 	    extra_data->n_refresh_user = 
 		data_disp->add_refresh_user_commands(cmds);
 	if (extra_data->refresh_disp_info)
-	    cmds += gdb->info_display_command();
+	    cmds.push_back(gdb->info_display_command());
 	assert (!extra_data->refresh_history_filename);
 	assert (!extra_data->refresh_history_size);
 	if (extra_data->refresh_setting)
-	    cmds += show_command(cmd, gdb->type());
+	    cmds.push_back(show_command(cmd, gdb->type()));
 	assert (!extra_data->refresh_handle);
 	break;
 
     case XDB:
 	if (extra_data->refresh_initial_line)
-	    cmds += "L";
+	    cmds.push_back("L");
 	if (extra_data->refresh_pwd)
-	    cmds += "!pwd";
+	    cmds.push_back("!pwd");
 	assert(!extra_data->refresh_class_path);
 	assert(!extra_data->refresh_file);
 	assert(!extra_data->refresh_line);
 	if (extra_data->refresh_breakpoints)
-	    cmds += "lb";
+	    cmds.push_back("lb");
 	if (extra_data->refresh_where)
-	    cmds += gdb->where_command();
+	    cmds.push_back(gdb->where_command());
 	if (extra_data->refresh_frame)
-	    cmds += gdb->frame_command();
+	    cmds.push_back(gdb->frame_command());
 	assert (!extra_data->refresh_registers);
 	assert (!extra_data->refresh_threads);
 	if (extra_data->refresh_data)
@@ -1747,7 +1747,7 @@ void send_gdb_command(string cmd, Widget origin,
 	    extra_data->n_refresh_user = 
 		data_disp->add_refresh_user_commands(cmds);
 	if (extra_data->refresh_disp_info)
-	    cmds += gdb->display_command();
+	    cmds.push_back(gdb->display_command());
 	assert (!extra_data->refresh_history_filename);
 	assert (!extra_data->refresh_history_size);
 	assert (!extra_data->refresh_setting);
@@ -1757,16 +1757,16 @@ void send_gdb_command(string cmd, Widget origin,
     case JDB:
 	assert (!extra_data->refresh_pwd);
 	if (extra_data->refresh_class_path)
-	    cmds += "use";
+	    cmds.push_back("use");
 	assert(!extra_data->refresh_file);
 	assert(!extra_data->refresh_line);
 	if (extra_data->refresh_breakpoints)
-	    cmds += "clear";
+	    cmds.push_back("clear");
 	if (extra_data->refresh_where)
-	    cmds += gdb->where_command();
+	    cmds.push_back(gdb->where_command());
 	assert (!extra_data->refresh_registers);
 	if (extra_data->refresh_threads)
-	    cmds += "threads";
+	    cmds.push_back("threads");
 	if (extra_data->refresh_data)
 	    extra_data->n_refresh_data = 
 		data_disp->add_refresh_data_commands(cmds);
@@ -1781,13 +1781,13 @@ void send_gdb_command(string cmd, Widget origin,
 
     case PYDB:
 	if (extra_data->refresh_pwd)
-	    cmds += gdb->pwd_command();
+	    cmds.push_back(gdb->pwd_command());
 	if (extra_data->refresh_breakpoints)
-	    cmds += "info break";
+	    cmds.push_back("info break");
 	if (extra_data->refresh_where)
-	    cmds += gdb->where_command();
+	    cmds.push_back(gdb->where_command());
 	if (extra_data->refresh_frame)
-	    cmds += gdb->frame_command();
+	    cmds.push_back(gdb->frame_command());
 	if (extra_data->refresh_data)
 	    extra_data->n_refresh_data = 
 		data_disp->add_refresh_data_commands(cmds);
@@ -1795,19 +1795,19 @@ void send_gdb_command(string cmd, Widget origin,
 	    extra_data->n_refresh_user = 
 		data_disp->add_refresh_user_commands(cmds);
 	if (extra_data->refresh_disp_info)
-	    cmds += gdb->info_display_command();
+	    cmds.push_back(gdb->info_display_command());
 	if (extra_data->refresh_setting)
-	    cmds += show_command(cmd, gdb->type());
+	    cmds.push_back(show_command(cmd, gdb->type()));
 	break;
 
     case BASH:
     case PERL:
 	if (extra_data->refresh_pwd)
-	    cmds += gdb->pwd_command();
+	    cmds.push_back(gdb->pwd_command());
 	if (extra_data->refresh_breakpoints)
-	    cmds += "L";
+	    cmds.push_back("L");
 	if (extra_data->refresh_where)
-	    cmds += gdb->where_command();
+	    cmds.push_back(gdb->where_command());
 	if (extra_data->refresh_data)
 	    extra_data->n_refresh_data = 
 		data_disp->add_refresh_data_commands(cmds);
@@ -1815,16 +1815,16 @@ void send_gdb_command(string cmd, Widget origin,
 	    extra_data->n_refresh_user = 
 		data_disp->add_refresh_user_commands(cmds);
 	if (extra_data->refresh_setting)
-	    cmds += show_command(cmd, gdb->type());
+	    cmds.push_back(show_command(cmd, gdb->type()));
 	break;
 
     case MAKE:
 	if (extra_data->refresh_pwd)
-	    cmds += gdb->pwd_command();
+	    cmds.push_back(gdb->pwd_command());
 	if (extra_data->refresh_breakpoints)
-	    cmds += "info break";
+	    cmds.push_back("info break");
 	if (extra_data->refresh_where)
-	    cmds += gdb->where_command();
+	    cmds.push_back(gdb->where_command());
 	if (extra_data->refresh_data)
 	    extra_data->n_refresh_data = 
 		data_disp->add_refresh_data_commands(cmds);
@@ -1832,18 +1832,18 @@ void send_gdb_command(string cmd, Widget origin,
 	    extra_data->n_refresh_user = 
 		data_disp->add_refresh_user_commands(cmds);
 	if (extra_data->refresh_setting)
-	    cmds += show_command(cmd, gdb->type());
+	    cmds.push_back(show_command(cmd, gdb->type()));
 	break;
 
     case DBG:
 	if (extra_data->refresh_pwd)
-	    cmds += gdb->pwd_command();
+	    cmds.push_back(gdb->pwd_command());
 	if (extra_data->refresh_breakpoints)
-	    cmds += "info breakpoints";
+	    cmds.push_back("info breakpoints");
 	if (extra_data->refresh_where)
-	    cmds += gdb->where_command();
+	    cmds.push_back(gdb->where_command());
 	if (extra_data->refresh_frame)
-	    cmds += gdb->frame_command();
+	    cmds.push_back(gdb->frame_command());
 	if (extra_data->refresh_data)
 	    extra_data->n_refresh_data = 
 		data_disp->add_refresh_data_commands(cmds);
@@ -1851,14 +1851,14 @@ void send_gdb_command(string cmd, Widget origin,
 	    extra_data->n_refresh_user = 
 		data_disp->add_refresh_user_commands(cmds);
 	if (extra_data->refresh_disp_info)
-	    cmds += gdb->info_display_command();
+	    cmds.push_back(gdb->info_display_command());
 	if (extra_data->refresh_setting)
-	    cmds += show_command(cmd, gdb->type());
+	    cmds.push_back(show_command(cmd, gdb->type()));
 	break;
     }
 
     while (dummy.size() < cmds.size())
-	dummy += (void *)0;
+	dummy.push_back((void *)0);
 
     if (!cmd_data->graph_cmd.empty())
     {
@@ -2379,12 +2379,12 @@ static bool read_displays(string arg, IntArray& numbers, bool verbose)
 	string number = read_nr_str(arg);
 	int nr = atoi(number.chars());
 	bool found = false;
-	for (int i = 0; !found && i < displays.size(); i++)
+	for (int i = 0; !found && i < int(displays.size()); i++)
 	{
 	    if (displays[i] == nr)
 	    {
 		// Found a display with this number
-		numbers += nr;
+		numbers.push_back(nr);
 		found = true;
 	    }
 	}
@@ -2395,13 +2395,13 @@ static bool read_displays(string arg, IntArray& numbers, bool verbose)
 	    if (disp_nr != 0)
 	    {
 		// Found a display with this name
-		numbers += disp_nr;
+		numbers.push_back(disp_nr);
 		found = true;
 	    }
 	}
 
 	if (!found)
-	    numbers += nr;	// Use given (probably invalid) display number
+	    numbers.push_back(nr);	// Use given (probably invalid) display number
     }
 
     strip_space(arg);
@@ -3292,8 +3292,9 @@ static void extra_completed (StringArray& answers,
 
     if (extra_data->refresh_user)
     {
-	StringArray answers_(answers.values() + qu_count,
-			    extra_data->n_refresh_user);
+// 	StringArray answers_(answers.data() + qu_count,
+// 			    extra_data->n_refresh_user);
+        StringArray answers_(&answers[qu_count], &answers[qu_count + extra_data->n_refresh_user]);
 	data_disp->process_user(answers_);
 	qu_count += extra_data->n_refresh_user;
     }

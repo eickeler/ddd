@@ -651,7 +651,7 @@ static void FindCB(Widget w, XtPointer client_data, XtPointer call_data,
     int next_occurrence = -1;
     if (!key.empty())
     {
-	find_keys += key;
+	find_keys.push_back(key);
 	smart_sort(find_keys);
 	uniq(find_keys);
 	ComboBoxSetList(fi->key, find_keys);
@@ -1077,8 +1077,8 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 		title.upcase();
 
 	    // Add title and position
-	    titles += replicate(' ', indent * 2) + title;
-	    positions += source;
+	    titles.push_back(replicate(' ', indent * 2) + title);
+	    positions.push_back(source);
 
 	    // Strip `File: ' line
 	    the_text.del(source, start_of_title - source);
@@ -1333,9 +1333,8 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 
 		    if (is_title)
 		    {
-			titles += 
-			    the_text.at(start_of_line, source - start_of_line);
-			positions += start_of_line;
+			titles.push_back(the_text.at(start_of_line, source - start_of_line));
+			positions.push_back(start_of_line);
 		    }
 		}
 
@@ -1359,13 +1358,13 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 
     // Set titles in selection list
     XmTextPosition *xmpositions = new XmTextPosition[titles.size() + 1];
-    for (i = 0; i < titles.size(); i++)
+    for (i = 0; i < int(titles.size()); i++)
 	xmpositions[i] = positions[i];
     xmpositions[i] = INT_MAX;
 
     XmStringTable xmtitles = new XmString[titles.size()];
 
-    for (i = 0; i < titles.size(); i++)
+    for (i = 0; i < int(titles.size()); i++)
     {
 	xmtitles[i] = 
 	    XmStringCreateLtoR(XMST(titles[i].chars()),
@@ -1382,7 +1381,7 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 		  XmNitemCount,         titles.size(),
 		  XtPointer(0));
 
-    for (i = 0; i < titles.size(); i++)
+    for (i = 0; i < int(titles.size()); i++)
 	XmStringFree(xmtitles[i]);
     delete[] xmtitles;
 

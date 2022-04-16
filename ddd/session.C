@@ -454,7 +454,7 @@ static void get_sessions(StringArray& arr)
 	    free(files[i]);
 	    file = file.before('/', -1);
 	    file = file.after('/', -1);
-	    arr += file;
+	    arr.push_back(file);
 	}
 	free((char *)files);
     }
@@ -498,19 +498,19 @@ static void update_sessions(Widget dialog)
     Widget sessions = XmSelectionBoxGetChild(dialog, XmDIALOG_LIST);
 
     StringArray session_list;
-    session_list += NO_SESSION;
+    session_list.push_back(NO_SESSION);
     get_sessions(session_list);
 	
     bool *selected = new bool[session_list.size()];
     int i;
-    for (i = 0; i < session_list.size(); i++)
+    for (i = 0; i < int(session_list.size()); i++)
     {
 	selected[i] = (session_list[i] == app_data.session
 		       || (session_list[i] == NO_SESSION 
 			   && app_data.session == DEFAULT_SESSION));
     }
 
-    setLabelList(sessions, session_list.values(),
+    setLabelList(sessions, session_list.data(),
 		 selected, session_list.size(), false, false);
 
     delete[] selected;
@@ -723,7 +723,7 @@ static void SetSessionCB(Widget dialog, XtPointer, XtPointer)
     {
 	StringArray session_list;
 	get_sessions(session_list);
-	for (int i = 0; i < session_list.size(); i++)
+	for (int i = 0; i < int(session_list.size()); i++)
 	    if (session_list[i] == app_data.session)
 	    {
 		// Okay, proceed

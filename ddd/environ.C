@@ -51,11 +51,11 @@ void put_environment(const char *name, const char *value)
     putenv(env);
 
     bool found = false;
-    for (int i = 0; i < environment_names.size() && !found; i++)
+    for (int i = 0; i < int(environment_names.size()) && !found; i++)
 	found = found || (environment_names[i] == name);
 
     if (!found)
-	environment_names += name;
+	environment_names.push_back(name);
 }
 
 // Return NAME1=VALUE1 NAME2=VALUE2 for each name defined by PUT_ENVIRONMENT
@@ -63,7 +63,7 @@ string set_environment_command()
 {
     string cmd;
 
-    for (int i = 0; i < environment_names.size(); i++)
+    for (int i = 0; i < int(environment_names.size()); i++)
     {
 	const string& name = environment_names[i];
 	const char *env = getenv(name.chars());

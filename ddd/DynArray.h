@@ -38,7 +38,7 @@
 // Note that a const DynArray will not grow.
 
 // If you prefer sparse storage, see the Assoc template.
-
+#if 0
 template<class T>
 class DynArray {
 private:
@@ -71,18 +71,18 @@ protected:
     }
     const T& _value(int i) const
     {
-	assert(i >= 0 && i < size());
+	assert(i >= 0 && i < capacity());
 	return _values[i];
     }
     T& _value(int i)
     {
-	assert(i >= 0 && i < size());
+	assert(i >= 0 && i < capacity());
 	return _values[i];
     }
 
 public:
     // Resources
-    virtual int size() const   { return _allocated_size; }
+    int capacity() const   { return _allocated_size; }
     const T& operator[](int i) const { return _value(i); }
     T& operator[](int i)       { return value(i); }
     const T* values() const    { return _values; }
@@ -108,15 +108,15 @@ public:
 
     // Copy constructor
     DynArray(const DynArray<T>& m):
-        _allocated_size(m.size()),
-        _values(new T [m.size()])
+        _allocated_size(m.capacity()),
+        _values(new T [m.capacity()])
     {
         for (int i = 0; i < _allocated_size; i++)
             _values[i] = m._values[i];
     }
 
     // Destructor
-    virtual ~DynArray()
+    ~DynArray()
     {
 	delete[] _values;
     }
@@ -133,12 +133,11 @@ public:
 	{
 	    T *old_values = _values;
 
-	    _allocated_size = m.size();
+	    _allocated_size = m.capacity();
 	    _values = new T [_allocated_size];
 
 	    for (int i = 0; i < _allocated_size; i++)
 		_values[i] = m._values[i];
-	    //_values = m._values;
 
 	    delete[] old_values;
 	}
@@ -153,10 +152,10 @@ public:
 	if (this == &m)
 	    return true;	// THIS == THIS
 
-	if (size() != m.size())
+	if (capacity() != m.capacity())
 	    return false;
 
-	for (int i = size() - 1; i >= 0; i--)
+	for (int i = capacity() - 1; i >= 0; i--)
 	{
 	    if (!(_values[i] == m._values[i]))
 		return false;
@@ -170,6 +169,6 @@ public:
 	return !(operator == (m));
     }
 };    
-
+#endif
 #endif // _DDD_DynArray_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

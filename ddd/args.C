@@ -93,7 +93,7 @@ static void add_argument(string arg, StringArray& arguments,
 
     // Insertion sort
     int i;
-    for (i = 0; i < arguments.size(); i++)
+    for (i = 0; i < int(arguments.size()); i++)
     {
 	int cmp = compare(arguments[i], arg);
 	if (cmp == 0)
@@ -102,7 +102,7 @@ static void add_argument(string arg, StringArray& arguments,
 	    break;
     }
 
-    arguments += "<dummy>";
+    arguments.push_back("<dummy>");
 
     for (int j = arguments.size() - 1; j > i; j--)
 	arguments[j] = arguments[j - 1];
@@ -213,7 +213,7 @@ static void update_arguments(Widget dialog, Widget arguments_w,
 
     bool *selected = new bool[arguments.size()];
     int pos = -1;
-    for (int i = 0; i < arguments.size(); i++)
+    for (int i = 0; i < int(arguments.size()); i++)
     {
 	if (arguments[i] == last)
 	    pos = i;
@@ -222,7 +222,7 @@ static void update_arguments(Widget dialog, Widget arguments_w,
     if (pos >= 0)
 	selected[pos] = true;
 
-    setLabelList(arguments_w, arguments.values(),
+    setLabelList(arguments_w, arguments.data(),
 		 selected, arguments.size(), false, false);
 
     if (pos >= 0)

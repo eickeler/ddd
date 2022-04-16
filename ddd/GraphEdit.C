@@ -1898,12 +1898,12 @@ static void UnselectAll(Widget w, XEvent *event, String *params,
 // Find nodes connected to ROOT
 static void find_connected_nodes(GraphNode *root, GraphNodePointerArray& nodes)
 {
-    for (int i = 0; i < nodes.size(); i++)
+    for (int i = 0; i < int(nodes.size()); i++)
 	if (nodes[i] == root)
 	    return;
 
     // if (!root->hidden()) 
-	nodes += root;
+	nodes.push_back(root);
 
     GraphEdge *edge;
     for (edge = root->firstFrom(); edge != 0; edge = root->nextFrom(edge))
@@ -1922,7 +1922,7 @@ static Boolean select_graph(Widget w, GraphNode *root, Boolean set = True)
 
     // Select them
     Boolean changed = False;
-    for (int i = 0; i < nodes.size(); i++)
+    for (int i = 0; i < int(nodes.size()); i++)
     {
 	GraphNode *node = nodes[i];
 	if (node->selected() != set)
@@ -2727,11 +2727,11 @@ static void remove_all_hints(Graph *graph)
 	 node = graph->nextNode(node))
     {
 	if (node->isHint())
-	    hints += node;
+	    hints.push_back(node);
     }
 
     // Remove hint nodes
-    for (int i = 0; i < hints.size(); i++)
+    for (int i = 0; i < int(hints.size()); i++)
 	*graph -= hints[i];
 
     // Enable remaining edges

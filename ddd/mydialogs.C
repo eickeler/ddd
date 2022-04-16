@@ -232,7 +232,7 @@ void getItemNumbers(Widget selectionList, IntArray& numbers)
 	XtFree(_item);
 
 	if (has_nr(item))
-	    numbers += get_nr(item);
+	    numbers.push_back(get_nr(item));
     }
 }
 

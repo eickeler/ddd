@@ -2543,7 +2543,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 
     // Put saved options back again
     int i;
-    for (i = argc + saved_options.size() - 1; i > saved_options.size(); i--)
+    for (i = argc + saved_options.size() - 1; i > int(saved_options.size()); i--)
 	argv[i] = argv[i - saved_options.size()];
     for (i = saved_options.size() - 1; i >= 0; i--)
 	argv[i + 1] = CONST_CAST(char*,saved_options[i].chars());
@@ -3503,7 +3503,7 @@ void init_dddlog()
 static void install_button_tips()
 {
     const WidgetArray& shells = Delay::shells();
-    for (int i = 0; i < shells.size(); i++)
+    for (int i = 0; i < int(shells.size()); i++)
     {
 	Widget shell = shells[i];
 	while (shell && !XmIsVendorShell(shell) && !XmIsMenuShell(shell))
@@ -3574,8 +3574,8 @@ static void set_shortcut_menu(DataDisp *data_disp, const string& exprs)
 	if (item.empty())
 	    continue;
 
-	items_s  += item;
-	labels_s += label;
+	items_s.push_back(item);
+	labels_s.push_back(label);
     }
 
     data_disp->set_shortcut_menu(items_s, labels_s);
@@ -7573,7 +7573,7 @@ static void setup_options(int& argc, const char *argv[],
 	if (save)
 	{
 	    // Found `--' - save all remaining options
-	    saved_options += arg;
+	    saved_options.push_back(arg);
 
 	    for (int j = i; j <= argc - 1; j++)
 		argv[j] = argv[j + 1];
@@ -7683,8 +7683,8 @@ static void setup_options(int& argc, const char *argv[],
 #endif
 	    if (i < argc - 1 && arg.matches(rxoptions))
 	    {
-		saved_options += arg;
-		saved_options += string(argv[i + 1]);
+		saved_options.push_back(arg);
+		saved_options.push_back(string(argv[i + 1]));
 
 		for (int j = i; j <= argc - 2; j++)
 		    argv[j] = argv[j + 2];
@@ -7911,7 +7911,7 @@ static void setup_theme_manager()
     StringArray available_themes;
     get_themes(available_themes);
 
-    for (int i = 0; i < available_themes.size(); i++)
+    for (int i = 0; i < int(available_themes.size()); i++)
     {
 	const char* theme = basename(available_themes[i].chars());
 

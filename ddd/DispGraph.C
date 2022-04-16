@@ -45,7 +45,6 @@ char DispGraph_rcsid[] =
 #include "AppData.h"
 #include "GraphEdit.h"
 #include "assert.h"
-#include "VarArray.h"
 #include "AliasGE.h"
 #include "HintGraphN.h"
 #include "VoidArray.h"
@@ -460,7 +459,7 @@ void DispGraph::find_hints_to(GraphNode *node, GraphNodePointerArray& hints)
 	if (edge->from()->isHint())
 	{
 	    find_hints_to(edge->from(), hints);
-	    hints += edge->from();
+	    hints.push_back(edge->from());
 	}
     }
 }
@@ -475,7 +474,7 @@ void DispGraph::find_hints_from(GraphNode *node, GraphNodePointerArray& hints)
 	if (edge->to()->isHint())
 	{
 	    find_hints_from(edge->to(), hints);
-	    hints += edge->to();
+	    hints.push_back(edge->to());
 	}
     }
 }
@@ -515,7 +514,7 @@ bool DispGraph::del (int disp_nr)
 
     find_hints_from(dn, hints);
     find_hints_to(dn, hints);
-    for (int i = 0; i < hints.size(); i++)
+    for (int i = 0; i < int(hints.size()); i++)
 	delete_node(hints[i]);
 
     delete_node(dn);
@@ -758,13 +757,13 @@ bool DispGraph::alias(Widget w, int disp_nr, int alias_disp_nr)
 	    e->to()->hidden() = true;
 	    e = e->to()->firstFrom();
 	}
-	to_nodes += e->to();
+	to_nodes.push_back(e->to());
 
 	EdgeAnnotation *anno = 0;
 	LineGraphEdge *ge = ptr_cast(LineGraphEdge, e);
 	if (ge != 0)
 	    anno = ge->annotation();
-	to_annotations += anno;
+	to_annotations.push_back(anno);
     }
     for (edge = dn->firstTo(); edge != 0; edge = dn->nextTo(edge))
     {
@@ -774,19 +773,19 @@ bool DispGraph::alias(Widget w, int disp_nr, int alias_disp_nr)
 	    e->from()->hidden() = true;
 	    e = e->from()->firstTo();
 	}
-	from_nodes += e->from();
+	from_nodes.push_back(e->from());
 
 	EdgeAnnotation *anno = 0;
 	LineGraphEdge *ge = ptr_cast(LineGraphEdge, e);
 	if (ge != 0)
 	    anno = ge->annotation();
-	from_annotations += anno;
+	from_annotations.push_back(anno);
     }
 
-    for (i = 0; i < to_nodes.size(); i++)
+    for (i = 0; i < int(to_nodes.size()); i++)
 	add_alias_edge(w, alias_disp_nr, 
 		       d0, to_nodes[i], to_annotations[i]);
-    for (i = 0; i < from_nodes.size(); i++)
+    for (i = 0; i < int(from_nodes.size()); i++)
 	add_alias_edge(w, alias_disp_nr, 
 		       from_nodes[i], d0, from_annotations[i]);
 
@@ -827,9 +826,9 @@ bool DispGraph::unalias(int alias_disp_nr)
     {
 	AliasGraphEdge *e = ptr_cast(AliasGraphEdge, edge);
 	if (e != 0 && e->disp_nr() == alias_disp_nr)
-	    kill_edges += (void *)e;
+	    kill_edges.push_back((void *)e);
     }
-    for (int i = 0; i < kill_edges.size(); i++)
+    for (int i = 0; i < int(kill_edges.size()); i++)
     {
 	AliasGraphEdge *e = (AliasGraphEdge *)kill_edges[i];
 	if (e->to()->isHint())

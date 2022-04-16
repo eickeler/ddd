@@ -28,11 +28,9 @@
 #ifndef _DDD_IntArray_h
 #define _DDD_IntArray_h
 
-#include "VarArray.h"
-#include "DynArray.h"
+#include <vector>
 
-typedef VarArray<int> VarIntArray;
-typedef DynArray<int> DynIntArray;
+typedef std::vector<int> VarIntArray;
 
 typedef VarIntArray IntArray;
 

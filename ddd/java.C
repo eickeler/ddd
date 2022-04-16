@@ -90,7 +90,7 @@ static void get_java_classes(const string& dir, const string& base,
     if (stat(dir.chars(), &sb))
 	return;			// Cannot stat
 
-    for (int i = 0; i < dirs_seen.size(); i++)
+    for (int i = 0; i < int(dirs_seen.size()); i++)
     {
 	if (dirs_seen[i].st_ino == sb.st_ino &&
 	    dirs_seen[i].st_dev == sb.st_dev)
@@ -99,7 +99,7 @@ static void get_java_classes(const string& dir, const string& base,
 	}
     }
 
-    dirs_seen += sb;
+    dirs_seen.push_back(sb);
 
     StatusDelay delay("Scanning " + quote(dir) + " for classes");
 
@@ -152,7 +152,7 @@ static void get_java_classes(const string& dir, const string& base,
 	    {
 		// Okay - we have a class and a corresponding
 		// .java source file.  Go for it.
-		classes_list += class_name;
+		classes_list.push_back(class_name);
 	    }
 
 	    free(files[i]);

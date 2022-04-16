@@ -28,15 +28,9 @@
 #ifndef _DDD_TextPosArray_h
 #define _DDD_TextPosArray_h
 
-#include "VarArray.h"
-#include "DynArray.h"
-
 #include <Xm/Xm.h>
 
-typedef VarArray<XmTextPosition> VarTextPositionArray;
-typedef DynArray<XmTextPosition> DynTextPositionArray;
-
-typedef VarTextPositionArray TextPositionArray;
+typedef std::vector<XmTextPosition> TextPositionArray;
 
 #endif // _DDD_TextPosArray_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

@@ -75,7 +75,7 @@ void ThemedVSLLib::set_theme_list(const StringArray& themes)
     (void) VSLLib::operator = (*_original_lib);
 
     // Read in themes
-    for (int i = 0; i < themes.size(); i++)
+    for (int i = 0; i < int(themes.size()); i++)
 	update(themes[i]);
 
     // Optimize according to saved mode

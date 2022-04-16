@@ -72,16 +72,16 @@ void PlotAgent::start_plot(const string& title, int n)
     if (need_reset)
 	reset();
 
-    titles += title;
-    values += "";
-    dims   += 0;
+    titles.push_back(title);
+    values.push_back("");
+    dims.push_back(0);
 
     ndim = n;
 
     while (files.size() < titles.size())
     {
 	// Open a new temporary file
-	files += tempfile();
+	files.push_back(tempfile());
     }
 
     // Open plot stream
@@ -161,7 +161,7 @@ int PlotAgent::flush()
 	}
 
 	// Issue functions
-	for (int i = 0; i < titles.size(); i++)
+	for (int i = 0; i < int(titles.size()); i++)
 	{
 	    if (i > 0)
 		cmd << ", ";
@@ -236,7 +236,7 @@ int PlotAgent::flush()
 void PlotAgent::abort()
 {
     // Unlink temporary files
-    for (int i = 0; i < files.size(); i++)
+    for (int i = 0; i < int(files.size()); i++)
 	unlink(files[i].chars());
 
     // We're done

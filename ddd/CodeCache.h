@@ -30,8 +30,8 @@
 
 #include "strclass.h"
 #include "bool.h"
-#include "VarArray.h"
 #include <ctype.h>
+#include <vector>
 
 // A single entry in the code cache
 struct CodeCacheEntry {
@@ -69,7 +69,7 @@ struct CodeCacheEntry {
     }
 };
 
-typedef VarArray<CodeCacheEntry> CodeCache;
+typedef std::vector<CodeCacheEntry> CodeCache;
 
 
 // Compare addresses: 

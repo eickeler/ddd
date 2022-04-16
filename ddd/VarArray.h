@@ -34,7 +34,7 @@
 // A VarArray is assigned elements using the += operator
 // and removed elements using the -= operator.
 // size() returns the number of elements in the array.
-
+#if 0
 template<class T>
 class VarArray: public DynArray<T> {
 private:
@@ -42,18 +42,18 @@ private:
 
 public:
     // Resources
-    virtual int size() const { return _size; }
+    int size() const { return _size; }
 
 protected:
     // Add a value
-    virtual void add(const T& v)
+    void add(const T& v)
     {
         this->value(_size) = v;	// gcc-2.3.3 chokes on having _size++ here
 	_size++;
     }
 
     // Remove an indexed value
-    virtual void _remove(int n)
+    void _remove(int n)
     {
 	assert(n >= 0 && n < size());
 
@@ -65,7 +65,7 @@ protected:
     }
 
     // Remove a given value
-    virtual void remove(const T& v)
+    void remove(const T& v)
     {
 	int i = 0;
 	int sz = size();
@@ -98,7 +98,7 @@ public:
 
     // Destructor.
     // Omitting this one triggers an internal compiler error in GCC 2.7.2 -O2
-    virtual ~VarArray()
+    ~VarArray()
     {}
 
     // Assignment
@@ -126,6 +126,6 @@ public:
 	return DynArray<T>::operator[](i);
     }
 };
-
+#endif
 #endif // _DDD_VarArray_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

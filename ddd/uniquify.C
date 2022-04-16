@@ -68,15 +68,15 @@ void uniquify(StringArray& files, StringArray& labels, char sep)
     static const StringArray empty;
     labels = empty;
     int i;
-    for (i = 0; i < files.size(); i++)
-	labels += basename(files[i].chars(), sep);
+    for (i = 0; i < int(files.size()); i++)
+	labels.push_back(basename(files[i].chars(), sep));
 
     // While there are any duplicate labels, add the directory names
     i = 0;
-    while (i < labels.size())
+    while (i < int(labels.size()))
     {
 	bool expanded = false;
-	for (int j = i + 1; j < labels.size(); j++)
+	for (int j = i + 1; j < int(labels.size()); j++)
 	{
 	    if (labels[i] == labels[j])
 	    {

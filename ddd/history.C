@@ -191,7 +191,7 @@ void set_history_from_line(const string& line,
 	return;
 
     while (gdb_history.size() < 1)
-	gdb_history += "";
+	gdb_history.push_back("");
     gdb_history[gdb_history.size() - 1] = line;
 
     if (gdb_history_w)
@@ -229,7 +229,7 @@ void add_to_history(const string& line)
 
     if (gdb_history.size() < 2 || line != gdb_history[gdb_history.size() - 2])
     {
-	gdb_history += "";
+	gdb_history.push_back("");
 
 	if (gdb_history_w)
 	{
@@ -330,7 +330,7 @@ void load_history(const string& file)
 
 	    if (!added && line[0] != '#')
 	    {
-		gdb_history += line;
+		gdb_history.push_back(line);
 		add_to_arguments(line);
 
 #if WITH_READLINE
@@ -342,7 +342,7 @@ void load_history(const string& file)
 	}
     }
 
-    gdb_history += "";
+    gdb_history.push_back("");
     gdb_current_history = gdb_history.size() - 1;
     gdb_new_history = true;
 
@@ -369,7 +369,7 @@ void save_history(const string& file, Widget origin)
 	int i;
 	StringArray recent;
 	get_recent(recent);
-	for (i = recent.size() - 1; i >= 0 && i >= recent.size() - 10; i--)
+	for (i = recent.size() - 1; i >= 0 && i >= int(recent.size()) - 10; i--)
 	    os << gdb->debug_command(recent[i]) << "\n";
 
 	// Now save the command history itself
@@ -377,7 +377,7 @@ void save_history(const string& file, Widget origin)
 	if (start < 0)
 	    start = 0;
 
-	for (i = start; i < gdb_history.size(); i++)
+	for (i = start; i < int(gdb_history.size()); i++)
 	    os << gdb_history[i] << "\n";
     }
 }
@@ -467,11 +467,11 @@ void gdbHistoryCB(Widget w, XtPointer, XtPointer)
 		  HistoryDestroyedCB, XtPointer(gdb_history_w));
 
     bool *selected = new bool[gdb_history.size() + 1];
-    for (int i = 0; i < gdb_history.size() + 1; i++)
+    for (int i = 0; i < int(gdb_history.size()) + 1; i++)
 	selected[i] = false;
     selected[gdb_current_history] = true;
 
-    setLabelList(gdb_commands_w, gdb_history.values(), 
+    setLabelList(gdb_commands_w, gdb_history.data(), 
 		 selected, gdb_history.size(), false, false);
 
     delete[] selected;
@@ -504,7 +504,7 @@ void prev_historyAct(Widget, XEvent*, String*, Cardinal*)
     if (gdb_current_history == 0)
 	return;
 
-    while (gdb_current_history >= gdb_history.size())
+    while (gdb_current_history >= int(gdb_history.size()))
 	gdb_current_history--;
     gdb_current_history--;
 
@@ -514,7 +514,7 @@ void prev_historyAct(Widget, XEvent*, String*, Cardinal*)
 
 void next_historyAct(Widget, XEvent*, String*, Cardinal*)
 {
-    if (gdb_current_history >= gdb_history.size() - 1)
+    if (gdb_current_history >= int(gdb_history.size()) - 1)
 	return;
 
     gdb_current_history++;
@@ -532,7 +532,7 @@ int search_history(const string& text, int direction, bool research)
     if (research)
 	i += direction;
 
-    while (i < gdb_history.size() && i >= 0)
+    while (i < int(gdb_history.size()) && i >= 0)
     {
 	if (gdb_history[i].contains(text))
 	    return i;
@@ -549,7 +549,7 @@ void goto_history(int pos)
     if (pos == -1)
 	pos = gdb_history.size() - 1;
 
-    assert (pos >= 0 && pos < gdb_history.size());
+    assert (pos >= 0 && pos < int(gdb_history.size()));
     gdb_current_history = pos;
     set_line_from_history();
 }
@@ -575,7 +575,7 @@ static void update_combo_box(Widget text, HistoryFilter filter)
 	    continue;		// Adjacent duplicate
 
 	if (app_data.popdown_history_size > 0 &&
-	    entries.size() >= int(app_data.popdown_history_size))
+	    int(entries.size()) >= int(app_data.popdown_history_size))
 	    break;		// Enough entries
 
 	bool found_duplicate = false;
@@ -583,11 +583,11 @@ static void update_combo_box(Widget text, HistoryFilter filter)
 	{
 	    // We'll not be sorted.  If we already have this value,
 	    // ignore new entry.
-	    for (int j = 0; !found_duplicate && j < entries.size(); j++)
+	    for (int j = 0; !found_duplicate && j < int(entries.size()); j++)
 		found_duplicate = (entries[j] == arg);
 	}
 	if (!found_duplicate)
-	    entries += arg;
+	    entries.push_back(arg);
     }
 
     if (app_data.sort_popdown_history)
@@ -656,14 +656,14 @@ void add_to_recent(const string& file)
 	recent_files[recent_files.size() - 1] == full_path)
 	return;			// Already in list
 
-    for (int i = 0; i < recent_files.size(); i++)
+    for (int i = 0; i < int(recent_files.size()); i++)
 	if (recent_files[i] == full_path ||
 	    (!remote_gdb() && 
 	     gdb->type() != JDB &&
 	     same_file(recent_files[i], full_path)))
 	    recent_files[i] = ""; // Clear old entry
 
-    recent_files += full_path;
+    recent_files.push_back(full_path);
     update_recent_menus();
 }
 
@@ -676,7 +676,7 @@ void get_recent(StringArray& arr)
 	if (recent.empty())
 	    continue;		// Removed
 
-	arr += recent_files[i];
+	arr.push_back(recent_files[i]);
     }
 }
 
@@ -690,8 +690,8 @@ static void update_recent_menu(const MMDesc *items)
     {
 	StringArray r;
 	get_recent(r);
-	for (int i = 0; i < r.size() && items[i].widget != 0; i++)
-	    recent_files += r[i];
+	for (int i = 0; i < int(r.size()) && items[i].widget != 0; i++)
+	    recent_files.push_back(r[i]);
     }
 
     // Uniquify labels
@@ -704,7 +704,7 @@ static void update_recent_menu(const MMDesc *items)
 
     // Set labels
     int i;
-    for (i = 0; i < labels.size(); i++)
+    for (i = 0; i < int(labels.size()); i++)
     {
 	MString label(itostring(i + 1) + " ");
 	label += tt(labels[i]);
@@ -734,7 +734,7 @@ static void update_recent_menu(const MMDesc *items)
 
 static void update_recent_menus()
 {
-    for (int i = 0; i < menus.size(); i++)
+    for (int i = 0; i < int(menus.size()); i++)
     {
 	const MMDesc *items = (const MMDesc *)menus[i];
 	update_recent_menu(items);
@@ -746,7 +746,7 @@ void tie_menu_to_recent_files(MMDesc *items)
     if (items == 0 || items[0].widget == 0)
 	return;
 
-    menus += (void *)items;
+    menus.push_back(((void *)items));
     update_recent_menu(items);
 }
 

@@ -50,7 +50,7 @@ ThemePattern::ThemePattern(const string& rep, bool active)
     for (int i = 0; i < count; i++)
     {
 	strip_space(subs[i]);
-	_patterns += subs[i];
+	_patterns.push_back(subs[i]);
     }
 
     delete[] subs;
@@ -58,7 +58,7 @@ ThemePattern::ThemePattern(const string& rep, bool active)
 
 std::ostream& operator<<(std::ostream& os, const ThemePattern& p)
 {
-    for (int i = 0; i < p.patterns().size(); i++)
+    for (int i = 0; i < int(p.patterns().size()); i++)
     {
 	if (i > 0)
 	    os << ';';
@@ -79,7 +79,7 @@ bool ThemePattern::matches(const string& pattern, const string& expr) const
 
 string ThemePattern::matching_pattern(const string& expr) const
 {
-    for (int i = 0; i < patterns().size(); i++)
+    for (int i = 0; i < int(patterns().size()); i++)
     {
 	if (matches(patterns()[i], expr))
 	{
@@ -95,19 +95,19 @@ string ThemePattern::matching_pattern(const string& expr) const
 
 void ThemePattern::add(const string& pattern)
 {
-    for (int i = 0; i < patterns().size(); i++)
+    for (int i = 0; i < int(patterns().size()); i++)
 	if (patterns()[i] == pattern)
 	    return;		// PATTERN is already there
 
-    _patterns += pattern;
+    _patterns.push_back(pattern);
 }
 
 void ThemePattern::remove(const string& pattern)
 {
     StringArray new_patterns;
-    for (int i = 0; i < patterns().size(); i++)
+    for (int i = 0; i < int(patterns().size()); i++)
 	if (patterns()[i] != pattern)
-	    new_patterns += patterns()[i];
+	    new_patterns.push_back(patterns()[i]);
 
     _patterns = new_patterns;
 }

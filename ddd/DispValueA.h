@@ -28,12 +28,12 @@
 #ifndef _DDD_DispValueArray_h
 #define _DDD_DispValueArray_h
 
-#include "VarArray.h"
+#include <vector>
 
 class DispValue;
 
 // An array of disp values
-typedef VarArray<DispValue *> DispValueArray;
+typedef std::vector<DispValue *> DispValueArray;
 
 #endif // _DDD_DispValueArray_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

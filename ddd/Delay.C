@@ -202,7 +202,7 @@ Delay::Delay(Widget w):
 
     if (delay_count++ == 0)
     {
-	for (int i = 0; i < delays.size(); i++)
+	for (int i = 0; i < int(delays.size()); i++)
 	{
 	    assert(delays[i] == 0);
 	    if (_shells[i])
@@ -222,7 +222,7 @@ void Delay::DestroyCB(Widget widget, XtPointer, XtPointer)
     assert(delays.size() == _shells.size());
 
     // Unregister shell
-    for (int i = 0; i < _shells.size(); i++)
+    for (int i = 0; i < int(_shells.size()); i++)
 	if (_shells[i] == widget)
 	{
 	    _shells[i] = 0;
@@ -244,12 +244,12 @@ void Delay::register_shell(Widget widget)
 
     // Check if the shell is already registered
     int i;
-    for (i = 0; i < _shells.size(); i++)
+    for (i = 0; i < int(_shells.size()); i++)
 	if (_shells[i] == widget)
 	    return;
 
     // Look for an empty slot
-    for (i = 0; i < _shells.size() && _shells[i] != 0; i++)
+    for (i = 0; i < int(_shells.size()) && _shells[i] != 0; i++)
 	;
 
     XtAddCallback(widget, XtNdestroyCallback, DestroyCB, XtPointer(0));
@@ -258,10 +258,10 @@ void Delay::register_shell(Widget widget)
     if (delay_count)
 	new_delay = new _Delay(widget);
 
-    if (i == _shells.size())
+    if (i == int(_shells.size()))
     {
-	_shells += Widget(0);
-	delays  += (_Delay *)0;
+	_shells.push_back(Widget(0));
+	delays.push_back((_Delay *)0);
     }
 
     assert(_shells[i] == 0);
@@ -286,7 +286,7 @@ Delay::~Delay()
 
     if (--delay_count == 0)
     {
-	for (int i = 0; i < delays.size(); i++)
+	for (int i = 0; i < int(delays.size()); i++)
 	{
 	    if (delays[i])
 	    {

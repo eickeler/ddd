@@ -28,10 +28,9 @@
 #ifndef _DDD_VoidArray_h
 #define _DDD_VoidArray_h
 
-#include "VarArray.h"
-#include "DynArray.h"
+#include <vector>
 
-typedef VarArray<void *> VoidArray;
+typedef std::vector<void *> VoidArray;
 
 #endif // _DDD_VoidArray_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

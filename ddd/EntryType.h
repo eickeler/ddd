@@ -28,7 +28,7 @@
 #ifndef _DDD_EntryType_h
 #define _DDD_EntryType_h
 
-#include "VarArray.h"
+#include <vector>
 
 enum EntryType
 {
@@ -49,7 +49,7 @@ enum EntryType
     SchedulerOptionMenuEntry	// Create `scheduler-locking' option menu
 };
 
-typedef VarArray<EntryType> EntryTypeArray;
+typedef std::vector<EntryType> EntryTypeArray;
 
 #endif // _DDD_EntryType_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

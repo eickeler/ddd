@@ -165,8 +165,9 @@ bool UndoBuffer::has_effect(const UndoBufferEntry& entry)
 // Remove all later entries, except for exec positions
 void UndoBuffer::clear_after_position()
 {
-    UndoBufferArray new_history(history.size());
-    for (int i = 0; i < history.size(); i++)
+    UndoBufferArray new_history;
+    new_history.reserve(history.size());
+    for (int i = 0; i < int(history.size()); i++)
     {
 	if (i < history_position || 
 	    (!history[i].has_command() && !history[i].has_pos()))
@@ -181,7 +182,7 @@ void UndoBuffer::clear_after_position()
 		entry.remove(UB_EXEC_COMMAND);
 	    }
 
-	    new_history += entry;
+	    new_history.push_back(entry);
 	}
     }
 
@@ -191,7 +192,7 @@ void UndoBuffer::clear_after_position()
 // Remove all exec commands
 void UndoBuffer::clear_exec_commands()
 {
-    for (int i = 0; i < history.size(); i++)
+    for (int i = 0; i < int(history.size()); i++)
     {
 	UndoBufferEntry& entry = history[i];
 	entry.remove(UB_EXEC_COMMAND);
@@ -238,16 +239,17 @@ void UndoBuffer::cleanup()
 	}
     }
 
-    UndoBufferArray new_history(history.size() - end);
+    UndoBufferArray new_history;
+    new_history.reserve(history.size() - end);
     int old_history_position = history_position;
 
-    for (int i = 0; i < history.size(); i++)
+    for (int i = 0; i < int(history.size()); i++)
     {
 	UndoBufferEntry& entry = history[i];
 
 	if (i >= end && has_effect(entry))
 	{
-	    new_history += entry;
+	    new_history.push_back(entry);
 	}
 	else
 	{
@@ -273,7 +275,7 @@ void UndoBuffer::add_entry(const UndoBufferEntry& entry)
 	clear_exec_commands();
 
     // Add at end
-    history += entry;
+    history.push_back(entry);
     history_position = history.size();
 
     // Clear commands without effect
@@ -360,7 +362,7 @@ void UndoBuffer::add_command(const string& command, bool exec)
 #endif
 
     assert (history.size() > 0);
-    assert (current_entry >= 0 && current_entry < history.size());
+    assert (current_entry >= 0 && current_entry < int(history.size()));
 
     UndoBufferEntry& entry = history[current_entry];
 
@@ -403,7 +405,7 @@ int UndoBuffer::allocation()
 {
     int alloc = 0;
 
-    for (int i = 0; i < history.size(); i++)
+    for (int i = 0; i < int(history.size()); i++)
 	alloc += history[i].allocation();
 
     return alloc;
@@ -466,7 +468,7 @@ void UndoBuffer::remap_breakpoint(string& cmd, int old_bp, int new_bp)
 
 void UndoBuffer::remap_breakpoint(int old_bp, int new_bp)
 {
-    for (int i = 0; i < history.size(); i++)
+    for (int i = 0; i < int(history.size()); i++)
     {
 	if (history[i].has(UB_COMMAND))
 	    remap_breakpoint(history[i][UB_COMMAND], old_bp, new_bp);
@@ -621,9 +623,9 @@ bool UndoBuffer::process_state(UndoBufferEntry& entry)
 	    if (entry.has(UB_DISPLAY_ADDRESS_PREFIX + name))
 		addr = entry[UB_DISPLAY_ADDRESS_PREFIX + name];
 
-	    displays += name;
-	    values   += value;
-	    addrs    += addr;
+	    displays.push_back(name);
+	    values.push_back(value);
+	    addrs.push_back(addr);
 	}
     }
     data_disp->update_displays(displays, values, addrs);
@@ -787,7 +789,7 @@ void UndoBuffer::redo()
     if (locked)
 	return;
 
-    if (history_position >= history.size())
+    if (history_position >= int(history.size()))
     {
 	set_status("Nothing to redo");
 	return;
@@ -849,7 +851,7 @@ string UndoBuffer::undo_action()
 
 string UndoBuffer::redo_action()
 {
-    if (gdb->recording() || history_position >= history.size())
+    if (gdb->recording() || history_position >= int(history.size()))
 	return NO_GDB_ANSWER;	// Nothing to redo
 
     const UndoBufferEntry& redo_entry = history[history_position];
@@ -907,7 +909,7 @@ void UndoBuffer::done(StatusMsg *msg)
     // Check whether we're showing an earlier state
     bool earlier = false;
 
-    for (int i = history_position; i < history.size(); i++)
+    for (int i = history_position; i < int(history.size()); i++)
     {
 	if (history[i].has_command())
 	    continue;
@@ -940,9 +942,10 @@ void UndoBuffer::clear_exec_pos()
     if (locked)
 	return;
 
-    UndoBufferArray new_history(history.size());
+    UndoBufferArray new_history;
+    new_history.reserve(history.size());
     int old_history_position = history_position;
-    for (int i = 0; i < history.size(); i++)
+    for (int i = 0; i < int(history.size()); i++)
     {
 	const UndoBufferEntry& entry = history[i];
 	
@@ -953,7 +956,7 @@ void UndoBuffer::clear_exec_pos()
 	    if (entry.has(UB_SOURCE))
 		new_entry[UB_SOURCE] = entry[UB_SOURCE];
 
-	    new_history += new_entry;
+	    new_history.push_back(new_entry);
 	}
 	else
 	{
@@ -998,7 +1001,7 @@ string UndoBuffer::display_history(const string& name)
     string answer = "";
     string last_value = "";
 
-    for (int i = 0; i < history.size(); i++)
+    for (int i = 0; i < int(history.size()); i++)
     {
 	const UndoBufferEntry& entry = history[i];
 
@@ -1019,10 +1022,10 @@ bool UndoBuffer::OK()
 {
     // HISTORY_POSITION must be within bounds.
     assert(history_position >= 0);
-    assert(history_position <= history.size());
+    assert(history_position <= int(history.size()));
 
     // Every entry must have some effect.
-    for (int i = 0; i < history.size(); i++)
+    for (int i = 0; i < int(history.size()); i++)
     {
 	assert(has_effect(history[i]));
     }

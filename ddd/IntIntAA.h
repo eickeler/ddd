@@ -38,7 +38,7 @@ typedef AssocIter<int, VarIntArray> IntIntArrayAssocIter;
 typedef Assoc<string, VarIntArray> StringIntArrayAssoc;
 typedef AssocIter<string, VarIntArray> StringIntArrayAssocIter;
 
-typedef VarArray<IntArray> IntArrayArray;
+typedef std::vector<IntArray> IntArrayArray;
 
 typedef Assoc<string, IntArrayArray> StringIntArrayArrayAssoc;
 typedef AssocIter<string, IntArrayArray> StringIntArrayArrayAssocIter;

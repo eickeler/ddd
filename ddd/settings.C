@@ -69,7 +69,6 @@ char settings_rcsid[] =
 #include "StringSA.h"
 #include "UndoBuffer.h"
 #include "ThemeP.h"
-#include "VarArray.h"
 #include "WidgetSA.h"
 #include "basename.h"
 #include "buttons.h"
@@ -390,7 +389,7 @@ static void update_reset_settings_button()
 
     check_options_file();
 
-    for (int i = 0; i < settings_entries.size(); i++)
+    for (int i = 0; i < int(settings_entries.size()); i++)
     {
 	Widget entry = settings_entries[i];
 
@@ -423,7 +422,7 @@ static void update_apply_settings_button()
     if (apply_settings_button == 0)
 	return;
 
-    for (int i = 0; i < settings_entries.size(); i++)
+    for (int i = 0; i < int(settings_entries.size()); i++)
     {
 	if (settings_entry_types[i] != TextFieldEntry)
 	    continue;
@@ -451,7 +450,7 @@ static void update_reset_signals_button()
 
     check_options_file();
 
-    for (int i = 0; i < signals_entries.size(); i++)
+    for (int i = 0; i < int(signals_entries.size()); i++)
     {
 	Widget entry = signals_entries[i];
 	if (signals_initial_values[entry] != signals_values[entry])
@@ -476,7 +475,7 @@ static void update_themes_buttons()
 
     ThemeManager old_tm(app_data.themes);
 
-    for (i = 0; i < themes_entries.size(); i++)
+    for (i = 0; i < int(themes_entries.size()); i++)
     {
 	Widget entry = themes_entries[i];
 	string theme = basename(XtName(entry));
@@ -516,7 +515,7 @@ static void update_themes_buttons()
 
     if (!reset_is_sensitive)
     {
-	for (i = 0; i < themes_labels.size(); i++)
+	for (i = 0; i < int(themes_labels.size()); i++)
 	{
 	    Widget button = themes_labels[i];
 	    string theme = basename(XtName(button));
@@ -548,7 +547,7 @@ void update_infos()
 {
     bool have_info = false;
 
-    for (int i = 0; i < infos_entries.size(); i++)
+    for (int i = 0; i < int(infos_entries.size()); i++)
     {
 	Widget button = infos_entries[i];
 	bool set = data_disp->have_user_display(XtName(button));
@@ -609,7 +608,7 @@ static void ApplyThemesCB(Widget, XtPointer, XtPointer)
 
     ThemeManager t;
 
-    for (int i = 0; i < themes_entries.size(); i++)
+    for (int i = 0; i < int(themes_entries.size()); i++)
     {
 	Widget button = themes_labels[i];
 	bool active = XmToggleButtonGetState(button);
@@ -640,7 +639,7 @@ static void ResetThemesCB(Widget w, XtPointer client_data,
 // Register additional info button
 void register_info_button(Widget w)
 {
-    infos_entries += w;
+    infos_entries.push_back(w);
 }
 
 // Save `settings' state
@@ -649,7 +648,7 @@ void save_settings_state()
     if (settings_form == 0)
 	return;
 
-    for (int i = 0; i < settings_entries.size(); i++)
+    for (int i = 0; i < int(settings_entries.size()); i++)
     {
 	Widget entry = settings_entries[i];
 	settings_initial_values[entry] = settings_values[entry];
@@ -665,7 +664,7 @@ void save_signals_state()
     if (signals_form == 0)
 	return;
 
-    for (int i = 0; i < signals_entries.size(); i++)
+    for (int i = 0; i < int(signals_entries.size()); i++)
     {
 	Widget entry = signals_entries[i];
 	signals_initial_values[entry] = signals_values[entry];
@@ -829,7 +828,7 @@ void process_show(const string& command, string value, bool init)
 	bool set = value != "off" && value != "0" && value != "unlimited" 
 	    && value != "false" && value != "insensitive";
 
-	for (int i = 0; i < settings_entries.size(); i++)
+	for (int i = 0; i < int(settings_entries.size()); i++)
 	{
 	    if (settings_entries[i] == button
 		&& settings_entry_types[i] == NoNumToggleButtonEntry)
@@ -2234,16 +2233,16 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	    process_handle(line, true);
 
 	    // Register buttons
-	    signals_entries += stop;
-	    signals_entries += print;
-	    signals_entries += pass;
+	    signals_entries.push_back(stop);
+	    signals_entries.push_back(print);
+	    signals_entries.push_back(pass);
 	}
     }
     else if (e_type == ThemeEntry)
     {
 	// Register entry
-	themes_entries += entry;
-	themes_labels  += label;
+	themes_entries.push_back(entry);
+	themes_labels.push_back(label);
     }
     else if (e_type != DisplayToggleButtonEntry)
     {
@@ -2274,13 +2273,13 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	process_show(show_command, value, true);
 
 	// Register entry
-	settings_entries     += entry;
-	settings_entry_types += e_type;
+	settings_entries.push_back(entry);
+	settings_entry_types.push_back(e_type);
     }
     else
     {
 	// Register entry
-	infos_entries += entry;
+	infos_entries.push_back(entry);
     }
 
     max_width = max(width, max_width);
@@ -2420,7 +2419,7 @@ static void add_settings(Widget form, int& row, Dimension& max_width,
 // Reload all settings
 static void reload_all_settings()
 {
-    for (int i = 0; i < settings_entries.size(); i++)
+    for (int i = 0; i < int(settings_entries.size()); i++)
     {
 	Widget entry = settings_entries[i];
 	string cmd = string(XtName(entry)) + " dummy";
@@ -2445,7 +2444,7 @@ static void ResetSettingsCB(Widget, XtPointer, XtPointer)
 {
     CommandGroup cg;
 
-    for (int i = 0; i < settings_entries.size(); i++)
+    for (int i = 0; i < int(settings_entries.size()); i++)
     {
 	Widget entry = settings_entries[i];
 
@@ -2475,7 +2474,7 @@ static void ResetSignalsCB(Widget, XtPointer, XtPointer)
 
     string command = "";
 
-    for (int i = 0; i < signals_entries.size(); i++)
+    for (int i = 0; i < int(signals_entries.size()); i++)
     {
 	Widget entry = signals_entries[i];
 	if (signals_initial_values[entry] != signals_values[entry])
@@ -2493,7 +2492,7 @@ static void ApplySettingsCB(Widget, XtPointer, XtPointer)
 {
     CommandGroup cg;
 
-    for (int i = 0; i < settings_entries.size(); i++)
+    for (int i = 0; i < int(settings_entries.size()); i++)
     {
 	if (settings_entry_types[i] != TextFieldEntry)
 	    continue;
@@ -2512,7 +2511,7 @@ static void ApplySettingsCB(Widget, XtPointer, XtPointer)
 // Delete all infos
 static void DeleteAllInfosCB (Widget, XtPointer, XtPointer)
 {
-    for (int i = 0; i < infos_entries.size(); i++)
+    for (int i = 0; i < int(infos_entries.size()); i++)
     {
 	Widget entry = infos_entries[i];
 	XmToggleButtonSetState(entry, False, True);
@@ -2616,14 +2615,14 @@ void get_themes(StringArray& themes)
 		string base = basename(files[i]);
 
 		bool duplicate = false;
-		for (int j = 0; !duplicate && j < bases.size(); j++)
+		for (int j = 0; !duplicate && j < int(bases.size()); j++)
 		    if (bases[j] == base)
 			duplicate = true;
 
 		if (!duplicate)
 		{
-		    themes += files[i];
-		    bases  += base;
+		    themes.push_back(files[i]);
+		    bases.push_back(base);
 		}
 
 		free(files[i]);
@@ -2641,7 +2640,7 @@ static void add_themes(Widget form, int& row, Dimension& max_width)
     StringArray themes;
     get_themes(themes);
 
-    for (int i = 0; i < themes.size(); i++)
+    for (int i = 0; i < int(themes.size()); i++)
 	add_button(form, row, max_width, gdb->type(), ThemeEntry, themes[i]);
 }
 
@@ -3068,7 +3067,7 @@ void update_themes()
 {
     assert(themes_entries.size() == themes_labels.size());
 
-    for (int i = 0; i < themes_entries.size(); i++)
+    for (int i = 0; i < int(themes_entries.size()); i++)
     {
 	Widget entry  = themes_entries[i];
 	Widget button = themes_labels[i];
@@ -3342,7 +3341,7 @@ string get_settings(DebuggerType type, unsigned long flags)
 	return "";
 
     std::ostringstream command;
-    for (int i = 0; i < settings_entries.size(); i++)
+    for (int i = 0; i < int(settings_entries.size()); i++)
     {
 	Widget entry = settings_entries[i];
 	string value = settings_values[entry];
@@ -3362,7 +3361,7 @@ string get_signals(DebuggerType type, unsigned long /* flags */)
     create_signals(type);
     string commands = "";
 
-    for (int i = 0; i < signals_entries.size(); i++)
+    for (int i = 0; i < int(signals_entries.size()); i++)
     {
 	Widget entry = signals_entries[i];
 	bool set = (signals_values[entry] == "yes");
@@ -3687,7 +3686,7 @@ static void refresh_combo_box()
     // Refresh combo box
     StringArray commands;
     for (StringStringAssocIter iter(defs); iter.ok(); ++iter)
-	commands += iter.key();
+	commands.push_back(iter.key());
     smart_sort(commands);
     ComboBoxSetList(name_w, commands);
 }
@@ -3795,7 +3794,7 @@ static void DoneEditCommandDefinitionCB(Widget w, XtPointer, XtPointer)
 	{
 	    string c = cmd.before('\n');
 	    if (!c.empty())
-		commands += c;
+		commands.push_back(c);
 	    cmd = cmd.after('\n');
 	}
 
@@ -3805,7 +3804,7 @@ static void DoneEditCommandDefinitionCB(Widget w, XtPointer, XtPointer)
 	set_sensitive(end_w,    false);
 
 	gdb_command("define " + name, w);
-	for (int j = 0; j < commands.size(); j++)
+	for (int j = 0; j < int(commands.size()); j++)
 	    gdb_command(commands[j], w);
 	gdb_command("end", w);
 

@@ -29,10 +29,9 @@
 #define _DDD_StringArray_h
 
 #include "strclass.h"
-#include "VarArray.h"
-#include "DynArray.h"
+#include <vector>
 
-typedef VarArray<string> StringArray;
+typedef std::vector<string> StringArray;
 
 #endif // _DDD_StringArray_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

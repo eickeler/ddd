@@ -391,7 +391,7 @@ static void configure_plot(PlotWindowInfo *plot)
     bool have_source = false;
     bool can_export  = false;
     const StringArray& sources = plot->plotter->data_files();
-    for (i = 0; i < sources.size(); i++)
+    for (i = 0; i < int(sources.size()); i++)
     {
 	if (!sources[i].empty())
 	{
@@ -771,7 +771,7 @@ static PlotWindowInfo *new_decoration(const string& name)
     PlotWindowInfo *plot = 0;
 
     // Check whether we can reuse an existing decoration
-    for (int i = 0; i < plot_infos.size(); i++)
+    for (int i = 0; i < int(plot_infos.size()); i++)
     {
 	PlotWindowInfo *info = (PlotWindowInfo *)plot_infos[i];
 	if (info->plotter == 0)
@@ -888,7 +888,7 @@ static PlotWindowInfo *new_decoration(const string& name)
 	Delay::register_shell(plot->shell);
 	InstallButtonTips(plot->shell);
 
-	plot_infos += plot;
+	plot_infos.push_back(plot);
     }
 
     string title = DDD_NAME ": " + name;
@@ -924,7 +924,7 @@ static PlotWindowInfo *new_decoration(const string& name)
 // Remove all unused decorations from cache
 void clear_plot_window_cache()
 {
-    for (int i = 0; i < plot_infos.size(); i++)
+    for (int i = 0; i < int(plot_infos.size()); i++)
     {
 	PlotWindowInfo *info = (PlotWindowInfo *)plot_infos[i];
 	if (info->plotter == 0)
@@ -1203,7 +1203,7 @@ static void DoExportCB(Widget w, XtPointer client_data, XtPointer call_data)
 
     string source = "";
     string title  = "";
-    for (int i = 0; source.empty() && i < sources.size(); i++)
+    for (int i = 0; source.empty() && i < int(sources.size()); i++)
     {
 	if (!sources[i].empty())
 	{

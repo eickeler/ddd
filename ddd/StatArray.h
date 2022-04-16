@@ -28,8 +28,7 @@
 #ifndef _DDD_StatArray_h
 #define _DDD_StatArray_h
 
-#include "VarArray.h"
-#include "DynArray.h"
+#include <vector>
 
 #include "config.h"
 #include "bool.h"
@@ -51,7 +50,7 @@ inline bool operator==(const struct stat& sb1, const struct stat& sb2)
     return sb1.st_ino == sb2.st_ino && sb1.st_dev == sb2.st_dev;
 }
 
-typedef VarArray<struct stat> StatArray;
+typedef std::vector<struct stat> StatArray;
 
 #endif // _DDD_StatArray_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

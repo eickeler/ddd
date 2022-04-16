@@ -79,7 +79,8 @@ char buttons_rcsid[] =
 #include <Xm/Text.h>
 #include <ctype.h>
 
-
+#include <algorithm>
+    
 //-----------------------------------------------------------------------------
 // Data
 //-----------------------------------------------------------------------------
@@ -718,7 +719,7 @@ static MString gdbDefaultButtonText(Widget widget, XEvent *,
 	StringArray recent_files;
 	get_recent(recent_files);
 	int index = help_name[1] - '1';
-	if (index >= 0 && index < recent_files.size())
+	if (index >= 0 && index < int(recent_files.size()))
 	    return rm(recent_files[index]);
     }
 
@@ -901,7 +902,7 @@ static void VerifyButtonWorkProc(XtPointer client_data, XtIntervalId *id)
     assert(*id == verify_id);
     verify_id = 0;
 
-    for (int i = 0; i < buttons_to_be_verified.size(); i++)
+    for (int i = 0; i < int(buttons_to_be_verified.size()); i++)
     {
 	Widget& button = buttons_to_be_verified[i];
 	if (button == 0)
@@ -970,7 +971,7 @@ static void VerifyButtonWorkProc(XtPointer client_data, XtIntervalId *id)
 static void DontVerifyButtonCB(Widget w, XtPointer, XtPointer)
 {
     // W is being destroyed - remove all references
-    for (int i = 0; i < buttons_to_be_verified.size(); i++)
+    for (int i = 0; i < int(buttons_to_be_verified.size()); i++)
 	if (buttons_to_be_verified[i] == w)
 	    buttons_to_be_verified[i] = 0;
 }
@@ -987,7 +988,7 @@ void verify_button(Widget button)
     set_sensitive(button, False);
 #endif
 
-    buttons_to_be_verified += button;
+    buttons_to_be_verified.push_back(button);
     XtAddCallback(button, XtNdestroyCallback, 
 		  DontVerifyButtonCB, XtPointer(0));
 
@@ -1015,17 +1016,17 @@ static WidgetArray edit_buttons;
 void refresh_buttons()
 {
     int i;
-    for (i = 0; i < up_buttons.size(); i++)
+    for (i = 0; i < int(up_buttons.size()); i++)
 	set_sensitive(up_buttons[i], source_view->can_go_up());
-    for (i = 0; i < down_buttons.size(); i++)
+    for (i = 0; i < int(down_buttons.size()); i++)
 	set_sensitive(down_buttons[i], source_view->can_go_down());
-    for (i = 0; i < undo_buttons.size(); i++)
+    for (i = 0; i < int(undo_buttons.size()); i++)
 	set_sensitive(undo_buttons[i], 
 		      undo_buffer.undo_action() != NO_GDB_ANSWER);
-    for (i = 0; i < redo_buttons.size(); i++)
+    for (i = 0; i < int(redo_buttons.size()); i++)
 	set_sensitive(redo_buttons[i], 
 		      undo_buffer.redo_action() != NO_GDB_ANSWER);
-    for (i = 0; i < edit_buttons.size(); i++)
+    for (i = 0; i < int(edit_buttons.size()); i++)
 	set_sensitive(edit_buttons[i], source_view->have_source());
 
     update_edit_menus();
@@ -1034,12 +1035,13 @@ void refresh_buttons()
 static void RemoveFromArrayCB(Widget w, XtPointer client_data, XtPointer)
 {
     WidgetArray& arr = *((WidgetArray *)client_data);
-    arr -= w;
+    //arr -= w;
+    arr.erase(std::remove(arr.begin(), arr.end(), w), arr.end());
 }
 
 static void register_button(WidgetArray& arr, Widget w)
 {
-    arr += w;
+    arr.push_back(w);
     XtAddCallback(w, XtNdestroyCallback, RemoveFromArrayCB, XtPointer(&arr));
 }
 
@@ -1598,7 +1600,7 @@ void refresh_button_editor()
 
     data_disp->get_shortcut_menu(exprs, labels);
     string expr;
-    for (int i = 0; i < exprs.size(); i++)
+    for (int i = 0; i < int(exprs.size()); i++)
     {
 	if (i > 0)
 	    expr += '\n';

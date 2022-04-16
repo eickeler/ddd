@@ -129,7 +129,7 @@ void show_invocation(const string& gdb_command, std::ostream& os)
 
     int i = 0;
     while (options_string[i] != 0)
-    	options += options_string[i++];
+    	options.push_back(options_string[i++]);
 
     // Set up debugger-specific options
     switch (type)
@@ -138,7 +138,7 @@ void show_invocation(const string& gdb_command, std::ostream& os)
     {
 	title = "BASH";
 	base  = "the BASH debugger.";
-	options += "  [bash options]     Pass option to Bash.";
+	options.push_back("  [bash options]     Pass option to Bash.");
 	args = "program-file [args]";
     }
     break;
@@ -147,7 +147,7 @@ void show_invocation(const string& gdb_command, std::ostream& os)
     {
 	title = "DBG";
 	base  = "DBG, the PHP debugger.";
-	options += "  [PHP options]      Pass option to DBG.";
+	options.push_back("  [PHP options]      Pass option to DBG.");
     }
     break;
 
@@ -155,7 +155,7 @@ void show_invocation(const string& gdb_command, std::ostream& os)
     {
 	title = "DBX";
 	base  = "DBX, the UNIX debugger.";
-	options += "  [DBX options]      Pass option to DBX.";
+	options.push_back("  [DBX options]      Pass option to DBX.");
     }
     break;
 
@@ -191,7 +191,7 @@ void show_invocation(const string& gdb_command, std::ostream& os)
 		    if (option.contains("For more information"))
 			state = Done;
 		    else if (!option.empty())
-			options += option;
+			options.push_back(option);
 		    break;
 
 		case Done:
@@ -206,7 +206,7 @@ void show_invocation(const string& gdb_command, std::ostream& os)
     {
 	title = "JDB";
 	base  = "JDB, the Java debugger.";
-	options += "  [JDB options]      Pass option to JDB.";
+	options.push_back("  [JDB options]      Pass option to JDB.");
 	args = "[class]";
     }
     break;
@@ -215,7 +215,7 @@ void show_invocation(const string& gdb_command, std::ostream& os)
     {
 	title = "MAKE";
 	base  = "the GNU Make debugger.";
-	options += "  [make options]     Pass option to GNU Make.";
+	options.push_back("  [make options]     Pass option to GNU Make.");
 	args = "program-file [args]";
     }
     break;
@@ -224,7 +224,7 @@ void show_invocation(const string& gdb_command, std::ostream& os)
     {
 	title = "PYDB";
 	base  = "PYDB, the Extended Python debugger.";
-	options += "  [PYDB options]     Pass option to PYDB.";
+	options.push_back("  [PYDB options]     Pass option to PYDB.");
 	args = "program-file";
     }
     break;
@@ -233,7 +233,7 @@ void show_invocation(const string& gdb_command, std::ostream& os)
     {
 	title = "Perl";
 	base  = "the Perl debugger.";
-	options += "  [Perl options]     Pass option to Perl.";
+	options.push_back("  [Perl options]     Pass option to Perl.");
 	args = "program-file [args]";
     }
     break;
@@ -242,7 +242,7 @@ void show_invocation(const string& gdb_command, std::ostream& os)
     {
 	title = "XDB";
 	base  = "XDB, the HP-UX debugger.";
-	options += "  [XDB options]      Pass option to XDB.";
+	options.push_back("  [XDB options]      Pass option to XDB.");
     }
     break;
     }
@@ -256,7 +256,7 @@ void show_invocation(const string& gdb_command, std::ostream& os)
 	"Options (including " << title << " options):\n\n";
 
     smart_sort(options);
-    for (i = 0; i < options.size(); i++)
+    for (i = 0; i < int(options.size()); i++)
 	os << options[i] << '\n';
 
     os << "\n"

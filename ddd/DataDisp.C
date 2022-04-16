@@ -460,10 +460,10 @@ static void sort(IntArray& a, bool (*le)(int, int) = default_le)
     int h = 1;
     do {
 	h = h * 3 + 1;
-    } while (h <= a.size());
+    } while (h <= int(a.size()));
     do {
 	h /= 3;
-	for (int i = h; i < a.size(); i++)
+	for (int i = h; i < int(a.size()); i++)
 	{
 	    int v = a[i];
 	    int j;
@@ -570,7 +570,7 @@ void DataDisp::get_all_display_numbers(IntArray& numbers)
 	 dn = disp_graph->next(ref))
     {
 	if (!dn->deferred())
-	    numbers += dn->disp_nr();
+	    numbers.push_back(dn->disp_nr());
     }
 }
 
@@ -583,7 +583,7 @@ void DataDisp::get_all_clusters(IntArray& numbers)
 	 dn = disp_graph->next(ref))
     {
 	if (is_cluster(dn))
-	    numbers += dn->disp_nr();
+	    numbers.push_back(dn->disp_nr());
     }
 }
 
@@ -690,8 +690,7 @@ void DataDisp::applyThemeCB (Widget w, XtPointer client_data,
 	arg = 0;
 	Widget apply = XmCreatePushButton(dialog, XMST("apply"), args, arg);
 	XtManageChild(apply);
-	XtAddCallback(apply, XmNactivateCallback, 
-		      applyThemeOnThisCB, client_data);
+	XtAddCallback(apply, XmNactivateCallback, applyThemeOnThisCB, client_data);
 	XtAddCallback(apply, XmNactivateCallback, DestroyShellCB, 0);
     }
 
@@ -748,7 +747,7 @@ void DataDisp::unapplyThemeCB (Widget w, XtPointer client_data, XtPointer)
 
     // 3. Remove first matching pattern
     StringArray patterns = tp.patterns();
-    for (int i = 0; i < patterns.size(); i++)
+    for (int i = 0; i < int(patterns.size()); i++)
     {
 	tp.remove(patterns[i]);
 	if (!tp.matches(expr))
@@ -866,7 +865,7 @@ void DataDisp::toggle_themeSQ(const string& theme, const string& pattern,
     strip_space(p);
 
     const StringArray& patterns = DispBox::theme_manager.pattern(t).patterns();
-    for (int i = 0; i < patterns.size(); i++)
+    for (int i = 0; i < int(patterns.size()); i++)
 	if (patterns[i] == p)
 	{
 	    // Pattern already applied
@@ -922,7 +921,7 @@ void DataDisp::dereferenceInPlaceCB(Widget w, XtPointer, XtPointer)
     new_display(display_expression, &p, "", false, false, w);
 
     IntArray nrs;
-    nrs += disp_node_arg->disp_nr();
+    nrs.push_back(disp_node_arg->disp_nr());
     delete_display(nrs, w);
 }
 
@@ -979,7 +978,7 @@ void DataDisp::toggleDetailCB(Widget dialog,
 		if (dn->disabled())
 		{
 		    // Enable display
-		    enable_nrs += dn->disp_nr();
+		    enable_nrs.push_back(dn->disp_nr());
 		}
 		else
 		{
@@ -995,7 +994,7 @@ void DataDisp::toggleDetailCB(Widget dialog,
 		if (dv == dn->value() && dn->enabled())
 		{
 		    // Disable display
-		    disable_nrs += dn->disp_nr();
+		    disable_nrs.push_back(dn->disp_nr());
 		}
 		else
 		{
@@ -1051,7 +1050,7 @@ void DataDisp::show(Widget dialog, int depth, int more)
 	    if (dn->disabled())
 	    {
 		// Enable display
-		disp_nrs += dn->disp_nr();
+		disp_nrs.push_back(dn->disp_nr());
 	    }
 		
 	    DispValue *dv = dn->selected_value();
@@ -1112,7 +1111,7 @@ void DataDisp::hideDetailCB (Widget dialog, XtPointer, XtPointer)
 	    if ((dv == 0 || dv == dn->value()) && dn->enabled())
 	    {
 		// Disable display
-		disp_nrs += dn->disp_nr();
+		disp_nrs.push_back(dn->disp_nr());
 	    }
 
 	    if (dv != 0 && dv->expanded())
@@ -1215,7 +1214,7 @@ void DataDisp::toggleDisableCB (Widget dialog, XtPointer, XtPointer)
     {
 	if (selected(dn))
 	{
-	    disp_nrs += dn->disp_nr();
+	    disp_nrs.push_back(dn->disp_nr());
 	    if (dn->enabled())
 		do_enable = false;
 	    if (dn->disabled())
@@ -1282,8 +1281,8 @@ void DataDisp::deleteCB (Widget dialog, XtPointer /* client_data */,
     }
 
     IntArray disp_nrs;
-    VarArray<GraphNode *> ancestors;
-    VarArray<GraphNode *> descendants;
+    std::vector<GraphNode *> ancestors;
+    std::vector<GraphNode *> descendants;
 
     MapRef ref;
     for (dn = disp_graph->first(ref); 
@@ -1293,7 +1292,7 @@ void DataDisp::deleteCB (Widget dialog, XtPointer /* client_data */,
 	dv = dn->selected_value();
 	if (selected(dn) && (dv == 0 || dv == dn->value()))
 	{
-	    disp_nrs += dn->disp_nr();
+	    disp_nrs.push_back(dn->disp_nr());
 
 	    // Select all ancestors
 	    GraphEdge *edge;
@@ -1303,7 +1302,7 @@ void DataDisp::deleteCB (Widget dialog, XtPointer /* client_data */,
 		while (ancestor->isHint())
 		    ancestor = ancestor->firstTo()->from();
 
-		ancestors += ancestor;
+		ancestors.push_back(ancestor);
 	    }
 
 	    // Select all descendants
@@ -1313,15 +1312,15 @@ void DataDisp::deleteCB (Widget dialog, XtPointer /* client_data */,
 		while (descendant->isHint())
 		    descendant = descendant->firstFrom()->to();
 
-		descendants += descendant;
+		descendants.push_back(descendant);
 	    }
 	}
     }
 
     int i;
-    for (i = 0; i < ancestors.size(); i++)
+    for (i = 0; i < int(ancestors.size()); i++)
 	select_with_all_descendants(ancestors[i]);
-    for (i = 0; i < descendants.size(); i++)
+    for (i = 0; i < int(descendants.size()); i++)
 	select_with_all_ancestors(descendants[i]);
 
     delete_display(disp_nrs, dialog);
@@ -1375,7 +1374,7 @@ void DataDisp::enableCB(Widget w, XtPointer, XtPointer)
     {
 	if (selected(dn) && dn->disabled())
 	{
-	    disp_nrs += dn->disp_nr();
+	    disp_nrs.push_back(dn->disp_nr());
 	}
     }
 
@@ -1395,7 +1394,7 @@ void DataDisp::disableCB(Widget w, XtPointer, XtPointer)
     {
 	if (selected(dn) && dn->enabled())
 	{
-	    disp_nrs += dn->disp_nr();
+	    disp_nrs.push_back(dn->disp_nr());
 	}
     }
 
@@ -1408,7 +1407,7 @@ void DataDisp::shortcutCB(Widget w, XtPointer client_data, XtPointer)
     int number = ((int)(long)client_data) - 1;
 
     assert (number >= 0);
-    assert (number < shortcut_exprs.size());
+    assert (number < int(shortcut_exprs.size()));
 
     set_last_origin(w);
 
@@ -1446,7 +1445,7 @@ void DataDisp::set_shortcut_menu(const StringArray& exprs,
     shortcut_exprs  = exprs;
 
     while (shortcut_labels.size() < exprs.size())
-	shortcut_labels += "";
+	shortcut_labels.push_back("");
 
 #if 0
     if (exprs.size() > shortcut_items)
@@ -1462,7 +1461,7 @@ void DataDisp::set_shortcut_menu(const StringArray& exprs,
 	Widget popup2_item = shortcut_popup2[i].widget;
 	Widget menu_item   = shortcut_menu  [i].widget;
 
-	if (i < exprs.size())
+	if (i < int(exprs.size()))
 	{
 	    string& expr  = shortcut_exprs[i];
 	    string& label = shortcut_labels[i];
@@ -1494,8 +1493,8 @@ void DataDisp::set_shortcut_menu(const StringArray& exprs,
 void DataDisp::add_shortcut_expr(const string& expr)
 {
     // Insert as first item in SHORTCUT_EXPRS
-    shortcut_exprs  += string("");
-    shortcut_labels += string("");
+    shortcut_exprs.push_back(string(""));
+    shortcut_labels.push_back(string(""));
     for (int i = shortcut_exprs.size() - 1; i > 0; i--)
     {
 	shortcut_exprs[i]  = shortcut_exprs[i - 1];
@@ -2347,14 +2346,14 @@ void DataDisp::set_args(const BoxPoint& p, SelectionMode mode)
 	current_themes = DispBox::theme_manager.themes(dv->full_name());
 
     int i;
-    for (i = 0; i < all_themes.size() && theme_menu[i].widget != 0; i++)
+    for (i = 0; i < int(all_themes.size()) && theme_menu[i].widget != 0; i++)
     {
 	const string& theme = all_themes[i];
 	Widget& button = theme_menu[i].widget;
 	XtVaSetValues(button, XmNuserData, theme.chars(), XtPointer(0));
 
 	bool set = false;
-	for (int j = 0; j < current_themes.size(); j++)
+	for (int j = 0; j < int(current_themes.size()); j++)
 	    if (theme == current_themes[j])
 	    {
 		set = true;
@@ -2803,7 +2802,7 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 
     // Shortcut menu
     int i;
-    for (i = 0; i < shortcut_items && i < shortcut_exprs.size(); i++)
+    for (i = 0; i < shortcut_items && i < int(shortcut_exprs.size()); i++)
     {
 	const string& expr = shortcut_exprs[i];
 	bool sens = false;
@@ -2888,7 +2887,7 @@ bool DataDisp::get_scopes(StringArray& scopes)
     {
 	string scope = get_scope(backtrace);
 	if (!scope.empty())
-	    scopes += scope;
+	    scopes.push_back(scope);
 	backtrace = backtrace.after('\n');
     }
 
@@ -2953,7 +2952,7 @@ void DataDisp::write_restore_scope_command(std::ostream& os,
     else
     {
 	// Search scope in backtrace
-	for (int i = 0; i < scopes.size(); i++)
+	for (int i = 0; i < int(scopes.size()); i++)
 	    if (scopes[i] == dn->scope())
 	    {
 		target_frame = i;
@@ -3074,7 +3073,7 @@ bool DataDisp::get_state(std::ostream& os,
 	 dn = disp_graph->next(ref))
     {
 	if (restore_state || selected(dn))
-	    nrs += dn->disp_nr();
+	    nrs.push_back(dn->disp_nr());
     }
     sort(nrs, absolute_le);
 
@@ -3088,7 +3087,7 @@ bool DataDisp::get_state(std::ostream& os,
     // When restoring, we'll be at the lowest frame (#0).
     int current_frame = 0;
 
-    for (int i = 0; i < nrs.size(); i++)
+    for (int i = 0; i < int(nrs.size()); i++)
     {
 	DispNode *dn = disp_graph->get(nrs[i]);
 	if (dn == 0)
@@ -3142,7 +3141,7 @@ void DataDisp::reset()
 	 dn != 0;
 	 dn = disp_graph->next(ref))
     {
-	display_nrs += dn->disp_nr();
+	display_nrs.push_back(dn->disp_nr());
     }
 
     if (display_nrs.size() > 0)
@@ -3184,7 +3183,7 @@ void DataDisp::UpdateGraphEditorSelectionCB(Widget, XtPointer, XtPointer)
 	int display_nr = dn->disp_nr();
 
 	bool select = false;
-	for (int i = 0; i < display_nrs.size(); i++)
+	for (int i = 0; i < int(display_nrs.size()); i++)
 	{
 	    if (display_nr == display_nrs[i])
 	    {
@@ -3269,15 +3268,15 @@ void DataDisp::UpdateGraphEditorSelectionCB(Widget, XtPointer, XtPointer)
 	     dn2 != 0; dn2 = disp_graph->next(ref))
 	{
 	    if (dn2->clustered() == cluster->disp_nr())
-		cluster_children += dn2->disp_nr();
+		cluster_children.push_back(dn2->disp_nr());
 	}
 	sort(cluster_children);
 
 	// The number of children of the main cluster List should be
 	// the same as the number of displays we just found.
-	assert(dv->nchildren() == cluster_children.size());
+	assert(dv->nchildren() == int(cluster_children.size()));
 
-	for (int i = 0; i < cluster_children.size(); i++)
+	for (int i = 0; i < int(cluster_children.size()); i++)
 	{
 	    if (cluster_children[i] == dn->disp_nr())
 	    {
@@ -3443,7 +3442,7 @@ void DataDisp::get_display_numbers(const string& name, IntArray& numbers)
 	 dn = disp_graph->next(ref))
     {
 	if (dn->name() == name)
-	    numbers += dn->disp_nr();
+	    numbers.push_back(dn->disp_nr());
     }
 }
 
@@ -3564,9 +3563,9 @@ void DataDisp::new_displaySQ (const string& display_expression,
 	    info.prompt         = false;
 	}
 
-	for (int i = 0; i < expressions.size(); i++)
+	for (int i = 0; i < int(expressions.size()); i++)
 	{
-	    if (do_prompt && i == expressions.size() - 1)
+	    if (do_prompt && i == int(expressions.size()) - 1)
 		info.prompt = true;
 
 	    NewDisplayInfo *infop = new NewDisplayInfo(info);
@@ -3599,7 +3598,7 @@ int DataDisp::unfold_expressions(const string& display_expression,
 {
     if (!display_expression.contains(rxmore_than_one))
     {
-	expressions += display_expression;
+	expressions.push_back(display_expression);
 	return 0;
     }
 
@@ -3736,7 +3735,7 @@ string DataDisp::builtin_user_command(const string& cmd, DispNode *node)
 	    if (node == 0 && dn->clustered() != -next_ddd_display_number)
 		continue;
 
-	    clustered_displays += dn->disp_nr();
+	    clustered_displays.push_back(dn->disp_nr());
 	}
 
 	sort(clustered_displays);
@@ -3748,7 +3747,7 @@ string DataDisp::builtin_user_command(const string& cmd, DispNode *node)
 	}
 	else
 	{
-	    for (int i = 0; i < clustered_displays.size(); i++)
+	    for (int i = 0; i < int(clustered_displays.size()); i++)
 	    {
 		DispNode *dn = disp_graph->get(clustered_displays[i]);
 		os << dn->name() << " = " HOOK_PREFIX 
@@ -4319,7 +4318,7 @@ int DataDisp::add_refresh_data_commands(StringArray& cmds)
     int initial_size = cmds.size();
 
     if (gdb->display_prints_values())
-	cmds += gdb->display_command();
+	cmds.push_back(gdb->display_command());
     else
     {
 	MapRef ref;
@@ -4336,7 +4335,7 @@ int DataDisp::add_refresh_data_commands(StringArray& cmds)
 		    if (line.contains('\n'))
 			line = line.before('\n');
 		    cmd = cmd.after('\n');
-		    cmds += line;
+		    cmds.push_back(line);
 		}
 	    }
 	}
@@ -4359,7 +4358,7 @@ int DataDisp::add_refresh_user_commands(StringArray& cmds)
 	{
 	    const string& cmd = dn->user_command();
 	    if (!is_internal_command(cmd))
-		cmds += cmd;
+		cmds.push_back(cmd);
 	}
     }
 
@@ -4389,21 +4388,21 @@ void DataDisp::refresh_displaySQ(Widget origin, bool verbose, bool do_prompt)
     VoidArray dummy;
 
     if (gdb->has_info_display_command())
-	cmds += gdb->info_display_command();
+	cmds.push_back(gdb->info_display_command());
     while (dummy.size() < cmds.size())
-	dummy += (void *)PROCESS_INFO_DISPLAY;
+	dummy.push_back((void *)PROCESS_INFO_DISPLAY);
 
     add_refresh_data_commands(cmds);
     while (dummy.size() < cmds.size())
-	dummy += (void *)PROCESS_DATA;
+	dummy.push_back((void *)PROCESS_DATA);
 
     add_refresh_user_commands(cmds);
     while (dummy.size() < cmds.size())
-	dummy += (void *)PROCESS_USER;
+	dummy.push_back((void *)PROCESS_USER);
 
     add_refresh_addr_commands(cmds);
     while (dummy.size() < cmds.size())
-	dummy += (void *)PROCESS_ADDR;
+	dummy.push_back((void *)PROCESS_ADDR);
 
     static RefreshInfo info;
     info.verbose = verbose;
@@ -4463,11 +4462,11 @@ void DataDisp::refresh_displayOQAC (StringArray& answers,
 	}
 
 	case PROCESS_USER:
-	    user_answers += answers[i];
+	    user_answers.push_back(answers[i]);
 	    break;
 
 	case PROCESS_ADDR:
-	    addr_answers += answers[i];
+	    addr_answers.push_back(answers[i]);
 	    break;
 
 	default:
@@ -4516,7 +4515,7 @@ string DataDisp::numbers(IntArray& a)
     sort(a);
 
     string ret;
-    for (int i = 0; i < a.size(); i++)
+    for (int i = 0; i < int(a.size()); i++)
     {
 	if (i > 0)
 	    ret += " ";
@@ -4532,7 +4531,7 @@ bool DataDisp::sort_and_check(IntArray& display_nrs)
     bool ok = true;
     sort(display_nrs);
 
-    for (int i = 0; i < display_nrs.size(); i++)
+    for (int i = 0; i < int(display_nrs.size()); i++)
     {
 	DispNode *dn = disp_graph->get(display_nrs[i]);
 	if (dn == 0)
@@ -4560,7 +4559,7 @@ void DataDisp::add_aliases(IntArray& display_nrs)
 	    bool have_alias = false;
 	    bool need_alias = false;
 
-	    for (int i = 0; i < display_nrs.size(); i++)
+	    for (int i = 0; i < int(display_nrs.size()); i++)
 	    {
 		if (display_nrs[i] == dn->disp_nr())
 		    have_alias = true;
@@ -4569,7 +4568,7 @@ void DataDisp::add_aliases(IntArray& display_nrs)
 	    }
 
 	    if (need_alias && !have_alias)
-		display_nrs += dn->disp_nr();
+		display_nrs.push_back(dn->disp_nr());
 	}
     }
 }
@@ -4594,7 +4593,7 @@ void DataDisp::disable_displaySQ(IntArray& display_nrs, bool verbose,
     int disabled_data_displays = 0;
     int i;
     string cmd = "disable display";
-    for (i = 0; i < display_nrs.size(); i++)
+    for (i = 0; i < int(display_nrs.size()); i++)
     {
 	if (gdb->has_disable_display_command() && display_nrs[i] > 0)
 	{
@@ -4613,7 +4612,7 @@ void DataDisp::disable_displaySQ(IntArray& display_nrs, bool verbose,
     }
 
     int disabled_user_displays = 0;
-    for (i = 0; i < display_nrs.size(); i++)
+    for (i = 0; i < int(display_nrs.size()); i++)
     {
 	DispNode *dn = disp_graph->get(display_nrs[i]);
 	if (dn != 0 && dn->enabled())
@@ -4674,7 +4673,7 @@ void DataDisp::enable_displaySQ(IntArray& display_nrs, bool verbose,
     int enabled_data_displays = 0;
     int i;
     string cmd = "enable display";
-    for (i = 0; i < display_nrs.size(); i++)
+    for (i = 0; i < int(display_nrs.size()); i++)
     {
 	if (gdb->has_enable_display_command() && display_nrs[i] > 0)
 	{
@@ -4695,7 +4694,7 @@ void DataDisp::enable_displaySQ(IntArray& display_nrs, bool verbose,
 
     // Handle user displays
     int enabled_user_displays = 0;
-    for (i = 0; i < display_nrs.size(); i++)
+    for (i = 0; i < int(display_nrs.size()); i++)
     {
 	DispNode *dn = disp_graph->get(display_nrs[i]);
 	if (dn != 0 && dn->is_user_command() && 
@@ -4758,9 +4757,9 @@ bool DataDisp::all_data_displays(IntArray& display_nrs)
     // Fetch given data displays
     IntArray data_display_nrs;
     int i;
-    for (i = 0; i < display_nrs.size(); i++)
+    for (i = 0; i < int(display_nrs.size()); i++)
 	if (display_nrs[i] > 0)
-	    data_display_nrs += display_nrs[i];
+	    data_display_nrs.push_back(display_nrs[i]);
 
     if (data_display_nrs.size() < 2)
 	return false;
@@ -4774,7 +4773,7 @@ bool DataDisp::all_data_displays(IntArray& display_nrs)
 	 dn = disp_graph->next(ref))
     {
 	if (!dn->deferred() && !dn->is_user_command())
-	    all_data_display_nrs += dn->disp_nr();
+	    all_data_display_nrs.push_back(dn->disp_nr());
     }
 
     // Compare
@@ -4784,7 +4783,7 @@ bool DataDisp::all_data_displays(IntArray& display_nrs)
     sort(all_data_display_nrs);
     sort(data_display_nrs);
 
-    for (i = 0; i < data_display_nrs.size(); i++)
+    for (i = 0; i < int(data_display_nrs.size()); i++)
 	if (data_display_nrs[i] != all_data_display_nrs[i])
 	    return false;
 
@@ -4811,7 +4810,7 @@ void DataDisp::delete_displaySQ(IntArray& display_nrs, bool verbose,
     else
     {
 	// Build command
-	for (int i = 0; i < display_nrs.size(); i++)
+	for (int i = 0; i < int(display_nrs.size()); i++)
 	{
 	    if (display_nrs[i] > 0)
 	    {
@@ -4889,7 +4888,7 @@ void DataDisp::deletion_done (IntArray& display_nrs, bool do_prompt)
     // Build undo command
     std::ostringstream undo_commands;
     int i;
-    for (i = 0; i < display_nrs.size(); i++)
+    for (i = 0; i < int(display_nrs.size()); i++)
     {
 	int nr = display_nrs[i];
 	DispNode *node = disp_graph->get(nr);
@@ -4907,7 +4906,7 @@ void DataDisp::deletion_done (IntArray& display_nrs, bool do_prompt)
 	undo_buffer.add_command(u, true);
 
     // Delete nodes
-    for (i = 0; i < display_nrs.size(); i++)
+    for (i = 0; i < int(display_nrs.size()); i++)
     {
 	int nr = display_nrs[i];
 
@@ -5030,7 +5029,7 @@ void DataDisp::process_info_display(string& info_display_answer,
 		// If DEFER_DELETED is set, we simply defer the
 		// existing displays such that they can be restored
 		// later.
-		deleted_displays += dn->disp_nr();
+		deleted_displays.push_back(dn->disp_nr());
 	    }
 	    else
 	    {
@@ -5071,13 +5070,13 @@ void DataDisp::process_info_display(string& info_display_answer,
 	    msg += rm("s");
 	msg += rm(" ");
 
-	for (int i = 0; i < deleted_displays.size(); i++)
+	for (int i = 0; i < int(deleted_displays.size()); i++)
 	{
 	    if (i > 0)
 	    {
 		if (deleted_displays.size() == 2)
 		    msg += rm(" and ");
-		else if (i == deleted_displays.size() - 1)
+		else if (i == int(deleted_displays.size()) - 1)
 		    msg += rm(", and ");
 		else
 		    msg += rm(", ");
@@ -5098,7 +5097,7 @@ void DataDisp::process_info_display(string& info_display_answer,
     if (defer_deleted)
     {
 	// Create new deferred displays
-	for (int i = 0; i < deleted_displays.size(); i++)
+	for (int i = 0; i < int(deleted_displays.size()); i++)
 	{
 	    DispNode *dn = disp_graph->get(deleted_displays[i]);
 
@@ -5131,7 +5130,7 @@ void DataDisp::process_info_display(string& info_display_answer,
     }
 
     // Delete remaining (= undeferred) displays
-    for (int i = 0; i < deleted_displays.size(); i++)
+    for (int i = 0; i < int(deleted_displays.size()); i++)
     {
 	disp_graph->del(deleted_displays[i]);
 	changed = true;
@@ -5389,7 +5388,7 @@ void DataDisp::update_displays(const StringArray& displays,
 	    continue;
 
 	bool found = false;
-	for (int i = 0; !found && i < displays.size(); i++)
+	for (int i = 0; !found && i < int(displays.size()); i++)
 	    found = (displays[i] == dn->name());
 
 	if (found)
@@ -5412,11 +5411,11 @@ void DataDisp::update_displays(const StringArray& displays,
 
     ProgressMeter s("Restoring displays");
     int i;
-    for (i = 0; i < values.size(); i++)
+    for (i = 0; i < int(values.size()); i++)
 	s.total += values[i].length();
 
     // Update values
-    for (i = 0; i < displays.size(); i++)
+    for (i = 0; i < int(displays.size()); i++)
     {
 	const string& name  = displays[i];
 	const string& value = values[i];
@@ -5483,14 +5482,14 @@ void DataDisp::process_user (StringArray& answers)
     ProgressMeter s("Updating status displays");
 
     int i;
-    for (i = 0; i < answers.size(); i++)
+    for (i = 0; i < int(answers.size()); i++)
 	s.total += answers[i].length();
 
     i = 0;
     bool changed = false;
     MapRef ref;
     for (int k = disp_graph->first_nr(ref); 
-	     k != 0 && i < answers.size();
+	     k != 0 && i < int(answers.size());
 	     k = disp_graph->next_nr(ref))
     {
 	DispNode* dn = disp_graph->get(k);
@@ -5547,7 +5546,7 @@ void DataDisp::process_scope(const string& scope)
 	 dn = disp_graph->next(ref))
     {
 	if (dn->deferred() && dn->scope() == scope)
-	    deferred_displays += dn->disp_nr();
+	    deferred_displays.push_back(dn->disp_nr());
     }
 
     if (deferred_displays.size() > 0)
@@ -5561,13 +5560,13 @@ void DataDisp::process_scope(const string& scope)
 	msg += rm(" ");
 
 	int i;
-	for (i = 0; i < deferred_displays.size(); i++)
+	for (i = 0; i < int(deferred_displays.size()); i++)
 	{
 	    if (i > 0)
 	    {
 		if (deferred_displays.size() == 2)
 		    msg += rm(" and ");
-		else if (i == deferred_displays.size() - 1)
+		else if (i == int(deferred_displays.size()) - 1)
 		    msg += rm(", and ");
 		else
 		    msg += rm(", ");
@@ -5576,7 +5575,7 @@ void DataDisp::process_scope(const string& scope)
 	}
 	set_status_mstring(msg);
 
-	for (i = 0; i < deferred_displays.size(); i++)
+	for (i = 0; i < int(deferred_displays.size()); i++)
 	{
 	    DispNode *dn = disp_graph->get(deferred_displays[i]);
 	    assert(dn != 0 && dn->deferred());
@@ -5589,7 +5588,7 @@ void DataDisp::process_scope(const string& scope)
 	    gdb_command(c);
 	}
 
-	for (i = 0; i < deferred_displays.size(); i++)
+	for (i = 0; i < int(deferred_displays.size()); i++)
 	{
 	    disp_graph->del(deferred_displays[i]);
 	}
@@ -5648,7 +5647,7 @@ static int max_width(const StringArray& s)
 {
     int w = 0;
 
-    for (int i = 0; i < s.size(); i++)
+    for (int i = 0; i < int(s.size()); i++)
 	w = max(w, s[i].length());
 
     return w;
@@ -5684,19 +5683,19 @@ void DataDisp::RefreshDisplayListCB(XtPointer client_data, XtIntervalId *id)
     if (number_of_displays > 0)
     {
 	// Add titles
-	nums   += "Num";
-	states += "State";
-	exprs  += "Expression";
-	scopes += "Scope";
-	addrs  += "Address";
+	nums.push_back("Num");
+	states.push_back("State");
+	exprs.push_back("Expression");
+	scopes.push_back("Scope");
+	addrs.push_back("Address");
     }
     else
     {
-	nums   += "";
-	states += "";
-	exprs  += "";
-	scopes += "";
-	addrs  += "";
+	nums.push_back("");
+	states.push_back("");
+	exprs.push_back("");
+	scopes.push_back("");
+	addrs.push_back("");
     }
 
     MapRef ref;
@@ -5705,24 +5704,24 @@ void DataDisp::RefreshDisplayListCB(XtPointer client_data, XtIntervalId *id)
     {
 	DispNode* dn = disp_graph->get(k);
 
-	nums += itostring(dn->disp_nr()) + ":";
+	nums.push_back(itostring(dn->disp_nr()) + ":");
 
 	if (dn->deferred())
-	    states += "deferred";
+	    states.push_back("deferred");
 	else if (!dn->active())
-	    states += "not active";
+	    states.push_back("not active");
 	else if (dn->clustered())
-	    states += "clustered";
+	    states.push_back("clustered");
 	else if (dn->hidden() && dn->alias_of != 0)
-	    states += "alias of " + itostring(dn->alias_of);
+	    states.push_back("alias of " + itostring(dn->alias_of));
 	else if (dn->enabled())
-	    states += "enabled";
+	    states.push_back("enabled");
 	else
-	    states += "disabled";
+	    states.push_back("disabled");
 	
-	exprs  += dn->name();
-	scopes += dn->scope();
-	addrs  += dn->addr();
+	exprs.push_back(dn->name());
+	scopes.push_back(dn->scope());
+	addrs.push_back(dn->addr());
     }
 
     int nums_width   = max_width(nums);
@@ -5862,19 +5861,19 @@ void DataDisp::RefreshDisplayListCB(XtPointer client_data, XtIntervalId *id)
 	    {
 		DispNode* dn = disp_graph->get(k);
 		if (selected(dn))
-		    displays += dn->disp_nr();
+		    displays.push_back(dn->disp_nr());
 	    }
 
 	    sort(displays);
-	    assert(displays.size() == selected_displays);
+	    assert(int(displays.size()) == selected_displays);
 
-	    for (k = 0; k < displays.size(); k++)
+	    for (k = 0; k < int(displays.size()); k++)
 	    {
 		if (k > 0)
 		{
 		    if (displays.size() == 2)
 			msg += rm(" and ");
-		    else if (k == displays.size() - 1)
+		    else if (k == int(displays.size()) - 1)
 			msg += rm(", and ");
 		    else
 			msg += rm(", ");
@@ -5980,8 +5979,7 @@ void DataDisp::setCB(Widget w, XtPointer, XtPointer)
 
     Delay::register_shell(info->dialog);
 
-    XtAddCallback(info->dialog, XmNdestroyCallback, 
-		  DeleteSetInfoCB, XtPointer(info));
+    XtAddCallback(info->dialog, XmNdestroyCallback, DeleteSetInfoCB, XtPointer(info));
 
     if (lesstif_version <= 79)
 	XtUnmanageChild(XmSelectionBoxGetChild(info->dialog,
@@ -6018,8 +6016,7 @@ void DataDisp::setCB(Widget w, XtPointer, XtPointer)
     XtAddCallback(info->dialog, XmNapplyCallback,  setDCB, XtPointer(info));
     XtAddCallback(info->dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
 
-    XtAddCallback(info->dialog, XmNcancelCallback,
-		  DestroyThisCB, XtPointer(info->dialog));
+    XtAddCallback(info->dialog, XmNcancelCallback, DestroyThisCB, XtPointer(info->dialog));
 
     Widget apply = XmSelectionBoxGetChild(info->dialog, XmDIALOG_APPLY_BUTTON);
     XtManageChild(apply);
@@ -6112,7 +6109,7 @@ void DataDisp::delete_user_display(const string& name)
     {
 	if (dn->user_command() == name)
 	{
-	    killme += dn->disp_nr();
+	    killme.push_back(dn->disp_nr());
 	}
     }
 
@@ -6203,13 +6200,13 @@ void DataDisp::set_cluster_displays(bool value)
 
 	IntArray killme;
 
-	for (int i = 0; i < all_clusters.size(); i++)
+	for (int i = 0; i < int(all_clusters.size()); i++)
 	{
 	    DispNode *cluster = disp_graph->get(all_clusters[i]);
 	    if (cluster != 0)
 	    {
 		// Delete cluster
-		killme += all_clusters[i];
+		killme.push_back(all_clusters[i]);
 	    }
 	}
 
@@ -6262,13 +6259,13 @@ void DataDisp::unclusterSelectedCB(Widget, XtPointer, XtPointer)
     get_all_clusters(all_clusters);
 
     IntArray killme;
-    for (int i = 0; i < all_clusters.size(); i++)
+    for (int i = 0; i < int(all_clusters.size()); i++)
     {
 	DispNode *cluster = disp_graph->get(all_clusters[i]);
 	if (cluster != 0 && selected(cluster))
 	{
 	    // Delete cluster
-	    killme += all_clusters[i];
+	    killme.push_back(all_clusters[i]);
 	}
     }
 
@@ -6285,7 +6282,7 @@ void DataDisp::clusterSelectedCB(Widget, XtPointer, XtPointer)
     get_all_clusters(all_clusters);
 
     // If we have a selected cluster, choose this one as a target
-    for (int i = 0; i < all_clusters.size(); i++)
+    for (int i = 0; i <int(all_clusters.size()); i++)
     {
 	DispNode *cluster = disp_graph->get(all_clusters[i]);
 	if (cluster != 0 && selected(cluster))
@@ -6367,7 +6364,7 @@ int DataDisp::add_refresh_addr_commands(StringArray& cmds, DispNode *dn)
 	{
 	    string addr = gdb->address_expr(dn->name());
 	    if (!addr.empty())
-		cmds += gdb->print_command(addr);
+		cmds.push_back(gdb->print_command(addr));
 	}
     }
     else
@@ -6418,7 +6415,7 @@ void DataDisp::RefreshAddrCB(XtPointer client_data, XtIntervalId *id)
 	if (cmds.size() > 0)
 	{
 	    while (dummy.size() < cmds.size())
-		dummy += (void *)PROCESS_ADDR;
+		dummy.push_back((void *)PROCESS_ADDR);
 
 	    static RefreshInfo info;
 	    info.verbose = false;
@@ -6466,7 +6463,7 @@ void DataDisp::process_addr (StringArray& answers)
 
     MapRef ref;
     for (DispNode* dn = disp_graph->first(ref); 
-	 dn != 0 && i < answers.size();
+	 dn != 0 && i < int(answers.size());
 	 dn = disp_graph->next(ref))
     {
 	if (dn->active() && !dn->is_user_command())
@@ -6539,7 +6536,7 @@ bool DataDisp::check_aliases()
 
 	    // Search for structurally equivalent entries in DISPLAY_TABLE.
 	    bool added = false;
-	    for (int i = 0; !added && i < list.size(); i++)
+	    for (int i = 0; !added && i < int(list.size()); i++)
 	    {
 		IntArray& displays = list[i];
 		assert (displays.size() > 0);
@@ -6551,7 +6548,7 @@ bool DataDisp::check_aliases()
 		if (!app_data.typed_aliases ||
 		    dn->value()->structurally_equal(d1->value()))
 		{
-		    displays += k;
+		    displays.push_back(k);
 		    added = true;
 		}
 	    }
@@ -6559,8 +6556,8 @@ bool DataDisp::check_aliases()
 	    if (!added)
 	    {
 		IntArray new_displays;
-		new_displays += k;
-		list += new_displays;
+		new_displays.push_back(k);
+		list.push_back(new_displays);
 	    }
 	}
     }
@@ -6575,7 +6572,7 @@ bool DataDisp::check_aliases()
 	IntArrayArray& list = iter.value();
 	assert(list.size() > 0);
 
-	for (int i = 0; i < list.size(); i++)
+	for (int i = 0; i < int(list.size()); i++)
 	{
 	    IntArray& displays = list[i];
 	    assert(displays.size() > 0);
@@ -6583,7 +6580,7 @@ bool DataDisp::check_aliases()
 	    if (addr.empty() || displays.size() == 1)
 	    {
 		// No address or just one display -- unmerge them
-		for (int k = 0; k < displays.size(); k++)
+		for (int k = 0; k < int(displays.size()); k++)
 		    changed = unmerge_display(displays[k]) || changed;
 	    }
 	    else
@@ -6619,10 +6616,10 @@ void DataDisp::sort_last_change(IntArray& disp_nrs)
     int h = 1;
     do {
 	h = h * 3 + 1;
-    } while (h <= disp_nrs.size());
+    } while (h <= int(disp_nrs.size()));
     do {
 	h /= 3;
-	for (int i = h; i < disp_nrs.size(); i++)
+	for (int i = h; i < int(disp_nrs.size()); i++)
 	{
 	    int v = disp_nrs[i];
 	    int j;
@@ -6663,7 +6660,7 @@ void DataDisp::merge_displays(IntArray displays,
     }
 
     IntArray suppressed_displays;
-    for (i = 1; i < displays.size(); i++)
+    for (i = 1; i < int(displays.size()); i++)
     {
 	int disp_nr = displays[i];
 	DispNode *dn = disp_graph->get(disp_nr);
@@ -6685,7 +6682,7 @@ void DataDisp::merge_displays(IntArray displays,
 	    if (c)
 	    {
 		if (!hidden)
-		    suppressed_displays += disp_nr;
+		    suppressed_displays.push_back(disp_nr);
 		changed = true;
 	    }
 	}
@@ -6716,9 +6713,9 @@ void DataDisp::merge_displays(IntArray displays,
 	else
 	{
 	    msg += rm("displays ");
-	    for (i = 1; i < suppressed_displays.size(); i++)
+	    for (i = 1; i < int(suppressed_displays.size()); i++)
 	    {
-		if (i == suppressed_displays.size() - 1)
+		if (i == int(suppressed_displays.size()) - 1)
 		    msg += rm(", and ");
 		else if (i > 1)
 		    msg += rm(", ");
@@ -6986,18 +6983,15 @@ DataDisp::DataDisp(Widget parent, Widget& data_buttons_w)
 
     if (arg_label != 0)
     {
-	XtAddCallback(arg_label, XmNactivateCallback,
-		      SelectionLostCB, XtPointer(0));
-	XtAddCallback(arg_label, XmNactivateCallback, 
-		      ClearTextFieldCB, graph_arg->text());
+	XtAddCallback(arg_label, XmNactivateCallback, SelectionLostCB, XtPointer(0));
+	XtAddCallback(arg_label, XmNactivateCallback, ClearTextFieldCB, graph_arg->text());
     }
 
     // Create (unmanaged) selection widget
     graph_selection_w =
 	verify(XmCreateText(graph_cmd_w, XMST("graph_selection"), 
 			    ArgList(0), 0));
-    XtAddCallback(graph_selection_w, XmNlosePrimaryCallback, 
-		  SelectionLostCB, XtPointer(0));
+    XtAddCallback(graph_selection_w, XmNlosePrimaryCallback, SelectionLostCB, XtPointer(0));
 }
 
 void DataDisp::create_shells()
@@ -7067,47 +7061,24 @@ void DataDisp::create_shells()
     register_menu_shell(display_area);
 
     // Add widget callbacks
-    XtAddCallback(graph_edit, XtNpreSelectionCallback,
-		  DoubleClickCB, XtPointer(this));
-    XtAddCallback(graph_edit, XtNselectionChangedCallback,
-		  UpdateDisplayEditorSelectionCB, XtPointer(this));
-    XtAddCallback(graph_edit, XtNcompareNodesCallback,
-		  CompareNodesCB, XtPointer(this));
-    XtAddCallback(graph_edit, XtNpreLayoutCallback,
-		  PreLayoutCB, XtPointer(this));
-    XtAddCallback(graph_edit, XtNpostLayoutCallback,
-		  PostLayoutCB, XtPointer(this));
+    XtAddCallback(graph_edit, XtNpreSelectionCallback, DoubleClickCB, XtPointer(this));
+    XtAddCallback(graph_edit, XtNselectionChangedCallback, UpdateDisplayEditorSelectionCB, XtPointer(this));
+    XtAddCallback(graph_edit, XtNcompareNodesCallback, CompareNodesCB, XtPointer(this));
+    XtAddCallback(graph_edit, XtNpreLayoutCallback, PreLayoutCB, XtPointer(this));
+    XtAddCallback(graph_edit, XtNpostLayoutCallback, PostLayoutCB, XtPointer(this));
 
     if (display_list_w != 0)
     {
-	XtAddCallback(display_list_w,
-		      XmNsingleSelectionCallback,
-		      UpdateGraphEditorSelectionCB,
-		      0);
-	XtAddCallback(display_list_w,
-		      XmNmultipleSelectionCallback,
-		      UpdateGraphEditorSelectionCB,
-		      0);
-	XtAddCallback(display_list_w,
-		      XmNextendedSelectionCallback,
-		      UpdateGraphEditorSelectionCB,
-		      0);
-	XtAddCallback(display_list_w,
-		      XmNbrowseSelectionCallback,
-		      UpdateGraphEditorSelectionCB,
-		      0);
+	XtAddCallback(display_list_w, XmNsingleSelectionCallback, UpdateGraphEditorSelectionCB, 0);
+	XtAddCallback(display_list_w, XmNmultipleSelectionCallback, UpdateGraphEditorSelectionCB, 0);
+	XtAddCallback(display_list_w, XmNextendedSelectionCallback, UpdateGraphEditorSelectionCB, 0);
+	XtAddCallback(display_list_w, XmNbrowseSelectionCallback, UpdateGraphEditorSelectionCB, 0);
     }
 
     if (edit_displays_dialog_w != 0)
     {
-	XtAddCallback(edit_displays_dialog_w,
-		      XmNokCallback,
-		      UnmanageThisCB,
-		      edit_displays_dialog_w);
-	XtAddCallback(edit_displays_dialog_w,
-		      XmNhelpCallback,
-		      ImmediateHelpCB,
-		      0);
+	XtAddCallback(edit_displays_dialog_w, XmNokCallback, UnmanageThisCB, edit_displays_dialog_w);
+	XtAddCallback(edit_displays_dialog_w, XmNhelpCallback, ImmediateHelpCB, 0);
     }
 
     // Add graph callbacks

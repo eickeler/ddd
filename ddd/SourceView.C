@@ -167,6 +167,8 @@ extern "C" {
 #include <errno.h>
 #include <limits.h>
 
+#include <algorithm>
+
 // Test for regular file - see stat(3)
 #ifndef S_ISREG
 #define S_ISREG(m) (((m) & S_IFMT) == S_IFREG)
@@ -439,10 +441,10 @@ static void sort(IntArray& a)
     int h = 1;
     do {
 	h = h * 3 + 1;
-    } while (h <= a.size());
+    } while (h <= int(a.size()));
     do {
 	h /= 3;
-	for (int i = h; i < a.size(); i++)
+	for (int i = h; i < int(a.size()); i++)
 	{
 	    int v = a[i];
 	    int j;
@@ -1026,7 +1028,7 @@ void SourceView::_set_bps_cond(const IntArray& _nrs, const string& cond,
     IntArray nrs(_nrs);
 
     int count = 0;
-    for (int i = 0; i < nrs.size(); i++)
+    for (int i = 0; i < int(nrs.size()); i++)
     {
 	int bp_nr = nrs[i];
 	BreakPoint *bp = bp_map.get(bp_nr);
@@ -1116,7 +1118,7 @@ void SourceView::bp_popup_disableCB (Widget w,
 string SourceView::numbers(const IntArray& nrs)
 {
     string cmd = ""; 
-    for (int i = 0; i < nrs.size(); i++)
+    for (int i = 0; i < int(nrs.size()); i++)
     {
 	if (i > 0)
 	    cmd += " ";
@@ -1146,7 +1148,7 @@ bool SourceView::all_bps(const IntArray& nrs)
     for (bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
     {
 	bool found = false;
-	for (int i = 0; !found && i < nrs.size(); i++)
+	for (int i = 0; !found && i < int(nrs.size()); i++)
 	{
 	    if (bp->number() == nrs[i])
 		found = true;
@@ -1196,7 +1198,7 @@ void SourceView::delete_bps(const IntArray& nrs, Widget w)
     if (gdb->recording() && gdb->has_clear_command())
     {
 	// While recording, prefer commands without explicit numbers.
-        for (int i = 0; i < nrs.size(); i++)
+        for (int i = 0; i < int(nrs.size()); i++)
 	{
 	    BreakPoint *bp = bp_map.get(nrs[i]);
 	    if (bp != 0)
@@ -1210,7 +1212,7 @@ void SourceView::delete_bps(const IntArray& nrs, Widget w)
     }
     else
     {
-        for (int i = 0; i < nrs.size(); i++) {
+        for (int i = 0; i < int(nrs.size()); i++) {
 	    std::vector<string> delcmds = delete_commands(nrs[i]);
 	    for (unsigned j = 0; j < delcmds.size(); j++)
 		gdb_command(delcmds[j]);
@@ -1976,10 +1978,10 @@ void SourceView::SetInsertionPosition(Widget text_w,
 StringArray SourceView::bad_files;
 bool SourceView::new_bad_file(const string& file_name)
 {
-    for (int i = 0; i < bad_files.size(); i++)
+    for (int i = 0; i < int(bad_files.size()); i++)
 	if (file_name == bad_files[i])
 	    return false;
-    bad_files += file_name;
+    bad_files.push_back(file_name);
     return true;
 }
 
@@ -2672,15 +2674,16 @@ int SourceView::read_current(string& file_name, bool force_reload, bool silent)
 
     // Number of lines
     line_count   = current_source.freq('\n');
-    _pos_of_line = TextPositionArray(line_count + 2);
-    _pos_of_line.operator += (XmTextPosition(0));
-    _pos_of_line.operator += (XmTextPosition(0));
+    _pos_of_line.clear();
+    _pos_of_line.reserve(line_count + 2);
+    _pos_of_line.push_back((XmTextPosition(0)));
+    _pos_of_line.push_back((XmTextPosition(0)));
 
     for (int i = 0; i < int(current_source.length()); i++)
 	if (current_source[i] == '\n')
-	    _pos_of_line.operator += (XmTextPosition(i + 1));
+	    _pos_of_line.push_back((XmTextPosition(i + 1)));
 
-    assert(_pos_of_line.size() == line_count + 2);
+    assert(int(_pos_of_line.size()) == line_count + 2);
 
     if (current_source.length() == 0)
 	return -1;
@@ -2691,7 +2694,7 @@ int SourceView::read_current(string& file_name, bool force_reload, bool silent)
 // Return position of line LINE
 XmTextPosition SourceView::pos_of_line(int line)
 {
-    if (line < 0 || line > line_count || line >= _pos_of_line.size())
+    if (line < 0 || line > line_count || line >= int(_pos_of_line.size()))
 	return 0;
     else
 	return _pos_of_line[line];
@@ -3004,7 +3007,7 @@ void SourceView::refresh_source_bp_disp(bool reset)
 	    bp_matches(bp))
 	{
 	    // ASSUME: multi-location breakpoints all have same source line
-	    bps_in_line[bp->line_nr()] += bp->number();
+	    bps_in_line[bp->line_nr()].push_back(bp->number());
 	}
     }
 
@@ -3026,7 +3029,7 @@ void SourceView::refresh_source_bp_disp(bool reset)
 	    VarIntArray& bps = bps_in_line[line_nr];
 
 	    string insert_string = "";
-	    for (int i = 0; i < bps.size(); i++)
+	    for (int i = 0; i < int(bps.size()); i++)
 	    {
 		BreakPoint *bp = bp_map.get(bps[i]);
 		insert_string += bp->symbol();
@@ -3061,7 +3064,7 @@ void SourceView::refresh_code_bp_disp(bool reset)
 
     // Clear all addresses
     int i;
-    for (i = 0; i < bp_addresses.size(); i++)
+    for (i = 0; i < int(bp_addresses.size()); i++)
     {
 	const string& address = bp_addresses[i];
 	XmTextPosition pos = find_pc(address);
@@ -3092,11 +3095,11 @@ void SourceView::refresh_code_bp_disp(bool reset)
 	    continue;
 
 	for (i = 0; i < bp->n_locations(); i++)
-	    bp_addresses += bp->get_location(i).address();
+	    bp_addresses.push_back(bp->get_location(i).address());
     }
 
     // Process all bp_addresses
-    for (i = 0; i < bp_addresses.size(); i++)
+    for (i = 0; i < int(bp_addresses.size()); i++)
     {
 	const string& address = bp_addresses[i];
 	XmTextPosition pos = find_pc(address);
@@ -3236,7 +3239,7 @@ bool SourceView::get_line_of_pos (Widget   w,
 		    // Find which breakpoint was selected
 		    XmTextPosition bp_disp_pos = line_pos;
 		    int i;
-		    for (i = 0; i < bps.size(); i++)
+		    for (i = 0; i < int(bps.size()); i++)
 		    {
 			BreakPoint* bp = bp_map.get(bps[i]);
 			assert(bp != NULL);
@@ -3294,7 +3297,7 @@ bool SourceView::get_line_of_pos (Widget   w,
 		{
 		    for (int i = 0; i < bp->n_locations(); i++)
 			if (compare_address(address, bp->get_location(i).address()) == 0)
-			    bps += bp->number();
+			    bps.push_back(bp->number());
 		}
 		if (bps.size() == 1)
 		{
@@ -3306,7 +3309,7 @@ bool SourceView::get_line_of_pos (Widget   w,
 		    // Find which breakpoint was selected
 		    int i;
 		    XmTextPosition bp_disp_pos = line_pos;
-		    for (i = 0; i < bps.size(); i++)
+		    for (i = 0; i < int(bps.size()); i++)
 		    {
 			BreakPoint* bp = bp_map.get(bps[i]);
 			assert(bp != NULL);
@@ -4241,7 +4244,7 @@ void SourceView::process_info_bp (string& info_output,
     MapRef ref;
     int i;
     for (i = bp_map.first_key(ref); i != 0; i = bp_map.next_key(ref))
-	bps_not_read += i;
+	bps_not_read.push_back(i);
 
     bool changed = false;
     bool added   = false;
@@ -4328,7 +4331,8 @@ void SourceView::process_info_bp (string& info_output,
 	if (bp_map.contains (bp_nr))
 	{
 	    // Update existing breakpoint
-	    bps_not_read -= bp_nr;
+	    //bps_not_read -= bp_nr;
+            bps_not_read.erase(std::remove(bps_not_read.begin(), bps_not_read.end(), bp_nr), bps_not_read.end());
 	    BreakPoint *bp = bp_map.get(bp_nr);
 
 	    std::ostringstream old_state;
@@ -4405,7 +4409,7 @@ void SourceView::process_info_bp (string& info_output,
     info_output = keep_me;
 
     // Delete all breakpoints not found now
-    for (i = 0; i < bps_not_read.size(); i++)
+    for (i = 0; i < int(bps_not_read.size()); i++)
     {
 	BreakPoint *bp = bp_map.get(bps_not_read[i]);
 
@@ -5124,7 +5128,7 @@ string SourceView::get_source_name(string filename)
 			if (sources.size() > 0)
 			{
 			    ans = "";
-			    for (int i = 0; i < sources.size(); i++)
+			    for (int i = 0; i < int(sources.size()); i++)
 				ans += sources[i] + '\n';
 
 			    source_name_cache[all_sources] = ans;
@@ -5657,7 +5661,7 @@ void SourceView::doubleClickAct(Widget w, XEvent *e, String *params,
 		 bp = bp_map.next(ref))
 	    {
 		if (bp_matches(bp, line_nr))
-		    bps += bp->number();
+		    bps.push_back(bp->number());
 	    }
 	}
 	else
@@ -5671,7 +5675,7 @@ void SourceView::doubleClickAct(Widget w, XEvent *e, String *params,
 		    BreakPointLocn &locn = bp->get_location(i);
 		    if (bp->type() == BREAKPOINT && 
 			compare_address(address, locn.address()) == 0)
-			bps += bp->number();
+			bps.push_back(bp->number());
 		}
 	    }
 	}
@@ -5987,7 +5991,7 @@ void SourceView::move_breakpoint_properties(int old_bp, int new_bp)
     while (info != 0)
     {
 	bool changed = false;
-	for (int i = 0; i < info->nrs.size(); i++)
+	for (int i = 0; i < int(info->nrs.size()); i++)
 	{
 	    if (info->nrs[i] == old_bp)
 	    {
@@ -6013,11 +6017,11 @@ void SourceView::copy_breakpoint_properties(int old_bp, int new_bp)
     BreakpointPropertiesInfo *info = BreakpointPropertiesInfo::all;
     while (info != 0)
     {
-	for (int i = 0; i < info->nrs.size(); i++)
+	for (int i = 0; i < int(info->nrs.size()); i++)
 	{
 	    if (info->nrs[i] == old_bp)
 	    {
-		info->nrs += new_bp;
+		info->nrs.push_back(new_bp);
 		update = true;
 		break;
 	    }
@@ -6035,7 +6039,7 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
     // Remove breakpoints from list
     bool future = false;
     int i;
-    for (i = 0; i < info->nrs.size(); i++)
+    for (i = 0; i < int(info->nrs.size()); i++)
     {
 	if (info->nrs[i] >= next_breakpoint_number())
 	{
@@ -6053,10 +6057,10 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
     }
     IntArray new_nrs;
 
-    for (i = 0; i < info->nrs.size(); i++)
+    for (i = 0; i < int(info->nrs.size()); i++)
     {
 	if (info->nrs[i] != 0)
-	    new_nrs += info->nrs[i];
+	    new_nrs.push_back(info->nrs[i]);
     }
 
     info->nrs = new_nrs;
@@ -6086,13 +6090,13 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
     else
     {
 	label = what + "s ";
-	for (i = 0; i < info->nrs.size(); i++)
+	for (i = 0; i < int(info->nrs.size()); i++)
 	{
 	    if (i > 0)
 	    {
 		if (info->nrs.size() == 2)
 		    label += " and ";
-		else if (i == info->nrs.size() - 1)
+		else if (i == int(info->nrs.size()) - 1)
 		    label += ", and ";
 		else
 		    label += ", ";
@@ -6109,7 +6113,7 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
 
     // Set values
     string commands = "";
-    for (i = 0; i < bp->commands().size(); i++)
+    for (i = 0; i < int(bp->commands().size()); i++)
     {
 	string cmd = bp->commands()[i];
 	strip_auto_command_prefix(cmd);
@@ -6164,7 +6168,7 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
     bool can_maketemp = false;
     bool can_print    = false;
 
-    for (i = 0; i < info->nrs.size(); i++)
+    for (i = 0; i < int(info->nrs.size()); i++)
     {
 	BreakPoint *bp = bp_map.get(info->nrs[i]);
 	if (bp->enabled())
@@ -6205,7 +6209,7 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
 
     if (info->sync_commands)
     {
-	for (i = 1; i < info->nrs.size(); i++)
+	for (i = 1; i < int(info->nrs.size()); i++)
 	    set_bp_commands(info->nrs[i], bp->commands());
 	info->sync_commands = false;
     }
@@ -6279,11 +6283,11 @@ void SourceView::getBreakpointNumbers(IntArray& breakpoint_nrs)
 
     // Double-check each number for safety.  One may define commands
     // as breakpoint numbers and cause DDD to crash.
-    for (int i = 0; i < numbers.size(); i++)
+    for (int i = 0; i < int(numbers.size()); i++)
     {
 	BreakPoint *bp = bp_map.get(numbers[i]);
 	if (bp != 0)
-	    breakpoint_nrs += numbers[i];
+	    breakpoint_nrs.push_back(numbers[i]);
     }
 }
 
@@ -6300,7 +6304,7 @@ void SourceView::EditBreakpointPropertiesCB(Widget,
     }
     else
     {
-	breakpoint_nrs += *((int *)client_data);
+	breakpoint_nrs.push_back(*((int *)client_data));
     }
 
     edit_bps(breakpoint_nrs);
@@ -6558,7 +6562,7 @@ void SourceView::SetBreakpointIgnoreCountNowCB(XtPointer client_data,
     int count = atoi(_count);
     XtFree(_count);
 
-    for (int i = 0; i < info->nrs.size(); i++)
+    for (int i = 0; i < int(info->nrs.size()); i++)
     {
 	gdb_command(gdb->ignore_command(itostring(info->nrs[i]), count));
 	info->ignore_spin_update++;
@@ -6681,7 +6685,7 @@ void SourceView::set_bp_commands(IntArray& nrs, const StringArray& commands,
 {
     CommandGroup cg;
 
-    for (int i = 0; i < nrs.size(); i++)
+    for (int i = 0; i < int(nrs.size()); i++)
     {
 	// Check for breakpoint
 	MapRef ref;
@@ -6697,7 +6701,7 @@ void SourceView::set_bp_commands(IntArray& nrs, const StringArray& commands,
 	if (commands.size() == bp->commands().size())
 	{
 	    bool same_commands = true;
-	    for (int j = 0; same_commands && j < bp->commands().size(); j++)
+	    for (int j = 0; same_commands && j < int(bp->commands().size()); j++)
 	    {
 		string c1 = bp->commands()[j];
 		strip_auto_command_prefix(c1);
@@ -6717,7 +6721,7 @@ void SourceView::set_bp_commands(IntArray& nrs, const StringArray& commands,
 	{
 	    // Get action for non-GDB types - a semicolon-separated
 	    // list of commands
-	    for (int j = 0; j < commands.size(); j++)
+	    for (int j = 0; j < int(commands.size()); j++)
 	    {
 		if (j > 0 && 
 		    !action.contains(";", -1) && !action.contains("; ", -1))
@@ -6747,7 +6751,7 @@ void SourceView::set_bp_commands(IntArray& nrs, const StringArray& commands,
 	case GDB:
 	{
 	    gdb_command("commands " + itostring(nrs[i]), origin);
-	    for (int j = 0; j < commands.size(); j++)
+	    for (int j = 0; j < int(commands.size()); j++)
 		gdb_command(commands[j], origin);
 	    gdb_command("end", origin);
 	    break;
@@ -6827,7 +6831,7 @@ void SourceView::EditBreakpointCommandsCB(Widget w,
 	{
 	    string c = cmd.before('\n');
 	    if (!c.empty())
-		commands += c;
+		commands.push_back(c);
 	    cmd = cmd.after('\n');
 	}
 
@@ -7117,7 +7121,7 @@ void SourceView::UpdateBreakpointButtonsCB(Widget, XtPointer,
     for (bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
 	bp->selected() = false;
 
-    for (int i = 0; i < breakpoint_nrs.size(); i++)
+    for (int i = 0; i < int(breakpoint_nrs.size()); i++)
     {
 	int bp_number = breakpoint_nrs[i];
 	for (bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
@@ -7336,10 +7340,10 @@ void SourceView::process_where(const string& where_output)
 	if (frame.contains("Reading ", 0))
 	    continue;		// Skip GDB `Reading in symbols' messages
 
-	frames += frame;
+	frames.push_back(frame);
     }
     delete[] frame_list;
-    frame_list = frames.values();
+    frame_list = frames.data();
     count = frames.size();
 
     if (gdb->type() != XDB)
@@ -7903,7 +7907,7 @@ void SourceView::ThreadCommandCB(Widget w, XtPointer client_data, XtPointer)
     IntArray threads;
     getItemNumbers(thread_list_w, threads);
 
-    for (int i = 0; i < threads.size(); i++)
+    for (int i = 0; i < int(threads.size()); i++)
 	command += " " + itostring(threads[i]);
 
     gdb_command(command, w);
@@ -8052,17 +8056,17 @@ void SourceView::set_max_glyphs (int nmax)
 	int i;
 	for (i = 0; i < nmax + 1; i++)
 	{
-	    plain_stops[k] += Widget(0);
-	    multi_stops[k]  += Widget(0);
-	    grey_stops[k]  += Widget(0);
+	    plain_stops[k].push_back(Widget(0));
+	    multi_stops[k].push_back(Widget(0));
+	    grey_stops[k].push_back(Widget(0));
 
-	    plain_conds[k] += Widget(0);
-	    multi_conds[k]  += Widget(0);
-	    grey_conds[k]  += Widget(0);
+	    plain_conds[k].push_back(Widget(0));
+	    multi_conds[k].push_back(Widget(0));
+	    grey_conds[k].push_back(Widget(0));
 
-	    plain_temps[k] += Widget(0);
-	    multi_temps[k]  += Widget(0);
-	    grey_temps[k]  += Widget(0);
+	    plain_temps[k].push_back(Widget(0));
+	    multi_temps[k].push_back(Widget(0));
+	    grey_temps[k].push_back(Widget(0));
 	}
     }
 }
@@ -8239,7 +8243,7 @@ void SourceView::unmap_glyph(Widget glyph)
 	log_glyph(glyph);
     }
 
-    changed_glyphs += glyph;
+    changed_glyphs.push_back(glyph);
 }
 
 // Map glyph GLYPH in (X, Y)
@@ -8297,7 +8301,7 @@ void SourceView::map_glyph(Widget& glyph, Position x, Position y)
 			  XtPointer(0));
 	    log_glyph(glyph);
 	}
-	changed_glyphs += glyph;
+	changed_glyphs.push_back(glyph);
     }
 
     if (user_data != 0)
@@ -8308,7 +8312,7 @@ void SourceView::map_glyph(Widget& glyph, Position x, Position y)
 	XtMapWidget(glyph);
 	XtVaSetValues(glyph, XmNuserData, XtPointer(1), XtPointer(0));
 	log_glyph(glyph);
-	changed_glyphs += glyph;
+	changed_glyphs.push_back(glyph);
     }
 }
 
@@ -8532,7 +8536,7 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 
 	int i;
 
-	for (i = 0; i < plain_stops[k].size() - 1; i++)
+	for (i = 0; i < int(plain_stops[k].size()) - 1; i++)
 	{
 	    if (plain_stops[k][i] == 0)
 	    {
@@ -8545,7 +8549,7 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 	    }
 	}
 
-	for (i = 0; i < plain_temps[k].size() - 1; i++)
+	for (i = 0; i < int(plain_temps[k].size()) - 1; i++)
 	{
 	    if (plain_temps[k][i] == 0)
 	    {
@@ -8558,7 +8562,7 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 	    }
 	}
 
-	for (i = 0; i < plain_conds[k].size() - 1; i++)
+	for (i = 0; i < int(plain_conds[k].size()) - 1; i++)
 	{
 	    if (plain_conds[k][i] == 0)
 	    {
@@ -8570,7 +8574,7 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 		return False;
 	    }
 	}
-	for (i = 0; i < multi_stops[k].size() - 1; i++)
+	for (i = 0; i < int(multi_stops[k].size()) - 1; i++)
 	{
 	    if (multi_stops[k][i] == 0)
 	    {
@@ -8582,7 +8586,7 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 		return False;
 	    }
 	}
-	for (i = 0; i < grey_stops[k].size() - 1; i++)
+	for (i = 0; i < int(grey_stops[k].size()) - 1; i++)
 	{
 	    if (grey_stops[k][i] == 0)
 	    {
@@ -8595,7 +8599,7 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 	    }
 	}
 
-	for (i = 0; i < multi_temps[k].size() - 1; i++)
+	for (i = 0; i < int(multi_temps[k].size()) - 1; i++)
 	{
 	    if (multi_temps[k][i] == 0)
 	    {
@@ -8607,7 +8611,7 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 		return False;
 	    }
 	}
-	for (i = 0; i < grey_temps[k].size() - 1; i++)
+	for (i = 0; i < int(grey_temps[k].size()) - 1; i++)
 	{
 	    if (grey_temps[k][i] == 0)
 	    {
@@ -8620,7 +8624,7 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 	    }
 	}
 
-	for (i = 0; i < multi_conds[k].size() - 1; i++)
+	for (i = 0; i < int(multi_conds[k].size()) - 1; i++)
 	{
 	    if (multi_conds[k][i] == 0)
 	    {
@@ -8632,7 +8636,7 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 		return False;
 	    }
 	}
-	for (i = 0; i < grey_conds[k].size() - 1; i++)
+	for (i = 0; i < int(grey_conds[k].size()) - 1; i++)
 	{
 	    if (grey_conds[k][i] == 0)
 	    {
@@ -8732,12 +8736,12 @@ Widget SourceView::map_stop_at(Widget glyph, XmTextPosition pos,
 
 	if (glyph != 0)
 	{
-	    for (int i = 0; i < positions.size(); i++)
+	    for (int i = 0; i < int(positions.size()); i++)
 		if (pos == positions[i])
 		    x += multiple_stop_x_offset;
 
 	    map_glyph(glyph, x + stop_x_offset, y);
-	    positions += pos;
+	    positions.push_back(pos);
 	    return glyph;
 	}
 	else
@@ -8992,7 +8996,7 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *id)
 	{
 	    // Change is imminent - unmap all glyphs that will change
 	    // and try again in 50ms
-	    for (int i = 0; i < glyphs.size(); i++)
+	    for (int i = 0; i < int(glyphs.size()); i++)
 		unmap_glyph(glyphs[i]);
 
 	    XtIntervalId new_id = 
@@ -9734,7 +9738,7 @@ void SourceView::deleteGlyphAct(Widget glyph, XEvent *, String *, Cardinal *)
 		// Cannot delete individual locations.
 		if (glyph == locn.code_glyph() && bp->n_locations() > 1)
 		    continue;
-		bps += bp->number();
+		bps.push_back(bp->number());
 	    }
 	}
     }
@@ -9832,9 +9836,9 @@ void SourceView::process_disassemble(const string& disassemble_output)
     if (cache_machine_code
 	&& !current_code_start.empty()
 	&& !current_code_end.empty())
-	code_cache += CodeCacheEntry(current_code_start, 
+	code_cache.push_back(CodeCacheEntry(current_code_start, 
 				     current_code_end, 
-				     current_code);
+				     current_code));
 }
 
 // Search PC in the current code; return beginning of line if found
@@ -10027,7 +10031,7 @@ void SourceView::show_pc(const string& pc, XmHighlightMode mode,
 
     // While PC not found, look for code in cache
     for (int i = 0; 
-	 pos == XmTextPosition(-1) && i < code_cache.size(); 
+	 pos == XmTextPosition(-1) && i < int(code_cache.size()); 
 	 i++)
     {
 	const CodeCacheEntry& cce = code_cache[i];
@@ -10220,7 +10224,7 @@ bool SourceView::get_state(std::ostream& os)
     // Restore breakpoints
     MapRef ref;
     for (BreakPoint *bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
-	breakpoint_nrs += bp->number();
+	breakpoint_nrs.push_back(bp->number());
 
     if (breakpoint_nrs.size() > 0)
     {
@@ -10236,7 +10240,7 @@ bool SourceView::get_state(std::ostream& os)
 	bool restore_old_numbers = max_number < max_breakpoint_number;
 
 	int num = 1;
-	for (int i = 0; i < breakpoint_nrs.size(); i++)
+	for (int i = 0; i < int(breakpoint_nrs.size()); i++)
 	{
 	    BreakPoint *bp = bp_map.get(breakpoint_nrs[i]);
 	    if (restore_old_numbers)

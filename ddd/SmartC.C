@@ -113,7 +113,7 @@ int smart_compare(const string& s1, const string& s2)
 // Sort array A, using smart_compare
 void smart_sort(StringArray& a)
 {
-    SMART_SHELL_SORT(string, a, a.size());
+    SMART_SHELL_SORT(string, a, int(a.size()));
 }
 
 // Sort array A, using smart_compare
@@ -133,10 +133,10 @@ void uniq(StringArray& a)
 {
     StringArray b;
 
-    for (int i = 0; i < a.size(); i++)
+    for (int i = 0; i < int(a.size()); i++)
     {
 	if (i == 0 || a[i - 1] != a[i])
-	    b += a[i];
+	    b.push_back(a[i]);
     }
     
     a = b;

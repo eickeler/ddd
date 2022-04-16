@@ -315,7 +315,7 @@ void BreakPoint::process_gdb(string& info_output)
 	    else if (starts_with_space)
 	    {
 		// A command (GDB indents all commands)
-		commands += line;
+		commands.push_back(line);
 		save_info = false;
 	    }
 	    else
@@ -722,7 +722,7 @@ void BreakPoint::process_perl(string& info_output)
 		    strip_space(command);
 		    if (!command.empty())
 		    {
-			mycommands += command;
+			mycommands.push_back(command);
 			command = "";
 		    }
 		}
@@ -742,7 +742,7 @@ static bool equal(const StringArray& s1, const StringArray& s2)
 {
     if (s1.size() != s2.size())
 	return false;
-    for (int i = 0; i < s1.size(); i++)
+    for (int i = 0; i < int(s1.size()); i++)
 	if (s1[i] != s2[i])
 	    return false;
 
@@ -886,7 +886,7 @@ bool BreakPoint::update(string& info_output,
         if (gdb->type() == GDB || gdb->type() == PYDB || gdb->type() == BASH)
 	{
 	    undo_commands << "commands " << num << '\n';
-	    for (int i = 0; i < commands().size(); i++)
+	    for (int i = 0; i < int(commands().size()); i++)
 		undo_commands << commands()[i] << '\n';
 	    undo_commands << "end\n";
 	}
@@ -1181,7 +1181,7 @@ bool BreakPoint::get_state(std::ostream& os, int nr, bool as_dummy,
 	    if (commands().size() != 0)
 	    {
 		os << "commands " << num << "\n";
-		for (int i = 0; i < commands().size(); i++)
+		for (int i = 0; i < int(commands().size()); i++)
 		    os << commands()[i] << "\n";
 		os << "end\n";
 	    }
@@ -1285,7 +1285,7 @@ bool BreakPoint::get_state(std::ostream& os, int nr, bool as_dummy,
 	if (commands().size() != 0)
 	{
 	    os << "a " << pos.after(':') << " ";
-	    for (int i = 0; i < commands().size(); i++)
+	    for (int i = 0; i < int(commands().size()); i++)
 		os << commands()[i] << ";";
 	    os << "\n";
 	}

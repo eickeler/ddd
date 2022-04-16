@@ -938,7 +938,7 @@ void dddSetKeyboardFocusPolicyCB (Widget w, XtPointer client_data, XtPointer)
 
     // Apply to existing shells
     const WidgetArray& shells = Delay::shells();
-    for (int i = 0; i < shells.size(); i++)
+    for (int i = 0; i < int(shells.size()); i++)
     {
 	Widget shell = shells[i];
 	while (shell != 0 && !XtIsSubclass(shell, vendorShellWidgetClass))
@@ -1340,7 +1340,10 @@ static bool copy(const string& src, const string& dest)
 
     FILE *to = fopen(dest.chars(), "w");
     if (to == 0)
+    {
+        fclose(from);
 	return false;
+    }
 
     int c;
     while ((c = getc(from)) != EOF)
@@ -2747,7 +2750,7 @@ bool save_options(unsigned long flags)
 	data_disp->get_shortcut_menu(exprs, labels);
 	string expr = "";
 
-	for (int i = 0; i < exprs.size(); i++)
+	for (int i = 0; i < int(exprs.size()); i++)
 	{
 	    if (i > 0)
 		expr += '\n';

@@ -660,9 +660,9 @@ void GDBAgent::init_qu_array (const StringArray& cmds,
     _qu_datas        = empty_v;
     for (int i = 0; i < qu_count; i++)
     {
-	complete_answers += "";
-	cmd_array        += cmds[i] + '\n';
-	_qu_datas        += qu_datas[i];
+	complete_answers.push_back("");
+	cmd_array.push_back(cmds[i] + '\n');
+	_qu_datas.push_back(qu_datas[i]);
     }
 }
 
