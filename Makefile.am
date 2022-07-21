@@ -113,8 +113,8 @@ snapshot:
 	rm -fr proto-toplev; mkdir proto-toplev
 	( \
 	    srcroot=`cd $(srcdir); pwd`; export srcroot; \
-	    ddd=$(PACKAGE_TARNAME) \
-	    VER=$(PACKAGE_VERSION) \
+	    ddd=$(PACKAGE_TARNAME); \
+	    VER=$(PACKAGE_VERSION); \
 	    echo "==> Making $$ddd-$$VER.tar.gz"; \
 	    rm -f $$ddd-$$VER.tar.gz; \
 	    ln -s $$srcroot proto-toplev/$$ddd-$$VER; \
@@ -129,6 +129,7 @@ snapshot:
 		-o -name '.[a-zA-Z0-9]*' -prune \
 		-o -name '*.o' -prune \
 		-o -name '*.a' -prune \
+		-o -name '*.log' -prune \
 		-o -name '*~' -prune \
 		-o -name '*#' -prune \
 		-o \( -name "$$ddd" -type l \) -prune \
@@ -157,8 +158,8 @@ htmldist:
 	rm -fr proto-toplev; mkdir proto-toplev
 	( \
 	    srcroot=`cd $(srcdir); pwd`; export srcroot; \
-	    ddd=$(PACKAGE_TARNAME) \
-	    VER=$(PACKAGE_VERSION) \
+	    ddd=$(PACKAGE_TARNAME); \
+	    VER=$(PACKAGE_VERSION); \
 	    echo "==> Making $$ddd-$$VER-html-manual.tar.gz"; \
 	    rm -f $$ddd-$$VER-pics.tar.gz; \
 	    ln -s $$srcroot proto-toplev/$$ddd-$$VER; \
@@ -186,8 +187,8 @@ picsdist:
 	rm -fr proto-toplev; mkdir proto-toplev
 	( \
 	    srcroot=`cd $(srcdir); pwd`; export srcroot; \
-	    ddd=$(PACKAGE_TARNAME) \
-	    VER=$(PACKAGE_VERSION) \
+	    ddd=$(PACKAGE_TARNAME); \
+	    VER=$(PACKAGE_VERSION); \
 	    echo "==> Making $$ddd-$$VER-pics.tar.gz"; \
 	    rm -f $$ddd-$$VER-pics.tar.gz; \
 	    ln -s $$srcroot proto-toplev/$$ddd-$$VER; \
