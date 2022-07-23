@@ -28,12 +28,10 @@
 # or send a mail to the DDD developers <ddd@gnu.org>.
 
 # This script checks out the current DDD development tree, as
-# stored in CVS, and creates a DDD release-of-the-day (`ROTD').
+# stored in SVN, and creates a DDD release-of-the-day (`ROTD').
 
-# Usage: `make-current [-final] [CVS options]'
+# Usage: `make-current [-final] 
 # -final: make an official release (else: release-of-the-day).
-# CVS options: given to CVS checkout (for checking out older versions).
-# To make a `fix' release, use `make-current -final -r DDD_X_Y_fixes'.
 
 # Some Bash versions issue the name of the directory they're changing into :-(
 unset CDPATH
@@ -48,30 +46,44 @@ if [ "$1" = "-final" ]; then
   shift
 fi
 
-# Setup environment
-tmpdir=$HOME/tmp/ddd$$
-workdir=$HOME/ddd
-target=`pwd`
-
-# Setup CVS stuff
-cvs_options="-z3"
-CVSROOT=":pserver:anonymous@cvs.ddd.sourceforge.net:/cvsroot/ddd"; export CVSROOT
-CVSREAD=1; export CVSREAD
-
-echo make-current[$$]: start at `date`
-
 # Fetch the date in ISO 8601 YYYY-MM-DD format.
 year=`date +"%Y"`
 month=`date +"%m"`
 day=`date +"%d"`
 date=$year-$month-$day
 
+# Setup environment
+tmpdir=$HOME/tmp/ddd$$
+target=$HOME/ddd-release
+
+# SVN repository
+SVNREPO="svn://svn.savannah.gnu.org/ddd/trunk"
+
+echo make-current[$$]: start at `date`
+
+echo "Creating ddd-$date.tar.gz$expires_msg..."
+echo "Target is $target"
+echo "Working directory is $tmpdir"
+mkdir -p $target
+mkdir -p $tmpdir
+cd $tmpdir
+
+# We are working in `$HOME/tmp/ddd'.  In case of trouble, clean up.
+trap "exit 1" 1 2 15
+trap "set +x; echo -n 'Cleaning up...'; rm -fr $tmpdir; echo done." 0
+
+# Check out sources to $tmpdir
+svn co $SVNREPO . > svn.log
+
+# Extract VERSION, EXPIRES, NICKNAME
+VERSION=$(grep AC_INIT configure.ac | cut -d ',' -f 2 | sed 's/\[\(.*\)\]/\1/')
+EXPIRES=$(grep EXPIRES= configure.ac | cut -d '"' -f 2)
+NICKNAME=$(grep NICKNAME= configure.ac | cut -d '"' -f 2)
+
 if $final; then
   # This is a final release; use the expiration date from the file.
-  eval `cvs "$cvs_options" checkout "$@" -p ddd/ddd/acinclude.m4 2> /dev/null | \
-   egrep '^(EXPIRES|VERSION|NICKNAME)='`
   expires=$EXPIRES
-  date=$VERSION
+  version=$VERSION
   nickname=$NICKNAME
 else
   # Let this release expire in 30-60 days.  It is unlikely we won't make
@@ -92,11 +104,17 @@ else
     12) expires=$next_year-02-01;;
   esac
   nickname="daily"
+  version="$VERSION-$date"
 fi
 
-# We are working in `/tmp/ddd'.  In case of trouble, clean up.
-trap "exit 1" 1 2 15
-trap "set +x; echo -n 'Cleaning up...'; rm -fr $tmpdir; echo done." 0
+echo "EXPIRES=$EXPIRES"
+echo "expires=$expires"
+echo "VERSION=$VERSION"
+echo "version=$version"
+echo "NICKNAME=$NICKNAME"
+echo "nickname=$nickname"
+echo "final=$final"
+
 
 # Go ahead...
 if [ "$expires" = "" ]; then
@@ -104,97 +122,42 @@ if [ "$expires" = "" ]; then
 else
   expires_msg=" (expires $expires)"
 fi
-echo "Creating ddd-$date.tar.gz$expires_msg..."
-echo "Target is $target"
-echo "Working directory is $tmpdir"
-set -x
-mkdir $tmpdir
-cd $tmpdir
 
-# Get a first DDD file out of CVS, such that `ddd' and `ddd/CVS' are created
-cvs "$cvs_options" checkout -kkv -P "$@" ddd/README
+echo "expires_msg=$expires_msg"
 
-# Change the group of the DDD subdirectory to `ddd'
-chgrp -R ddd ddd
-chmod g+s ddd
+#  TEMPORARY FIX
+sed 's/DDD_NAMES/EXPIRES=\nAC_SUBST(EXPIRES)\nDDD_NAMES/' configure.ac > configure.ac~
+mv configure.ac~ configure.ac
 
-# Now get the remainder, expanding RCS keywords.
-cvs "$cvs_options" checkout -kkv -P "$@" ddd
-cd ddd
 
 if $final; then
   :
 else
 # Override the ROTD version.
-sed 's/VERSION=.*/# &/
-s/EXPIRES=.*/# &/
-/^# VERSION=/a\
-VERSION='$date'
+sedscript="s/AC_INIT(\[ddd\],\[.*\]/AC_INIT([ddd],[$version]/;\
+s/EXPIRES=.*$/EXPIRES=$expires/;\
+s/NICKNAME=\".*\"/NICKNAME=\"$nickname\"/"
 
-/^# EXPIRES=/a\
-EXPIRES='$expires'
-
-' < ddd/acinclude.m4 > ddd/acinclude.m4~
-mv ddd/acinclude.m4~ ddd/acinclude.m4
+sed "$sedscript" configure.ac > configure.ac~
+mv configure.ac~ configure.ac
 fi
 
 # Set up configure scripts.
-# Note: Don't use `--include-deps' at this stage, such that
-# dependencies are generated in `.deps/' subdir.
-(cd ddd && aclocal)
-autoconf -l ddd
-automake --gnu --add-missing --copy --verbose
-(cd ddd && autoconf && automake --foreign --add-missing --copy --verbose)
-(cd vsllib && autoconf -l ../ddd && automake --foreign --verbose)
-(cd themes && autoconf -l ../ddd && automake --foreign --verbose)
+autoreconf -ifv
 
 # Configure the package.
 sh ./configure -v
 
-# Build libraries.
-
-# Build DDD.  (We have to build all in order to get correct dependencies.)
-(cd ddd
- make Makefile
- make Makefile
- make diststuff
- make all
- automake --foreign --include-deps --srcdir-name=`pwd` --build-dir=. --verbose
-)
-
-Add a RELEASE tag
-if $final; then
-   (
-    cd $workdir
-    echo "ddd-$date: released `date`" > ./.RELEASE
-    cvs commit -m"ddd-$date \"$nickname\" released" .RELEASE
-   )
-fi
-
 # Create distribution.
-make cvsdist
+make dist &> make.log 
 
-if [ -f ddd-$date.tar.gz ]; then
-  if $final; then
-    # Tag our CVS files
-    tag=DDD_`echo $date | sed 's/[^a-zA-Z0-9]/_/g'`
-    ( cd $workdir; cvs rtag -F "$tag" . )
-    case "$tag" in
-      DDD_*_*_*)
-	# Already a `fix' release
-	;;
-      *)
-	# Create a `fixes' branch
-        ( cd $workdir; cvs rtag -F -b ${tag}_fixes . )
-        ;;
-    esac
-  fi
+if [ -f ddd-$version.tar.gz ]; then
 
   # Move dist file into target area
   rm -f $target/ddd-*.tar.gz
   mv ddd-*.tar.gz $target
 
-  echo "Creating ddd-$date.tar.gz$expires_msg...done."
+  echo "Creating ddd-$version.tar.gz$expires_msg...done."
   echo "make-current[$$]: done at `date`"
 else
   echo "make-current[$$]: failed at `date`"

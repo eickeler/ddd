@@ -69,9 +69,9 @@ SED  = sed
 # The build number.  (This must be set from outside)
 REL = 1
 
-# Build a DDD distribution from CVS archive.
-.PHONY: cvsdist
-cvsdist: $(srcdir)/ChangeLog diststuff disttouch distclean \
+# Build a DDD distribution from archive.
+.PHONY: dist
+dist: diststuff disttouch distclean \
 	snapshot htmldist picsdist
 
 # RPM spec
@@ -208,18 +208,6 @@ picsdist:
 		--file - ) | $(GZIP) -v -9 > $$ddd-$$VER-pics.tar.gz; \
 	)
 	rm -fr proto-toplev
-
-# -----------------------------------------------------------------------------
-# ChangeLog.
-# -----------------------------------------------------------------------------
-
-# We create the ChangeLog file directly from the CVS archive.
-CVS2CL = etc/cvs2cl.pl
-USERMAP = etc/users
-$(srcdir)/ChangeLog: $(srcdir)/Makefile.am
-	if (cd $(srcdir); $(CVS2CL) --separate-header --no-wrap --revisions --utc --usermap $(USERMAP) ); then \
-	rm -f $(srcdir)/ChangeLog.bak \
-	else true; fi
 
 # -----------------------------------------------------------------------------
 # Autoconf.
