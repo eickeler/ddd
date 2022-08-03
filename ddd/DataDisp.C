@@ -1660,7 +1660,7 @@ void DataDisp::DoubleClickCB(Widget w, XtPointer, XtPointer call_data)
 	else if (count.selected_collapsed > 0)
 	{
 	    // Show 1 level more
-	    showMoreDetailCB(w, XtPointer(2), 0);
+	    showMoreDetailCB(w, XtPointer(1), 0);
 	}
 	else
 	{
