@@ -713,7 +713,7 @@ cxxtest_LDADD = $(LIBM)
 ddd_LDADD = $(RPATH) $(ALL_X_LIBS) $(ALL_LIBS)
 vsl_LDADD = $(RPATH) $(ALL_X_LIBS) $(ALL_LIBS)
 X_INCLUDE = @X_CFLAGS@
-AM_CPPFLAGS = -I$(srcdir)/.. $(X_INCLUDE)
+AM_CPPFLAGS = -I$(srcdir)/.. -I.. $(X_INCLUDE)
 
 # -----------------------------------------------------------------------------
 # DDD Application Defaults.
@@ -764,12 +764,6 @@ vsldir  = $(srcdir)/../vsllib
 
 VSL_CPP = $(CPP) -I$(vsldir) -I$(prefix)/lib/vsl-include
 
-$(vsldir)/ddd.vsl: $(srcdir)/../m4/ddd.vsl.m4 $(srcdir)/../m4/colors.m4
-	( \
-		echo "define(srcdir, \`$(srcdir)')dnl"; \
-		echo "include(srcdir()/../m4/ddd.vsl.m4)dnl" \
-	) | $(M4) | $(DELETE_CR) > $@~ && $(MV) $@~ $@
-
 VSLSRC = \
 	$(vsldir)/std.vsl \
 	$(vsldir)/builtin.vsl \
@@ -802,20 +796,17 @@ LEXTOCXX = $(srcdir)/lextoC
 LEX_OUTPUT_ROOT = @LEX_OUTPUT_ROOT@
 
 # VSL parsers.
-$(srcdir)/vsl-lex.C: $(srcdir)/vsl-lex.L
+vsl-lex.C: $(srcdir)/vsl-lex.L
 	$(LEX) $(LFLAGS) $(srcdir)/vsl-lex.L
 #	$(SHELL) $(LEXTOCXX) -prefix vsl
 #	$(MV) $(LEX_OUTPUT_ROOT).cc $@
 #	$(RM) $(LEX_OUTPUT_ROOT).c
 
-$(srcdir)/vsl-gramma.H $(srcdir)/vsl-gramma.C: $(srcdir)/vsl-gramma.Y \
+vsl-gramma.H vsl-gramma.C: $(srcdir)/vsl-gramma.Y \
 	$(YACCTOCXX) $(YACCTOCXX).bison $(YACCTOCXX).h $(YACCTOCXX).sun
 	$(YACC) $(YFLAGS) -d $(srcdir)/vsl-gramma.Y
 
-VSLRead.$(OBJEXT): \
-	$(srcdir)/vsl-lex.C \
-	$(srcdir)/vsl-gramma.H \
-	$(srcdir)/vsl-gramma.C
+VSLRead.$(OBJEXT): vsl-lex.C vsl-gramma.H vsl-gramma.C
 
 # DDD regexp parsers.
 rxscan.C: $(srcdir)/rxscan.L
@@ -983,16 +974,18 @@ bug.$(OBJEXT):	$(srcdir)/bug.C
 # Icons.
 # -----------------------------------------------------------------------------
 
+
 # Icon rules
-.xpm.xbm:
-	@$(ECHO) "Creating $@"
+#.xpm.xbm:
+$(toolbardir)/%.xbm:  $(srctoolbardir)/%.xpm
+	@$(ECHO) "Creating $@ from $<"
+	@mkdir -p $(toolbardir)
 	@-base=`$(ECHO) $@ | $(SED) 's,.*/,,' | $(SED) 's/[.]x[bp]m.*//'`; \
 	$(SED) 's/[	 ][cg]4*[ 	][#a-zA-Z0-9][#a-zA-Z0-9]*//g' $< | \
 	$(SED) 's/[nN]one/white/g' | \
 	$(XPMTOPPM) | $(PNMDEPTH) 255 | $(PPMTOPGM) | $(PGMTOPBM) | \
 	$(PBMTOXBM) | $(SED) "s/noname/$${base}/g" | \
-	$(SED) "s/static char/static unsigned char/g" | $(DELETE_CR) > $@~
-	@test -s $@~ && $(MV) $@~ $@ || ($(RM) $@~; test -s $@)
+	$(SED) "s/static char/static unsigned char/g" > $@
 
 #.xbm.xface:
 #	@$(ECHO) "Creating $@"
@@ -1025,8 +1018,10 @@ bug.$(OBJEXT):	$(srcdir)/bug.C
 #	$(RM) $${base}-object.pbm $${base}-mask.pbm $${base}-button.ppm
 #	@test -s $@~ && $(MV) $@~ $@ || ($(RM) $@~; test -s $@)
 
-.xpm.xbmxx:
-	@$(ECHO) "Creating $@"
+#.xpm.xbmxx:
+$(toolbardir)/%.xbmxx:  $(srctoolbardir)/%.xpm
+	@$(ECHO) "Creating $@ from $<"
+	@mkdir -p $(toolbardir)
 	@-base=`$(ECHO) $@ | $(SED) 's,.*/,,' | $(SED) 's/[.]x[bp]m.*//'`; \
 	$(SED) 's/[ 	]c[	 ][#a-zA-Z0-9][#a-zA-Z0-9]*//' $< | \
 	$(SED) 's/ g black  / g grey50 /' | \
@@ -1035,8 +1030,7 @@ bug.$(OBJEXT):	$(srcdir)/bug.C
 	$(SED) 's/[nN]one/white/g' | \
 	$(XPMTOPPM) | $(PNMDEPTH) 255 | $(PPMTOPGM) | $(PGMTOPBM) | \
 	$(PBMTOXBM) | $(SED) "s/noname/$${base}_xx/" | \
-	$(SED) "s/static char/static unsigned char/g" | $(DELETE_CR) > $@~
-	@test -s $@~ && $(MV) $@~ $@ || ($(RM) $@~; test -s $@)
+	$(SED) "s/static char/static unsigned char/g" > $@
 
 # Icons and logos.
 
@@ -1048,6 +1042,7 @@ cursorsdir = $(icondir)/cursors
 glyphsdir = $(icondir)/glyphs
 tictactoedir = $(icondir)/tictactoe
 toolbardir = $(buildicondir)/toolbar
+srctoolbardir = $(icondir)/toolbar
 
 
 .PHONY: icons
@@ -1116,32 +1111,32 @@ XBM_TICTACTOE_ICONS = \
 
 # XBM icons are derived from XPM sources
 XPM_ICONS = \
-	$(toolbardir)/breakat.xpm \
-	$(toolbardir)/clearat.xpm \
-	$(toolbardir)/cluster.xpm \
-	$(toolbardir)/delete.xpm \
-	$(toolbardir)/deref.xpm \
-	$(toolbardir)/disable.xpm \
-	$(toolbardir)/display.xpm \
-	$(toolbardir)/findbwd.xpm \
-	$(toolbardir)/findfwd.xpm \
-	$(toolbardir)/enable.xpm \
-	$(toolbardir)/hide.xpm \
-	$(toolbardir)/lookup.xpm \
-	$(toolbardir)/maketemp.xpm \
-	$(toolbardir)/newbreak.xpm \
-	$(toolbardir)/newdisplay.xpm \
-	$(toolbardir)/newwatch.xpm \
-	$(toolbardir)/plot.xpm \
-	$(toolbardir)/print.xpm \
-	$(toolbardir)/properties.xpm \
-	$(toolbardir)/rotate.xpm \
-	$(toolbardir)/set.xpm \
-	$(toolbardir)/show.xpm \
-	$(toolbardir)/uncluster.xpm \
-	$(toolbardir)/undisplay.xpm \
-	$(toolbardir)/unwatch.xpm \
-	$(toolbardir)/watch.xpm 
+	$(srctoolbardir)/breakat.xpm \
+	$(srctoolbardir)/clearat.xpm \
+	$(srctoolbardir)/cluster.xpm \
+	$(srctoolbardir)/delete.xpm \
+	$(srctoolbardir)/deref.xpm \
+	$(srctoolbardir)/disable.xpm \
+	$(srctoolbardir)/display.xpm \
+	$(srctoolbardir)/findbwd.xpm \
+	$(srctoolbardir)/findfwd.xpm \
+	$(srctoolbardir)/enable.xpm \
+	$(srctoolbardir)/hide.xpm \
+	$(srctoolbardir)/lookup.xpm \
+	$(srctoolbardir)/maketemp.xpm \
+	$(srctoolbardir)/newbreak.xpm \
+	$(srctoolbardir)/newdisplay.xpm \
+	$(srctoolbardir)/newwatch.xpm \
+	$(srctoolbardir)/plot.xpm \
+	$(srctoolbardir)/print.xpm \
+	$(srctoolbardir)/properties.xpm \
+	$(srctoolbardir)/rotate.xpm \
+	$(srctoolbardir)/set.xpm \
+	$(srctoolbardir)/show.xpm \
+	$(srctoolbardir)/uncluster.xpm \
+	$(srctoolbardir)/undisplay.xpm \
+	$(srctoolbardir)/unwatch.xpm \
+	$(srctoolbardir)/watch.xpm 
 
 # XBM icons are derived from XPM sources
 XBM_ICONS = \
@@ -1200,6 +1195,7 @@ XPM_XX_ICONS = \
 	$(toolbardir)/undisplay.xpmxx \
 	$(toolbardir)/unwatch.xpmxx \
 	$(toolbardir)/watch.xpmxx 
+
 
 # XBMXX icons (insensitive XBM icons) are derived from XPM sources
 XBM_XX_ICONS = \

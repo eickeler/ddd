@@ -76,3 +76,11 @@ vsl_demos = \
 	DEMOS/std
 
 EXTRA_DIST = $(vslroot_DATA) $(vsl_demos)
+
+ddd.vsl: $(srcdir)/../m4/ddd.vsl.m4 $(srcdir)/../m4/colors.m4
+	echo "srcdir = $(srcdir)"
+	( \
+		echo "define(srcdir, \`$(srcdir)')dnl"; \
+		echo "include(srcdir()/../m4/ddd.vsl.m4)dnl" \
+	) | $(M4) > $@
+
