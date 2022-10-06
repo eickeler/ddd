@@ -2917,7 +2917,7 @@ Click on @bf ():@rm  to clear the argument @bf ()@rm .
 To view a specific section, select its title from the index at the top.\n\
 \n\
 To find a string in the manual, enter it in the @bf ()@rm  argument field \
-and press @key RETURN @symbol \277@rm .\n\
+and press @key RETURN <cr>@rm .\n\
 Click on @charset Find@small<< @charset()@rm  to search the next occurrence of @bf ()@rm .\n\
 Click on @charset Find@small>> @charset()@rm  to search the previous occurrence of @bf ()@rm .
 
@@ -2945,7 +2945,7 @@ The @DDD@ License, a GNU General Public License, describes the terms\n\
 and conditions for copying, distributing and modifying @DDD@.\n\
 \n\
 To find a string in the license, enter it in the @bf ()@rm  argument field \
-and press @key RETURN @symbol \277@rm .\n\
+and press @key RETURN <cr>@rm .\n\
 Click on @charset Find@small<< @charset()@rm  to search the next occurrence of @bf ()@rm .\n\
 Click on @charset Find@small>> @charset()@rm  to search the previous occurrence of @bf ()@rm .\n\
 \n\
@@ -2971,7 +2971,7 @@ you do not have.
 What's new in this @DDD@ release relative to previous releases.\n\
 \n\
 To find a string in the text, enter it in the @bf ()@rm  argument field \
-and press @key RETURN @symbol \277@rm .\n\
+and press @key RETURN <cr>@rm .\n\
 Click on @charset Find@small<< @charset()@rm  to search the next occurrence of @bf ()@rm .\n\
 Click on @charset Find@small>> @charset()@rm  to search the previous occurrence of @bf ()@rm .
 
@@ -4914,9 +4914,9 @@ Click on @bf Reset@rm  to restore the saved preferences.
 These settings control @GDB@ operations.\n\
 Click on @bf ?@rm  near an item to get further information.\n\
 \n\
-@bf Edit@symbol \256@bf Save Options@rm  saves all @GDB@ settings, except\n\
+@bf Edit->@bf Save Options@rm  saves all @GDB@ settings, except\n\
 session-dependent settings such as source or object paths.\n\
-@bf File@symbol \256@bf Save Session@rm  also saves session-dependent @GDB@ settings.\n\
+@bf File->@bf Save Session@rm  also saves session-dependent @GDB@ settings.\n\
 \n\
 Click on @bf Apply@rm  to apply changed text settings.\n\
 Click on @bf Reset@rm  to restore the saved settings.\n\
@@ -5092,7 +5092,7 @@ If @bf Enable supported buttons only@rm  is set, @DDD@ enables a button\n\
 if and only if its command is supported by the inferior debugger.\n\
 \n\
 Click on @bf OK@rm  to apply the changes and close this window.\n\
-Use @bf Edit@symbol \256@bf Save Options@rm  to save all button specifications.
+Use @bf Edit->@bf Save Options@rm  to save all button specifications.
 
 @Ddd@*edit_buttons*shortcuts*helpString: \
 @bs Shortcut Editor@rm \n\
@@ -5115,7 +5115,7 @@ Useful shortcuts include:\n\
 member points at.\n\
 \n\
 Click on @bf OK@rm  to apply the changes and close this window.\n\
-Use @bf Edit@symbol \256@bf Save Options@rm  to save all shortcuts.
+Use @bf Edit->@bf Save Options@rm  to save all shortcuts.
 
 
 
@@ -5766,7 +5766,7 @@ Stop whenever the value of @bf ()@rm  changes.\n\
 stops your program whenever the value of @bf ()@rm  changes.\n\
 @bf Unwatch()@rm  deletes the @sl watchpoint@rm  associated with @bf ()@rm .\n\
 \n\
-To see all watchpoints, select @bf Data@symbol \256@bf Edit Watchpoints@rm .\n\
+To see all watchpoints, select @bf Data->@bf Edit Watchpoints@rm .\n\
 \n\
 \
 Pulldown menu functions (press and hold @bs mouse button 1@rm ):\
@@ -5807,7 +5807,7 @@ debugged program by about two orders of magnitude.
 \n\
 Search an occurrence of @bf ()@rm  in the current source text.\n\
 \n\
-See @bf Edit@symbol \256@bf Preferences@symbol \256@bf Source@rm  for search settings.\n\
+See @bf Edit->@bf Preferences->@bf Source@rm  for search settings.\n\
 \n\
 \
 Pulldown menu functions (press and hold @bs mouse button 1@rm ):\
@@ -5950,7 +5950,7 @@ debugged program.\n\
 The upper area shows the source code.\n\
 The lower area shows the machine code.\n\
 \n\
-Use @bf Help@symbol \256@bf On Item@rm  to get\n\
+Use @bf Help->@bf On Item@rm  to get\n\
 detailed help on each of these areas.
 
 
@@ -6194,7 +6194,7 @@ currently\n\
 interaction\n\
     with @GDB@ and the debugged program.\n\
 \n\
-Use @bf Help@symbol \256@bf On Item@rm  to get detailed \
+Use @bf Help->@bf On Item@rm  to get detailed \
 help on any of these areas.
 @Ddd@.main_window.helpString: \
 @bs @DDD@ Main Window@rm \n\
@@ -6212,7 +6212,7 @@ currently\n\
 interaction\n\
     with @GDB@ and the debugged program.\n\
 \n\
-Use @bf Help@symbol \256@bf On Item@rm  to get detailed \
+Use @bf Help->@bf On Item@rm  to get detailed \
 help on any of these areas.
 
 
@@ -6307,9 +6307,9 @@ In a 3-D plot, a point at X/Y/Z shows the value Z at the array index X/Y.\n\
 Scalars are shown as lines and can be rotated using the @bf Rotate ()@rm  button.\n\
 \n\
 You can modify the plot appearance via the options in the menu bar.\n\
-@bf File@symbol \256@bf Command@rm  gives you direct access to the Gnuplot program.\n\
+@bf File->@bf Command@rm  gives you direct access to the Gnuplot program.\n\
 \n\
-Use @bf File@symbol \256@bf Close@rm  to close this window.
+Use @bf File->@bf Close@rm  to close this window.
 
 @Ddd@*plot*swallower.helpString:  \
 @bs Plot Window@rm \n\
@@ -6322,9 +6322,9 @@ In a 3-D plot, a point at X/Y/Z shows the value Z at the array index X/Y.\n\
 Scalars are shown as lines and can be rotated using the @bf Rotate ()@rm  button.\n\
 \n\
 You can modify the plot appearance via the options in the menu bar.\n\
-@bf File@symbol \256@bf Command@rm  gives you direct access to the Gnuplot program.\n\
+@bf File->@bf Command@rm  gives you direct access to the Gnuplot program.\n\
 \n\
-Use @bf File@symbol \256@bf Close@rm  to close this window.
+Use @bf File->@bf Close@rm  to close this window.
 
 @Ddd@*plot*area.helpString:       \
 @bs Plot Window@rm \n\
@@ -6337,9 +6337,9 @@ In a 3-D plot, a point at X/Y/Z shows the value Z at the array index X/Y.\n\
 Scalars are shown as lines and can be rotated using the @bf Rotate ()@rm  button.\n\
 \n\
 You can modify the plot appearance via the options in the menu bar.\n\
-@bf File@symbol \256@bf Command@rm  gives you direct access to the Gnuplot program.\n\
+@bf File->@bf Command@rm  gives you direct access to the Gnuplot program.\n\
 \n\
-Use @bf File@symbol \256@bf Close@rm  to close this window.
+Use @bf File->@bf Close@rm  to close this window.
 
 
 @Ddd@*plot*replot.labelString:    Refresh Plot
@@ -6745,7 +6745,7 @@ Get the next debugging command \
 @Ddd@*?*Apply.helpString:	\
 @bf Apply@rm \n\
 \n\
-Execute the current debugging command.  (Equivalent to @key RETURN @symbol \277@rm ).
+Execute the current debugging command.  (Equivalent to @key RETURN <cr>@rm ).
 @Ddd@*?*Apply.tipString: \
 @rm Execute current command
 
@@ -6846,20 +6846,22 @@ Reload the source from file.
 @Ddd@*print*custom.labelString:		      Other...
 
 @Ddd@*print*helpString: \
-@rm You can print on a PostScript@symbol \344 @rm  printer or print to a file.\n\
+@rm You can print on a PostScript@small \[TM\] @rm printer or print to a file.\n\
 Enter the print command or the file name in the appropriate fields.\n\
 \n\
 Files can be created in the following formats:\n\
-@tt \267 @bf PostScript@rm  @tt -@rm  PostScript@symbol \344 @rm  format.\n\
+@tt \267 @bf PostScript@rm  @tt -@rm  PostScript format.\n\
 @tt \267 @bf FIG@rm  @tt -@rm  FIG format (for the @tt xfig@rm  program).\n\
 \n\
 Select @bf Print Displays@rm  to print displays.\n\
 Select @bf Print Plots@rm  to print the current plots.\n\
 \n\
 To print selected items only, select @bf Selected Only@rm .\n\
-For PostScript@symbol \344 @rm  format only, you can also specify orientation and paper size.\n\
+For PostScript format only, you can also specify orientation and paper size.\n\
 \n\
-To print, click on @bf Print@rm .
+To print, click on @bf Print@rm .\n\
+\n\n\
+PostScript is a trademark of Adobe Inc.
 
 @Ddd@*paper_size_dialog.dialogTitle:  		@DDD@: Paper Size
 @Ddd@*paper_size_dialog.selectionLabelString: 	Paper size
@@ -6922,7 +6924,7 @@ Enter the name of a core dump in the argument field.\n\
 The core dump is used for examining memory and registers.\n\
 No argument means to have no core file.\n\
 \n\
-Before using @bf Open Core@rm , you should use @bf File@symbol \256@bf Open Program@rm \n\
+Before using @bf Open Core@rm , you should use @bf File->@bf Open Program@rm \n\
 to specify the program causing the core dump, and to load its symbol table.\n\
 \n\
 Click on @bf Open@rm  to open the selected core dump.\n\
@@ -6940,7 +6942,7 @@ Enter the name of a source file in the argument field.\n\
 The source file is shown in the source window and may be used\n\
 for setting or clearing breakpoints.\n\
 \n\
-Before using @bf Open Source@rm , you should use @bf File@symbol \256@bf Open Program@rm \n\
+Before using @bf Open Source@rm , you should use @bf File->@bf Open Program@rm \n\
 to specify the executable program, and to load its symbol table.\n\
 \n\
 Click on @bf Open@rm  to open the selected source file.\n\
@@ -6971,7 +6973,7 @@ When you have finished debugging the attached process, you can use\n\
 the process\n\
 continues its execution.\n\
 \n\
-Before using @bf Attach@rm , you should use @bf File@symbol \256@bf Open Program@rm \n\
+Before using @bf Attach@rm , you should use @bf File->@bf Open Program@rm \n\
 to specify the program running in the process, and to load its symbol table.\n\
 \n\
 Click on @bf Attach@rm  to attach to the selected process.\n\
@@ -6991,7 +6993,7 @@ The dialog shows the currently accessible Java classes.\n\
 Please select a class to be debugged.\n\
 \n\
 These classes all have corresponding @tt .java@rm  sources in the class path.\n\
-To search for other classes, select @bf Edit@symbol \256@bf JDB Settings@rm \n\
+To search for other classes, select @bf Edit->@bf JDB Settings@rm \n\
 and add their directories to the class path.\n\
 \n\
 Click on @bf Open@rm  to open the selected class.\n\
@@ -7017,7 +7019,7 @@ Source files from shared libraries are only shown after the library\n\
 has been loaded into @GDB@.  To load shared libraries, click on\n\
 @bf Load Shared Object Library Symbols@rm .\n\
 \n\
-To search for other sources, select @bf Edit@symbol \256@bf @GDB@ Settings@rm \n\
+To search for other sources, select @bf Edit->@bf @GDB@ Settings@rm \n\
 and add their directories to the source path.\n\
 \n\
 Click on @bf Open@rm  to open the selected source and close this window.\n\
@@ -7874,7 +7876,7 @@ Try to get three stop signs in a row.
 \n\
 You may wish to wait until the @GDB@ prompt appears,\n\
 or interrupt the current debugging command by selecting\n\
-@bf Program@symbol \256@bf Interrupt@rm  (or typing @key Esc@rm ).\n\
+@bf Program->@bf Interrupt@rm  (or typing @key Esc@rm ).\n\
 \n\
 If @GDB@ is busy running your debugged program, interrupting\n\
 @GDB@ means to interrupt program execution, such that you can\n\
@@ -7894,7 +7896,7 @@ at the @GDB@ prompt.
 The debugged program may be still running.\n\
 \n\
 Before killing a running @GDB@, you should try to interrupt it\n\
-(by selecting @bf Program@symbol \256@bf Interrupt@rm ).
+(by selecting @bf Program->@bf Interrupt@rm ).
 
 @Ddd@*shutdown_dialog.dialogTitle: @DDD@: Program Running
 ! @Ddd@*shutdown_dialog.messageString:	 \
@@ -7930,7 +7932,7 @@ Click on @bf Exit@rm  to exit @DDD@.
 @DDD@ users have reported that this frequently happens when @GDB@ attempts\n\
 to access undefined variables.  You can avoid this by disabling the\n\
 automatic display of variable values\n\
-(via @bf Edit@symbol \256@bf Preferences@symbol \256@bf General@symbol \256@bf Automatic Display of Variable Values@rm ).\n\
+(via @bf Edit->@bf Preferences->@bf General->@bf Automatic Display of Variable Values@rm ).\n\
 \n\
 Click on @bf Restart @GDB@@rm  to restart @GDB@.\n\
 Click on @bf Exit@rm  to exit @DDD@.
@@ -7982,7 +7984,7 @@ Here are some hints that may help you out:\n\
 @tt \267 @rm If @GDB@ could not be invoked due to some communication failure,\n\
     try changing the `@tt .blockTTYInput@rm' resource.\n\
 For details on options and resources, see the @DDD@ manual: select\n\
-@bf Help@symbol \256@bf @DDD@ Reference@rm  \
+@bf Help->@bf @DDD@ Reference@rm  \
 or invoke @DDD@ with the `@tt --manual@rm' option.\n\
 \n\
 Click on @bf Exit@rm  to exit @DDD@.
@@ -7995,7 +7997,7 @@ Click on @bf Exit@rm  to exit @DDD@.
 \n\
 @DDD@ requires the Gnuplot program to create plots.\n\
 Please install Gnuplot (available from any GNU site)\n\
-or enter its path in @bf Edit@symbol \256@bf Preferences@symbol \256@bf Helpers@symbol \256@bf Plot@rm .
+or enter its path in @bf Edit->@bf Preferences->@bf Helpers->@bf Plot@rm .
 
 @Ddd@*fatal_dialog.dialogTitle: @DDD@: Oops
 @Ddd@*fatal_dialog.messageString:	  \
@@ -8038,7 +8040,7 @@ Click on @bf Yes@rm  or @bf No@rm , or enter `@tt yes@rm' or `@tt no@rm' \
 in the @GDB@ console.\n\
 \n\
 To turn off these confirmations in GDB, unset\n\
-@bf Edit@symbol \256@bf GDB Settings@symbol \256@bf Confirm potentially dangerous operations@rm .
+@bf Edit->@bf GDB Settings->@bf Confirm potentially dangerous operations@rm .
 
 @Ddd@*gdb_message_dialog.dialogTitle: @DDD@: Debugger Message
 @Ddd@*gdb_message_dialog*helpString:	\
@@ -8080,7 +8082,7 @@ To make your changes take effect, you can\n\
 \n\
 To see your changes take effect, click on @bf Yes@rm  to restart @DDD@.\n\
 Otherwise, click on @bf No@rm  and be sure to save your changes\n\
-using @bf Edit@symbol \256@bf Save Options@rm .
+using @bf Edit->@bf Save Options@rm .
 
 @Ddd@*set_dialog.dialogTitle: @DDD@: Set Value
 @Ddd@*set_dialog.textAccelerators:
@@ -8163,7 +8165,7 @@ This typically happens when\n\
 To load the changed options file into this @DDD@ instance, click on @bf OK@rm .\n\
 To ignore the changed options file, click on @bf Cancel@rm .\n\
 \n\
-Use @bf File@symbol \256@bf Save Session@rm  to save the current options in a session.
+Use @bf File->@bf Save Session@rm  to save the current options in a session.
 
 
 @Ddd@*overwrite_options_dialog.dialogTitle: @DDD@: Overwrite Options
@@ -8178,7 +8180,7 @@ This typically happens when\n\
 To overwrite the changed options file, click on @bf OK@rm .\n\
 To cancel saving options, click on @bf Cancel@rm .\n\
 \n\
-Use @bf File@symbol \256@bf Save Session@rm  to save the current options in a session.
+Use @bf File->@bf Save Session@rm  to save the current options in a session.
 
 
 @Ddd@*lock_dialog.dialogTitle: @DDD@: There can be only one
@@ -8190,7 +8192,7 @@ To kill the other @DDD@ instance, click on @bf Kill@rm .\n\
 Otherwise, click on @bf Exit@rm .\n\
 \n\
 You can disable this warning by disabling\n\
-@bf Edit@symbol \256@bf Preferences@symbol \256@bf General@symbol \256@bf Warn if multiple @@@@@DDD@@@@@ instances are running@rm .
+@bf Edit->@bf Preferences->@bf General->@bf Warn if multiple @@@@@DDD@@@@@ instances are running@rm .
 @Ddd@*lock_dialog.okLabelString:		Continue
 @Ddd@*lock_dialog*kill.labelString:	Kill
 @Ddd@*lock_dialog.cancelLabelString: 	Exit
@@ -8210,7 +8212,7 @@ You are about to apply a theme to an expression or a pattern.\n\
 \n\
 Applying a theme is @sl permanent@rm ; that is, it will be applied to all\n\
 present and future occurrences of the expression. (You can always\n\
-unapply the theme via @bf Data@symbol \256@bf Themes@rm .)\n\n\
+unapply the theme via @bf Data->@bf Themes@rm .)\n\n\
 You can choose where @sl @THEME_DOC@@rm  should be applied:\n\
 \n\
 @tt \267 @rm To apply @sl @THEME_DOC@@rm  on all expressions \
@@ -8232,7 +8234,7 @@ You are about to apply a theme to an expression or a pattern.\n\
 \n\
 Applying a theme is @sl permanent@rm ; that is, it will be applied to all\n\
 present and future occurrences of the expression. (You can always\n\
-unapply the theme via @bf Data@symbol \256@bf Themes@rm .)\n\n\
+unapply the theme via @bf Data->@bf Themes@rm .)\n\n\
 To apply @sl @THEME_DOC@@rm  on @tt @EXPR@@rm , click on @bf Apply@rm .\n\
 To cancel applying the theme, click on @bf Cancel@rm .
 
@@ -8265,22 +8267,22 @@ a\n\
 \n\
 @tt \267 @rm If your personal `@tt ~/.@ddd@/init@rm' file or some session \
 `@tt init@rm' file is out of date,\n\
-    use @bf Edit@symbol \256@bf Save Options@rm  to update it.
+    use @bf Edit->@bf Save Options@rm  to update it.
 
 @Ddd@*class_error.dialogTitle: @DDD@: No Class
 @Ddd@*class_error*helpString:	\
 @rm The given class could not be loaded.\n\
-Please check the @GDB@ search path via @bf Edit@symbol \256@bf @GDB@ settings@rm .
+Please check the @GDB@ search path via @bf Edit->@bf @GDB@ settings@rm .
 
 @Ddd@*source_file_error.dialogTitle: @DDD@: No Source
 @Ddd@*source_file_error*helpString:	\
 @rm The given source file could not be loaded.\n\
-Please check the @GDB@ search path via @bf Edit@symbol \256@bf @GDB@ settings@rm .
+Please check the @GDB@ search path via @bf Edit->@bf @GDB@ settings@rm .
 
 @Ddd@*remote_file_error.dialogTitle: @DDD@: No Remote Source
 @Ddd@*remote_file_error*helpString:	\
 @rm The given source file could not be loaded from the remote host.\n\
-Please check the @GDB@ search path via @bf Edit@symbol \256@bf @GDB@ settings@rm .
+Please check the @GDB@ search path via @bf Edit->@bf @GDB@ settings@rm .
 
 @Ddd@*source_file_from_gdb_warning.dialogTitle: @DDD@: Source From Debugger
 @Ddd@*source_file_from_gdb_warning*helpString:	\
@@ -8314,12 +8316,12 @@ Please use an alternate key and tru again.
 @Ddd@*no_source_error.dialogTitle: @DDD@: No Source
 @Ddd@*no_source_error*helpString:	\
 @rm There is no current source text in which to search.\n\
-Please open a program first, using @bf File@symbol \256@bf Open Program@rm .
+Please open a program first, using @bf File->@bf Open Program@rm .
 
 @Ddd@*no_source_edit_error.dialogTitle: @DDD@: No Source
 @Ddd@*no_source_edit_error*helpString:	\
 @rm There is no current source text to edit.\n\
-Please open a program first, using @bf File@symbol \256@bf Open Program@rm .
+Please open a program first, using @bf File->@bf Open Program@rm .
 
 @Ddd@*no_such_line_error.dialogTitle: @DDD@: No such line
 @Ddd@*no_such_line_error*helpString:	\
@@ -8349,7 +8351,7 @@ to access core dumps, source files, or attaching to processes.\n\
 You can ignore this warning and proceed, but @GDB@ may be unable\n\
 to display symbolic values and determine locations.\n\
 \n\
-To open a program, use @bf File@symbol \256@bf Open Program@rm .
+To open a program, use @bf File->@bf Open Program@rm .
 
 
 @Ddd@*print_empty_graph_error.dialogTitle: @DDD@: Nothing to Print
@@ -8389,7 +8391,7 @@ could not be invoked.  The debugged process will\n\
 execute in the @GDB@ console instead.\n\
 \n\
 Please verify the contents of the\n\
-@bf Edit@symbol \256@bf Preferences@symbol \256@bf Helpers@symbol \256@bf Execution Window@rm \n\
+@bf Edit->@bf Preferences->@bf Helpers->@bf Execution Window@rm \n\
 setting and make sure that the given\n\
 terminal program is within your executable path.
 
@@ -8434,7 +8436,7 @@ Please verify whether `@tt ~/.@ddd@/init@rm' is writable and try again.
 @rm The @DDD@ license could not be uncompressed.\n\
 \n\
 Please verify the contents of the\n\
-@bf Edit@symbol \256@bf Preferences@symbol \256@bf Helpers@symbol \256@bf Uncompress@rm \n\
+@bf Edit->@bf Preferences->@bf Helpers->@bf Uncompress@rm \n\
 setting and make sure that the given\n\
 uncompressing program is within your executable path.
 
@@ -8443,7 +8445,7 @@ uncompressing program is within your executable path.
 @rm The @DDD@ news could not be uncompressed.\n\
 \n\
 Please verify the contents of the\n\
-@bf Edit@symbol \256@bf Preferences@symbol \256@bf Helpers@symbol \256@bf Uncompress@rm \n\
+@bf Edit->@bf Preferences->@bf Helpers->@bf Uncompress@rm \n\
 setting and make sure that the given\n\
 uncompressing program is within your executable path.
 
@@ -8452,7 +8454,7 @@ uncompressing program is within your executable path.
 @rm The @DDD@ manual could not be uncompressed.\n\
 \n\
 Please verify the contents of the\n\
-@bf Edit@symbol \256@bf Preferences@symbol \256@bf Helpers@symbol \256@bf Uncompress@rm \n\
+@bf Edit->@bf Preferences->@bf Helpers->@bf Uncompress@rm \n\
 setting and make sure that the given\n\
 uncompressing program is within your executable path.
 
@@ -8492,7 +8494,7 @@ Please verify the range and try again.
 @DDD@ @VERSION@ should no longer be used.\n\
 \n\
 Please upgrade to a recent @DDD@ version.\n\
-For details, see the @bf Help@symbol \256@bf @DDD@ WWW Page@rm .
+For details, see the @bf Help->@bf @DDD@ WWW Page@rm .
 
 @Ddd@*core_missing_warning.dialogTitle: @DDD@: Core Missing
 @Ddd@*core_missing_warning*helpString: \
@@ -8501,7 +8503,7 @@ This means that the current memory contents and execution position\n\
 will be lost when restoring the session.\n\
 \n\
 Please verify the settings in\n\
-@bf Edit@symbol \256@bf Preferences@symbol \256@bf Helpers@symbol \256@bf Get Core File@rm ;\n\
+@bf Edit->@bf Preferences->@bf Helpers->@bf Get Core File@rm ;\n\
 try again without helper if appropriate.\n\
 \n\
 Also be sure that you have not disabled core dumps\n\
@@ -8537,7 +8539,7 @@ Please verify whether the `@tt ~/.@ddd@/sessions/@rm' is writable.
 @Ddd@*too_many_shortcuts_warning*helpString:	\
 @rm @DDD@ has not enough room for all display shortcuts and will\n\
 only display the most recently created shortcuts.\n\
-Please edit the list of display shortcuts, using @bf Display@symbol \256@bf Edit Menu@rm .
+Please edit the list of display shortcuts, using @bf Display->@bf Edit Menu@rm .
 
 @Ddd@*gdb_io_error.dialogTitle: @DDD@: I/O Error
 @Ddd@*gdb_io_error*helpString: \
@@ -8615,25 +8617,25 @@ variable.
 @rm You have not opened any program yet.  @GDB@ needs a debuggee\n\
 to access core dumps, source files, or attaching to processes.\n\
 \n\
-To open a program, use @bf File@symbol \256@bf Open Program@rm .
+To open a program, use @bf File->@bf Open Program@rm .
 
 
 @Ddd@*no_source_and_no_code.helpString: \
 @rm @GDB@ cannot find the source code of your program.\n\
 \n\
 Here are some hints that may help you out:\n\
-@tt \267 @rm Use @bf File@symbol \256@bf Open Source@rm  to select a source file.\n\
+@tt \267 @rm Use @bf File->@bf Open Source@rm  to select a source file.\n\
 @tt \267 @rm If this does not work, your program may lack debugging information.\n\
     Without debugging information, @GDB@ will be unable to locate the source\n\
     code.  To request debugging information, specify the `@tt -g@rm' option\n\
     when you run the compiler.\n\
 @tt \267 @rm You may need to tell @GDB@ where the source code files are.\n\
-    Invoke @bf Edit@symbol \256@bf @GDB@ Settings@rm  and look for appropriate entries.\n\
+    Invoke @bf Edit->@bf @GDB@ Settings@rm  and look for appropriate entries.\n\
     Using GDB, you can also create a local `@tt .gdbinit@rm' file that contains\n\
     `@tt directory @sl path@rm @rm', where @sl path@rm  is the source path.\n\
 @tt \267 @rm Using GDB, you can continue at machine code level \
 by enabling the\n\
-    Machine Code Window.  Use @bf Source@symbol \256@bf Display Machine Code@rm .
+    Machine Code Window.  Use @bf Source->@bf Display Machine Code@rm .
 
 @Ddd@*recording.helpString: \
 @rm @GDB@ is recording commands.\n\
@@ -8644,7 +8646,7 @@ for execution when a breakpoint is reached or for user-defined commands.\n\
 \n\
 @tt \267 @rm To end the recording, click on @bf End@rm  \
 or enter `@tt end@rm' at the @GDB@ prompt.\n\
-@tt \267 @rm To cancel the recording, select @bf Program@symbol \256@bf Interrupt@rm  \
+@tt \267 @rm To cancel the recording, select @bf Program->@bf Interrupt@rm  \
 or press @key Esc@rm .
 
 @Ddd@*busy.helpString: \
@@ -8653,7 +8655,7 @@ or press @key Esc@rm .
 You may\n\
 @tt \267 @rm wish to wait until the @GDB@ prompt appears, or\n\
 @tt \267 @rm interrupt the current debugging command by selecting\n\
-    @bf Program@symbol \256@bf Interrupt@rm  (or typing @key Esc@rm ).
+    @bf Program->@bf Interrupt@rm  (or typing @key Esc@rm ).
 
 @Ddd@*running.helpString: \
 @rm @GDB@ is executing the debugged program.\n\
@@ -8661,21 +8663,21 @@ You may\n\
 You may\n\
 @tt \267 @rm interact with the program until a breakpoint is reached, or\n\
 @tt \267 @rm interrupt program execution by selecting\n\
-    @bf Program@symbol \256@bf Interrupt@rm  (or typing @key Esc@rm ).
+    @bf Program->@bf Interrupt@rm  (or typing @key Esc@rm ).
 
 @Ddd@*program_not_running.helpString: \
 @rm Your program is not running.\n\
 \n\
 You may now choose between the following:\n\
-@tt \267 @rm Start the program, using @bf Program@symbol \256@bf Run@rm . \
+@tt \267 @rm Start the program, using @bf Program->@bf Run@rm . \
 You may wish to \n\
     set some breakpoints beforehand, using @bf Break at ()@rm  and \n\
-    @bf Source@symbol \256@bf Edit Breakpoints@rm .\n\
+    @bf Source->@bf Edit Breakpoints@rm .\n\
     To find specific functions, use @bf Lookup ()@rm .\n\
 @tt \267 @rm If your program is already running outside of @DDD@, you can\n\
-    attach to its running process, using @bf File@symbol \256@bf Attach to Process@rm .\n\
+    attach to its running process, using @bf File->@bf Attach to Process@rm .\n\
 @tt \267 @rm If some previous invocation of your program has failed, and\n\
-    you want to know why, use @bf File@symbol \256@bf Open Core Dump@rm  to open\n\
+    you want to know why, use @bf File->@bf Open Core Dump@rm  to open\n\
     its core dump.
 
 @Ddd@*item_selected.helpString: \
@@ -8697,12 +8699,12 @@ You may wish to \n\
 @tt \267 @rm To view numerical data as a plot, use @bf Plot ()@rm .\n\
 @tt \267 @rm To change the value of the selected display, use @bf Set ()@rm .\n\
 @tt \267 @rm To delete the selected displays, use @bf Delete ()@rm .\n\
-@tt \267 @rm Use @bf Data@symbol \256@bf Edit Displays@rm  for further editing.
+@tt \267 @rm Use @bf Data->@bf Edit Displays@rm  for further editing.
 
 @Ddd@*command_entered.helpString: \
 @rm You have entered some command at the @GDB@ prompt.\n\
 \n\
-@tt \267 @rm To execute the current command, press @key RETURN @symbol \277@rm .\n\
+@tt \267 @rm To execute the current command, press @key RETURN <cr>@rm .\n\
 @tt \267 @rm To complete the current word, use @key TAB@rm .\n\
 @tt \267 @rm To move through the command history, use @key Up@rm  and @key Down@rm .\n\
 @tt \267 @rm To clear the current line, use @key Ctrl+U@rm .\n\
@@ -8713,77 +8715,77 @@ You may wish to \n\
 and there is no source code for the current execution position.\n\
 \n\
 Here are some hints that may help you out:\n\
-@tt \267 @rm Use @bf Status@symbol \256@bf Up@rm  to step out of libraries \
+@tt \267 @rm Use @bf Status->@bf Up@rm  to step out of libraries \
 and to enter your own functions.\n\
-@tt \267 @rm Use @bf File@symbol \256@bf Open Source@rm  to select a source file.\n\
+@tt \267 @rm Use @bf File->@bf Open Source@rm  to select a source file.\n\
 @tt \267 @rm If this does not work, your program may lack debugging information.\n\
     Without debugging information, @GDB@ will be unable to locate the source\n\
     code.  To request debugging information, specify the `@tt -g@rm' option\n\
     when you run the compiler.\n\
 @tt \267 @rm You may need to tell @GDB@ where the source code files are.\n\
-    Invoke @bf Edit@symbol \256@bf @GDB@ Settings@rm  and look for appropriate entries.\n\
+    Invoke @bf Edit->@bf @GDB@ Settings@rm  and look for appropriate entries.\n\
     Using GDB, you can also create a local `@tt .gdbinit@rm' file that contains\n\
     `@tt directory @sl path@rm @rm', where @sl path@rm  is the source path.\n\
 @tt \267 @rm Using GDB, you can continue at machine code level \
 by enabling the\n\
-    Machine Code Window.  Use @bf Source@symbol \256@bf Display Machine Code@rm .
+    Machine Code Window.  Use @bf Source->@bf Display Machine Code@rm .
 
 
 @Ddd@*stopped_at_passed_signal.helpString: \
 @rm Your program @PROGRAM_STATE@.\n\
 \n\
-@tt \267 @rm To find out how you got here, use @bf Status@symbol \256@bf Backtrace@rm .\n\
+@tt \267 @rm To find out how you got here, use @bf Status->@bf Backtrace@rm .\n\
 @tt \267 @rm To examine a variable value, select it first (click on an \
 occurrence).\n\
     Then use @bf Print ()@rm  (simple values) or @bf Display ()@rm  \
 (complex values).\n\
     Press @bs mouse button 3@rm  on the variable name for a shortcut.\n\
 @tt \267 @rm You can display all local variables at once using\n\
-    @bf Data@symbol \256@bf Display Local Variables@rm .\n\
+    @bf Data->@bf Display Local Variables@rm .\n\
 @tt \267 @rm To set and clear further breakpoints, use \
-@bf Source@symbol \256@bf Edit Breakpoints@rm .\n\
+@bf Source->@bf Edit Breakpoints@rm .\n\
     Press @bs mouse button 3@rm  on a location or breakpoint to get a shortcut.\n\
 \n\
 When resuming execution, the @SIGNAL_DESCRIPTION@ signal\n\
 will be passed to the program.\n\
 @tt \267 @rm To continue execution without giving a @SIGNAL@ signal,\n\
-    use @bf Commands@symbol \256@bf Continue Without Signal@rm .\n\
-@tt \267 @rm To see or change the current signal handling, use @bf Status@symbol \256@bf Signals@rm .
+    use @bf Commands->@bf Continue Without Signal@rm .\n\
+@tt \267 @rm To see or change the current signal handling, use @bf Status->@bf Signals@rm .
 
 @Ddd@*stopped_at_ignored_signal.helpString: \
 @rm Your program @PROGRAM_STATE@.\n\
 \n\
-@tt \267 @rm To find out how you got here, use @bf Status@symbol \256@bf Backtrace@rm .\n\
+@tt \267 @rm To find out how you got here, use @bf Status->@bf Backtrace@rm .\n\
 @tt \267 @rm To examine a variable value, select it first (click on an \
 occurrence).\n\
     Then use @bf Print ()@rm  (simple values) or @bf Display ()@rm  \
 (complex values).\n\
     Press @bs mouse button 3@rm  on the variable name for a shortcut.\n\
 @tt \267 @rm You can display all local variables at once using\n\
-    @bf Data@symbol \256@bf Display Local Variables@rm .\n\
+    @bf Data->@bf Display Local Variables@rm .\n\
 @tt \267 @rm To set and clear further breakpoints, use \
-@bf Source@symbol \256@bf Edit Breakpoints@rm .\n\
+@bf Source->@bf Edit Breakpoints@rm .\n\
     Press @bs mouse button 3@rm  on a location or breakpoint to get a shortcut.\n\
 \n\
 When resuming execution, the @SIGNAL_DESCRIPTION@ signal \
 will @sl not@rm  be passed to the program.\n\
 @tt \267 @rm To pass this signal to the program, \
 use the @GDB@ command `@tt signal @SIGNAL@@rm'.\n\
-@tt \267 @rm To see or change the current signal handling, use @bf Status@symbol \256@bf Signals@rm .
+@tt \267 @rm To see or change the current signal handling, use @bf Status->@bf Signals@rm .
 
 @Ddd@*stopped.helpString: \
 @rm Your program @PROGRAM_STATE@.\n\
 \n\
-@tt \267 @rm To find out how you got here, use @bf Status@symbol \256@bf Backtrace@rm .\n\
+@tt \267 @rm To find out how you got here, use @bf Status->@bf Backtrace@rm .\n\
 @tt \267 @rm To examine a variable value, select it first (click on an \
 occurrence).\n\
     Then use @bf Print ()@rm  (simple values) or @bf Display ()@rm  \
 (complex values).\n\
     Press @bs mouse button 3@rm  on the variable name for a shortcut.\n\
 @tt \267 @rm You can display all local variables at once using\n\
-    @bf Data@symbol \256@bf Display Local Variables@rm .\n\
+    @bf Data->@bf Display Local Variables@rm .\n\
 @tt \267 @rm To set and clear further breakpoints, use \
-@bf Source@symbol \256@bf Edit Breakpoints@rm .\n\
+@bf Source->@bf Edit Breakpoints@rm .\n\
     Press @bs mouse button 3@rm  on a location or breakpoint to get a shortcut.\n\
 @tt \267 @rm Use the functions of the @bf Program@rm  menu to resume execution\n\
     and step through your program.
@@ -8799,8 +8801,8 @@ Most normal @DDD@ commands that would query further information\n\
 are disabled in historic mode.  However, you can examine\n\
 the current execution position, or the active displays.\n\
 \n\
-@tt \267 @rm To revert to the current program state, use @bf Edit@symbol \256@bf Redo@rm .\n\
-@tt \267 @rm To view even earlier states of your program, use @bf Edit@symbol \256@bf Undo@rm .
+@tt \267 @rm To revert to the current program state, use @bf Edit->@bf Redo@rm .\n\
+@tt \267 @rm To view even earlier states of your program, use @bf Edit->@bf Undo@rm .
 
 
 !-----------------------------------------------------------------------------
@@ -8839,7 +8841,7 @@ You can get help on all items by pointing at them and pressing F1.\n\
 And don't worry, you can undo most mistakes...
 
 @Ddd@*tip2: \
-@rm Whenever you're stuck, try @bf Help@symbol \256@bf What Now@rm .  This will analyze the\n\
+@rm Whenever you're stuck, try @bf Help->@bf What Now@rm .  This will analyze the\n\
 current @DDD@ state and give you some hints on what to do next.
 
 @Ddd@*tip3: \
@@ -8849,10 +8851,10 @@ with additional options.
 
 @Ddd@*tip4: \
 @rm You can interrupt @GDB@ and the current program by clicking on\n\
-@bf Program@symbol \256@bf Interrupt@rm  or pressing @key Esc@rm .
+@bf Program->@bf Interrupt@rm  or pressing @key Esc@rm .
 
 @Ddd@*tip5: \
-@rm If you made a mistake, try @bf Edit@symbol \256@bf Undo@rm .  This will undo the most\n\
+@rm If you made a mistake, try @bf Edit->@bf Undo@rm .  This will undo the most\n\
 recent debugger command and redisplay the previous program state.
 
 @Ddd@*tip6: \
@@ -8872,7 +8874,7 @@ will toggle more details.
 @Ddd@*tip9: \
 @rm If your program needs special terminal capabilities such as readline\n\
 or curses, let it run in the separate execution window \n\
-(@bf Program@symbol \256@bf Run in Execution Window@rm ).
+(@bf Program->@bf Run in Execution Window@rm ).
 
 
 ! Intermediate tips.
@@ -8881,11 +8883,11 @@ or curses, let it run in the separate execution window \n\
 @rm You can save space in the data window by \n\
 @tt \267 @rm hiding details (@bf Show/Hide@rm ),\n\
 @tt \267 @rm rotating structs (@bf Rotate@rm ), and \n\
-@tt \267 @rm clustering variables (@bf Undisp@symbol \256@bf Cluster@rm ).
+@tt \267 @rm clustering variables (@bf Undisp->@bf Cluster@rm ).
 
 @Ddd@*tip11: \
 @rm If you want to customize the @DDD@ fonts, see\n\
-@bf Edit@symbol \256@bf Preferences@symbol \256@bf Fonts@rm .
+@bf Edit->@bf Preferences->@bf Fonts@rm .
 
 @Ddd@*tip12: \
 @rm To change the text background color, write into `@tt ~/.@ddd@/init@rm':\n\
@@ -8900,21 +8902,21 @@ a filename, hit @key Tab@rm , and voila!  It's completed.
 
 @Ddd@*tip14: \
 @rm You can always recenter the command tool\n\
-by selecting @bf View@symbol \256@bf Command Tool@rm ,\n\
+by selecting @bf View->@bf Command Tool@rm ,\n\
 or by pressing @key Alt+8@rm .
 
 @Ddd@*tip15: \
 @rm To scroll the data display, most users find a @sl panner@rm \n\
 much more convenient than two scrollbars.\n\
-Check out @bf Edit@symbol \256@bf Preferences@symbol \256@bf Startup@symbol \256@bf Data Scrolling@rm .
+Check out @bf Edit->@bf Preferences->@bf Startup->@bf Data Scrolling@rm .
 
 @Ddd@*tip16: \
 @rm To limit the number of array elements in a data display, set\n\
-@bf Edit@symbol \256@bf GDB Settings@symbol \256@bf Limit on array elements to print@rm .
+@bf Edit->@bf GDB Settings->@bf Limit on array elements to print@rm .
 
 @Ddd@*tip17: \
 @rm If @DDD@ cannot find a source, set the @GDB@ source path via \n\
-@bf Edit@symbol \256@bf @GDB@ Settings@rm  or enter \n\
+@bf Edit->@bf @GDB@ Settings@rm  or enter \n\
 `@tt dir sourcedir_1:sourcedir_2:...:sourcedir_n@rm' at the GDB prompt.
 
 @Ddd@*tip18: \
@@ -8923,7 +8925,7 @@ by double-clicking in the breakpoint area.
 
 @Ddd@*tip19: \
 @rm To see the @sl actual@rm  type of a C++ object in GDB, set\n\
-@bf Edit@symbol \256@bf GDB Settings@symbol \256@bf Set printing of object's derived type@rm .
+@bf Edit->@bf GDB Settings->@bf Set printing of object's derived type@rm .
 
 @Ddd@*tip20: \
 @rm To display @sl data@rm  in hexadecimal format, display it and choose\n\
@@ -8932,7 +8934,7 @@ or enter `@tt graph display /x @sl data@rm @rm' at the GDB prompt.
 
 @Ddd@*tip21: \
 @rm To send a signal to your program,\n\
-use @bf Status@symbol \256@bf Signals@symbol \256@bf Send@rm .
+use @bf Status->@bf Signals->@bf Send@rm .
 
 @Ddd@*tip22: \
 @rm To quickly display variable values,\n\
@@ -8940,10 +8942,10 @@ double-click on the variable name.
 
 @Ddd@*tip23: \
 @rm After looking up an item or stepping through the program, you can use\n\
-@bf Edit@symbol \256@bf Undo@rm  and @bf Edit@symbol \256@bf Redo@rm  to return to earlier locations.
+@bf Edit->@bf Undo@rm  and @bf Edit->@bf Redo@rm  to return to earlier locations.
 
 @Ddd@*tip24: \
-@rm You can repeat the last command by hitting @key RETURN @symbol \277@rm .\n\
+@rm You can repeat the last command by hitting @key RETURN <cr>@rm .\n\
 Use @key Ctrl+B@rm  and @key Ctrl+F@rm  to search the command history.
 
 @Ddd@*tip25: \
@@ -8952,12 +8954,12 @@ Just press and hold @bs mouse button 1@rm  on a breakpoint,\n\
 move it to the new position and release @bs mouse button 1@rm  again.
 
 @Ddd@*tip26: \
-@rm To make your program ignore signals, use @bf Status@symbol \256@bf Signals@rm  and\n\
+@rm To make your program ignore signals, use @bf Status->@bf Signals@rm  and\n\
 unset the @bf Pass@rm  button for the appropriate signal.
 
 @Ddd@*tip27: \
 @rm You can save space by disabling toolbar captions.\n\
-See @bf Edit@symbol \256@bf Preferences@symbol \256@bf Startup@symbol \256@bf Toolbar Appearance@rm .
+See @bf Edit->@bf Preferences->@bf Startup->@bf Toolbar Appearance@rm .
 
 @Ddd@*tip28: \
 @rm To quickly edit breakpoint properties, \n\
@@ -8974,7 +8976,7 @@ put the following lines in your `@tt .gdbinit@rm' file:\n\
 
 @Ddd@*tip30: \
 @rm To get rid of these tips of the day, unset\n\
-@bf Edit@symbol \256@bf Preferences@symbol \256@bf Startup@symbol \256@bf Show Tip of the Day@rm .
+@bf Edit->@bf Preferences->@bf Startup->@bf Show Tip of the Day@rm .
 
 @Ddd@*tip31: \
 @rm To redirect stderr from the execution window to the debugger console,\n\
@@ -8990,7 +8992,7 @@ display and click on @bf Undisp@rm .  Confirming with @bf Apply to All@rm \n\
 suppresses the member in other displays, too.
 
 @Ddd@*tip34: \
-@rm To display data in a smaller font, try @bf Data@symbol \256@bf Themes@symbol \256@bf Small Values@rm .\n\
+@rm To display data in a smaller font, try @bf Data->@bf Themes->@bf Small Values@rm .\n\
 The pattern describes the expressions you want to see in smaller font:\n\
 `@tt *@rm' matches all expressions.
 
@@ -9010,7 +9012,7 @@ arbitrary collections of data displays.
 
 @Ddd@*tip38: \
 @rm Do you want to stop this debugging session and resume later?\n\
-Use @bf File@symbol \256@bf Save Session@rm !
+Use @bf File->@bf Save Session@rm !
 
 @Ddd@*tip39: \
 @rm You can interact with @DDD@ even while the debuggee is executing:\n\
@@ -9020,7 +9022,7 @@ This works whenever program execution is initiated by @bf Run@rm  or @bf Cont@rm
 @Ddd@*tip40: \
 @rm To debug a child process, put a call to `@tt sleep@rm' in the child right\n\
 after the `@tt fork@rm' call.  Run the program and attach to the child process\n\
-using @bf File@symbol \256@bf Attach to Process@rm .
+using @bf File->@bf Attach to Process@rm .
 
 @Ddd@*tip41: \
 @rm If your program prints a lot of text on standard error, try\n\
@@ -9033,7 +9035,7 @@ invoking @DDD@ using `@tt --debugger '@sl NAME@rm  2> @sl FILE@rm '@rm'.
 
 @Ddd@*tip43: \
 @rm Using GDB, you can define your own canned sequences of commands.\n\
-Try @bf Commands@symbol \256@bf Define Command@rm .
+Try @bf Commands->@bf Define Command@rm .
 
 @Ddd@*tip44: \
 @rm To use GDB with Solaris CC, compile with `@tt -xs@rm'.\n\
@@ -9046,16 +9048,16 @@ See the G77 documentation for details.
 
 @Ddd@*tip46: \
 @rm Double-clicking on a function call will lead you to the definition of\n\
-the function.  Use @bf Edit@symbol \256@bf Undo@rm  to return to the function call.
+the function.  Use @bf Edit->@bf Undo@rm  to return to the function call.
 
 @Ddd@*tip47: \
 @rm Disabled breakpoints can be used as bookmarks.\n\
-Use @bf Source@symbol \256@bf Edit Breakpoints@rm  to list all breakpoints;\n\
+Use @bf Source->@bf Edit Breakpoints@rm  to list all breakpoints;\n\
 then, click on @bf Lookup@rm  to jump to a breakpoint location.
 
 @Ddd@*tip48: \
 @rm You can assign user-defined buttons to frequently used commands.\n\
-Try @bf Commands@symbol \256@bf Edit Buttons@rm .
+Try @bf Commands->@bf Edit Buttons@rm .
 
 @Ddd@*tip49: \
 @rm In the Breakpoint and Display Editors,\n\
@@ -9064,13 +9066,13 @@ This allows you to select non-contiguous ranges of items.
 
 @Ddd@*tip50: \
 @rm To change the properties of multiple breakpoints at once,\n\
-select them in the breakpoint editor (@bf Source@symbol \256@bf Edit Breakpoints@rm )\n\
+select them in the breakpoint editor (@bf Source->@bf Edit Breakpoints@rm )\n\
 and click on @bf Properties@rm .
 
 @Ddd@*tip51: \
 @rm Even while in the source window, \n\
 you can enter and edit GDB commands:\n\
-Just type the command and press @key RETURN @symbol \277@rm .
+Just type the command and press @key RETURN <cr>@rm .
 
 @Ddd@*tip52: \
 @rm You can record commands to be executed when a breakpoint is hit.\n\

@@ -125,8 +125,6 @@ static string userfont(const AppData& ad, DDDFont font)
 	return ad.fixed_width_font;
     case DataDDDFont:
 	return ad.data_font;
-    case SymbolDDDFont:
-	return "";
     }
 
     assert(0);
@@ -147,8 +145,6 @@ static string font_type(DDDFont font)
  	return "fixed width font";
     case DataDDDFont:
  	return "data font";
-    case SymbolDDDFont:
- 	return "symbol font";
     }
 
     assert(0);
@@ -168,8 +164,6 @@ static string fallbackfont(DDDFont font)
     case FixedWidthDDDFont:
     case DataDDDFont:
 	return "-misc-liberation mono-bold-r-normal--0-0-0-0-m-0-iso8859-1";
-    case SymbolDDDFont:
- 	return "-*-symbol-*-*-*-*-*-120-*-*-*-*-adobe-*";
     }
 
     assert(0);
@@ -190,7 +184,6 @@ static string component(const AppData& ad, DDDFont font, FontComponent n)
 	    break;
 
 	case VariableWidthDDDFont:
-	case SymbolDDDFont:
 	    sz = ad.variable_width_font_size;
 	    break;
 
@@ -328,8 +321,7 @@ static void setup_font_db(const AppData& ad, XrmDatabase& db)
 	font_defs[CHARSET_BF] + "=" + CHARSET_BF + "," +
 	font_defs[CHARSET_BS] + "=" + CHARSET_BS + "," +
 	font_defs[CHARSET_LOGO] + "=" + CHARSET_LOGO + "," +
-	font_defs[CHARSET_LLOGO] + "=" + CHARSET_LLOGO + "," +
-	font_defs[CHARSET_SYMBOL] + "=" + CHARSET_SYMBOL;
+	font_defs[CHARSET_LLOGO] + "=" + CHARSET_LLOGO + ",";
 
 
     string default_fontlist = 
@@ -455,8 +447,6 @@ static void setup_x_fonts(const AppData& ad, XrmDatabase& db)
 
     define_font(ad, CHARSET_KEY, VariableWidthDDDFont,
 		override(Weight, "bold"));
-
-    define_font(ad, CHARSET_SYMBOL, SymbolDDDFont);
 
     title(ad, "Font resources");
 

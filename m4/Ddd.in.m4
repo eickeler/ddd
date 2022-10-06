@@ -5527,7 +5527,7 @@ Ddd*print*executive.labelString:	      Executive (7ONE_HALF" TIMES 10")
 Ddd*print*custom.labelString:		      Other...
 
 Ddd*print*helpString: \
-@rm You can print on a POSTSCRIPT printer or print to a file.\n\
+@rm You can print on a POSTSCRIPT@small [\[TM\]] @rm printer or print to a file.\n\
 Enter the print command or the file name in the appropriate fields.\n\
 \n\
 Files can be created in the following formats:\n\
@@ -5540,7 +5540,9 @@ Select LBL(Print Plots) to print the current plots.\n\
 To print selected items only, select LBL(Selected Only).\n\
 For POSTSCRIPT format only, you can also specify orientation and paper size.\n\
 \n\
-To print, click on LBL(Print).
+To print, click on LBL(Print).\n\
+\n\n\
+PostScript is a trademark of Adobe Inc.
 
 Ddd*paper_size_dialog.dialogTitle:  		DDD: Paper Size
 Ddd*paper_size_dialog.selectionLabelString: 	Paper size

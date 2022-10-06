@@ -45,9 +45,8 @@ dnl
 dnl DASH makes a dash.
 define([DASH], [@tt -@rm ])dnl
 dnl
-dnl SEP is the postscript arrow symbol.
-define([SEP], [@symbol \256])dnl
-dnl define([SEP], [@rm  | @bf ])dnl
+dnl SEP is the arrow symbol.
+define([SEP], [->])dnl
 dnl
 dnl DESC(ITEM, DESC) issues `* ITEM - DESC.', with ITEM in bold.
 define([DESC], [ifelse([$1], , [[DESC]], [@tt \267 LBL($1) DASH $2.])])dnl
@@ -132,11 +131,11 @@ dnl LBL_FIND_,,, are the labels used for the Find buttons
 define([LBL_FIND_BACKWARD], [@charset Find@small<< @charset()@rm ])dnl
 define([LBL_FIND_FORWARD],  [@charset Find@small>> @charset()@rm ])dnl
 dnl
-dnl POSTSCRIPT includes a (TM) symbol
-define([POSTSCRIPT], [PostScript@symbol \344 @rm ])dnl
+dnl POSTSCRIPT 
+define([POSTSCRIPT], [PostScript])dnl
 dnl
 dnl KEY_RETURN is the symbol of the return key
-define([KEY_RETURN], [KEY(RETURN @symbol \277)])dnl
+define([KEY_RETURN], [KEY(RETURN <cr>)])dnl
 dnl
 dnl HELP_KEY is the name of the help key
 define([HELP_KEY], [F1])dnl

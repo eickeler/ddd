@@ -37,7 +37,6 @@
 enum DDDFont { DefaultDDDFont       = 0,
 	       VariableWidthDDDFont = 1,
 	       FixedWidthDDDFont    = 2,
-	       SymbolDDDFont        = 3,
                DataDDDFont          = 4 };
 
 // Setup font specs.  DB is the resource database in use.
