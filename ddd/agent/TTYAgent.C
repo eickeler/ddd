@@ -476,7 +476,11 @@ void TTYAgent::open_master()
     // ("UNIX98"). Based on SVR4, and thus possibly streams based.
     master = -1;
 
-#if HAVE_GETPT
+#if HAVE_POSIX_OPENPT
+    master = posix_openpt(O_RDWR|O_NOCTTY);
+    if (master < 0)
+	_raiseIOMsg("posix_openpt");
+#elif HAVE_GETPT
     // On systems with GNU libc 2.1, getpt() returns a new file
     // descriptor for the next available master pseudo-terminal.  This
     // function is a GNU extension.

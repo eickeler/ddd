@@ -187,6 +187,7 @@ void translate_command(string& command)
     case DBG:  // I think this is right.
     case GDB:
     case MAKE:
+    default:
 	break;
     }
 

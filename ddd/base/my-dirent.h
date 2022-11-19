@@ -26,7 +26,7 @@
 // or send a mail to the DDD developers <ddd@gnu.org>.
 
 #ifndef _DDD_my_dirent_h
-#define _DDD_my_Dirent_h
+#define _DDD_my_dirent_h
 
 #include "config.h"
 #include <sys/types.h>

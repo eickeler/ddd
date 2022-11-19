@@ -55,6 +55,7 @@ char show_rcsid[] =
 #include <fstream>
 #include <string.h>
 #include <errno.h>
+#include <unistd.h>
 
 #include "x11/Xpm.h"
 #if HAVE_ATHENA

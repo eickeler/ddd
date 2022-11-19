@@ -82,7 +82,7 @@ char comm_manager_rcsid[] =
 
 #include <ctype.h>
 #include <fstream>
-
+#include <unistd.h>
 
 //-----------------------------------------------------------------------------
 // Data
