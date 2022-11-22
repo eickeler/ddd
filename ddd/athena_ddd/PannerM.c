@@ -27,6 +27,7 @@ in this Software without prior written authorization from The Open Group.
  */
 
 /* $XFree86: xc/lib/Xaw/Panner.c,v 3.8 2001/07/25 15:04:49 dawes Exp $ */
+#if HAVE_ATHENA
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -1058,4 +1059,6 @@ void CallActionPage(Widget gw, XEvent *event, String *params, Cardinal *num_para
 {
     ActionPage(gw, event, params, num_params);
 }
+
+#endif
 

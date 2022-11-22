@@ -58,8 +58,11 @@ char GraphEdit_rcsid[] =
 #include "GraphNPA.h"
 #include "base/casts.h"
 #include "PannedGE.h"
+
+#if HAVE_ATHENA
 #include "AppData.h"
 #include "athena_ddd/PannerM.h"
+#endif
 
 #if XmVersion < 1002
 // Motif 1.1 backwards compatibility
