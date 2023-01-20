@@ -57,7 +57,7 @@
 @set EDITION First
 
 @c !!set DDD manual's revision date
-@set DATE 8 Feb, 2009
+@set DATE 20 Jan, 2023
 
 @c Index stuff
 @c Labels
@@ -2396,6 +2396,9 @@ Run @XDB{} as inferior debugger.
 Giving this option is equivalent to setting the @DDD{}
 @samp{debugger} resource to @samp{xdb}.  @xref{Customizing Debugger
 Interaction}, for details.
+
+@item --
+Stops the processing of the options and passes all options after this option to the inferior debugger.
 @end table
 
 
@@ -2462,6 +2465,9 @@ debugger.  Single dashes @option{-} instead of double dashes @option{--} may
 also be used.
 
 @table @option
+@item --args @var{execfile} @var{args} .. 
+Pass any arguments after the executable file to the debugged program. Options after this option are not processed by DDD. 
+
 @item -b @var{baudrate}
 Set serial port baud rate used for remote debugging.
 
@@ -2675,8 +2681,8 @@ from the on-line documentation at
 @node GNU Make Options
 @subsubsection GNU Make Options
 
-If you have the proper @code{make} installed (for now it is probably
-called @code{remake}), the option needed to specify debugging support
+If you have the proper @code{remake} installed (GNU Make with debugging 
+support), the option needed to specify debugging support
 is @option{--debugger}. You can pick up a debugger-enabled version
 from @uref{http://bashdb.sourceforge.net/remake}. Other options can be
 found from the on-line documentation at
