@@ -52,11 +52,11 @@ for ARG in $*; do
   esac
 done 
 
-UBUNTUPKGS=( \
+DEBIANPKGS=( \
   "binutils" "g++" "gcc" "make" "libmotif-dev" "libx11-dev" "libxpm-dev" \
   "libxt-dev" "libxaw7-dev" "libxpm-dev" "libncurses-dev" "gdb" "fonts-liberation" \
   )
-UBUNTUDEVPKGS=( \
+DEBIANDEVPKGS=( \
   "automake" "autoconf" "libtool" "bison" "flex" "texinfo" "netpbm" \
   "texlive-font-utils" "texlive-latex-base" \
   )
@@ -68,13 +68,14 @@ FEDORAPKGS=( \
   "netpbm-progs" \
   )
 FEDORADEVPKGS=( \
-  "automake" "autoconf" "libtool" "bison" "flex" "texinfo" "netpbm" \
+  "automake" "autoconf" "libtool" "bison" "flex" "texinfo" "netpbm" "transfig" \
+  "ImageMagick" "texinfo-tex" \
   )
 
 NEEDED=""
 
-if grep Ubuntu /etc/os-release > /dev/null; then
-  DISTRO="UBUNTU"
+if grep -E "Ubuntu|Raspbian" /etc/os-release > /dev/null; then
+  DISTRO="DEBIAN"
   INSTALLED=$(dpkg -l | cut -d ' ' -f 3 | cut -d ':' -f 1)
   INSTALLED=" $INSTALLED "
 elif grep Fedora /etc/redhat-release > /dev/null; then
@@ -89,14 +90,14 @@ if [ "$DISTRO" = "UNKNOWN" ]; then
   exit 1
 fi
 
-if [ "$DISTRO" = "UBUNTU" ]; then
+if [ "$DISTRO" = "DEBIAN" ]; then
   echo "Checking pre-req's for $DISTRO distro"
   echo ""
 
   if [ $MAINTAINER = 1 ]; then
-    PKGS=( ${UBUNTUPKGS[*]} ${UBUNTUDEVPKGS[*]} )
+    PKGS=( ${DEBIANPKGS[*]} ${DEBIANDEVPKGS[*]} )
   else
-    PKGS=( ${UBUNTUPKGS[*]} )
+    PKGS=( ${DEBIANPKGS[*]} )
   fi
   
   for PKG in ${PKGS[@]}
