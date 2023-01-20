@@ -61,35 +61,6 @@ is a potential bug.  Find out what's going on and let us know; use GNU
 make as a workaround.)
 
 
-Configuring DDD from the repository
-===================================
-
-If you have downloaded a tarball of DDD sources, skip this section.
-
-You will need to install the Subversion source management system
-if it is not already installed on your system.
-
-DDD sources can be obtained from the FSF GNU 
-https://savannah.gnu.org/svn/?group=ddd:
-
-Download the latest sources:
-  $ svn co svn://svn.savannah.gnu.org/ddd/trunk ddd
-If you are a project member, you can download using the following:
-  $ svn co svn+ssh://<membername>@svn.savannah.gnu.org/ddd/trunk ddd
-Configure for building DDD:
-  $ cd ddd
-  $ autoreconf -ifv
-  $ cd ..
-  $ mkdir build
-  $ cd build
-
-Configure DDD:
-
-  $ ../ddd/configure 
-
-To build DDD, continue with the section titled "Make DDD" below.
-
-
 Configure DDD from tarball
 ==========================
 
@@ -114,6 +85,45 @@ Install these and re-run configure until it issues the following:
 
   configuration is done.  Type `make' to make DDD.
 
+To build DDD, continue with the section titled "Make DDD" below.
+
+
+Configuring DDD from the repository
+===================================
+
+If you have downloaded a tarball of DDD sources, skip this section.
+
+To download DDD sources from the Savannah repository, you will
+need to install the Subversion source management system if it is 
+not already installed on your system.
+
+DDD sources can be obtained from the FSF GNU Savannah website:
+https://savannah.gnu.org/svn/?group=ddd.
+We recommend that you do not download the entire DDD repository.  
+It is more than 1.1Gb, including all branches and tags.
+
+You may download a specific release of DDD or the top of the 
+development tree.  To download a release, including latest updates,
+use "branches/<release>" for <module> in the following commands.  If 
+you want to download the top of the development tree, use "trunk"
+for <module> in the following commands.  
+
+The latest release of DDD is "DDD_3_4".  Note that the top of the
+development tree may contain changes which have not been completely
+tested. 
+
+Download the latest sources:
+  $ svn co svn://svn.savannah.gnu.org/ddd/<module> ddd
+Configure for building DDD:
+  $ cd ddd
+  $ autoreconf -ifv
+  $ cd ..
+  $ mkdir build
+  $ cd build
+
+Configure DDD:
+
+  $ ../ddd/configure 
 
 Make DDD and Install
 ====================
