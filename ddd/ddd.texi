@@ -3580,7 +3580,7 @@ Default is @code{10}.
 
 @defvr Resource runInterruptDelay (class InterruptDelay)
 The time (in ms) to wait before automatically interrupting a @samp{run}
-command.  @DDD{} cannot interrupt a @samp{cont} command immediately,
+command.  @DDD{} cannot interrupt a @samp{run} command immediately,
 because this may disturb process creation.  Default is @code{2000}.
 @end defvr
 

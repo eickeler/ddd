@@ -385,9 +385,6 @@ static void setup_theme_manager();
 // Set `Settings' title
 static void set_settings_title(Widget w);
 
-// Set Cut/Copy/Paste bindings for MENU to STYLE
-static void set_cut_copy_paste_bindings(MMDesc *menu, BindingStyle style);
-
 // Set Select All bindings for MENU to STYLE
 static void set_select_all_bindings(MMDesc *menu, BindingStyle style);
 
@@ -4266,10 +4263,6 @@ void update_options()
     set_toggle(cut_copy_paste_kde_w,   cut_copy_paste_style == KDEBindings);
     set_toggle(cut_copy_paste_motif_w, cut_copy_paste_style == MotifBindings);
 
-    set_cut_copy_paste_bindings(command_edit_menu, cut_copy_paste_style);
-    set_cut_copy_paste_bindings(source_edit_menu,  cut_copy_paste_style);
-    set_cut_copy_paste_bindings(data_edit_menu,    cut_copy_paste_style);
-
     BindingStyle select_all_style = app_data.select_all_bindings;
     set_toggle(select_all_kde_w,   select_all_style == KDEBindings);
     set_toggle(select_all_motif_w, select_all_style == MotifBindings);
@@ -6349,63 +6342,6 @@ static void gdbDeleteSelectionCB(Widget w, XtPointer client_data,
 
     if (success)
 	gdbUnselectAllCB(w, client_data, call_data);
-}
-
-// Update cut/copy/paste bindings
-static void set_cut_copy_paste_bindings(MMDesc *menu, BindingStyle style)
-{
-    if (menu == 0 || menu[0].widget == 0)
-	return;
-
-#ifdef LESSTIF_VERSION
-    // This only works in Lesstif.
-    switch (style)
-    {
-    case KDEBindings:
-    {
-	MString cut("Ctrl+X");
-	MString copy("Ctrl+C");
-	MString paste("Ctrl+V");
-
-	XtVaSetValues(menu[EditItems::Cut].widget,
-		      XmNaccelerator, "~Shift Ctrl<Key>X",
-		      XmNacceleratorText, cut.xmstring(),
-		      XtPointer(0));
-	XtVaSetValues(menu[EditItems::Copy].widget,
-		      XmNaccelerator, "~Shift Ctrl<Key>C",
-		      XmNacceleratorText, copy.xmstring(),
-		      XtPointer(0));
-	XtVaSetValues(menu[EditItems::Paste].widget,
-		      XmNaccelerator, "~Shift Ctrl<Key>V",
-		      XmNacceleratorText, paste.xmstring(),
-		      XtPointer(0));
-	break;
-    }
-
-    case MotifBindings:
-    {
-	MString cut("Shift+Del");
-	MString copy("Ctrl+Ins");
-	MString paste("Shift+Ins");
-
-	XtVaSetValues(menu[EditItems::Cut].widget,
-		      XmNaccelerator, "~Ctrl Shift<Key>Delete",
-		      XmNacceleratorText, cut.xmstring(),
-		      XtPointer(0));
-	XtVaSetValues(menu[EditItems::Copy].widget,
-		      XmNaccelerator, "~Shift Ctrl<Key>Insert",
-		      XmNacceleratorText, copy.xmstring(),
-		      XtPointer(0));
-	XtVaSetValues(menu[EditItems::Paste].widget,
-		      XmNaccelerator, "~Ctrl Shift<Key>Insert",
-		      XmNacceleratorText, paste.xmstring(),
-		      XtPointer(0));
-	break;
-    }
-    }
-#else
-    (void) style;
-#endif
 }
 
 static void setup_cut_copy_paste_bindings(XrmDatabase db)

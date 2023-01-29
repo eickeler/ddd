@@ -137,7 +137,7 @@ static XmLabelHackClassRec xmLabelHackClassRec =
 	0,			      // syn_resources
 	0,                            // num_syn_resources
 	0                             // extension
-#if defined(__sgi) && !defined(LesstifVersion)
+#if defined(__sgi)
 	// Paul Sydney <sydney@ulua.mhpcc.af.mil> reports that OSF/Motif
 	// on an SGI Indy running IRIX 6.5 has an extra
 	// `_SG_vendorExtension' field.  If this is not initialized
@@ -150,7 +150,7 @@ static XmLabelHackClassRec xmLabelHackClassRec =
 	XmInheritMenuProc,            // menuProcs
 	XtInheritTranslations,        // translations
 	0                             // extension
-#if defined(__sgi) && !defined(LesstifVersion)
+#if defined(__sgi)
 	, 0
 #endif
     },
@@ -230,10 +230,6 @@ static Boolean set_values(Widget old, Widget, Widget _new,
     return False;		// No need to redisplay
 }
 
-#if defined(LesstifVersion)
-static void noResize(Widget) {}
-#endif
-
 static GC _topShadowGC(XmLabelWidget _label)
 {
     XGCValues gcValues;
@@ -308,14 +304,6 @@ extern "C" {
 	    (*oldLabelWidgetExposeProc)(_w, _event, _region);
 	else
 	{
-#if defined(LesstifVersion)
-	    // LessTif invokes resize() when exposing the widget,
-	    // creating a new insensitive GC.  Inhibit this.
-	    XtWidgetProc oldResizeProc = XtClass(_w)->core_class.resize;
-	    XtClass(_w)->core_class.resize = noResize;
-	    oldResizeProc(_w);
-#endif
-
 	    insensitiveGC = LABEL(label).insensitive_GC;
 
 	    LABEL(label).TextRect.x += 1;
@@ -341,10 +329,6 @@ extern "C" {
 	    XtReleaseGC(_w, LABEL(label).insensitive_GC);
 
 	    LABEL(label).insensitive_GC = insensitiveGC;
-
-#if defined(LesstifVersion)
-	    XtClass(_w)->core_class.resize = oldResizeProc;
-#endif
 	}
     }
 }
@@ -428,14 +412,6 @@ extern "C" {
 	    (*oldLabelGadgetExposeProc)(_w, _event, _region);
 	else
 	{
-#if defined(LesstifVersion)
-	    // LessTif invokes resize() when exposing the widget,
-	    // creating a new insensitive GC.  Inhibit this.
-	    XtWidgetProc oldResizeProc = XtClass(_w)->core_class.resize;
-	    XtClass(_w)->core_class.resize = noResize;
-	    oldResizeProc(_w);
-#endif
-
 	    insensitiveGC = LABEL(label).insensitive_GC;
 
 	    LABEL(label).TextRect.x += 1;
@@ -461,10 +437,6 @@ extern "C" {
 	    XtReleaseGC(_w, LABEL(label).insensitive_GC);
 
 	    LABEL(label).insensitive_GC = insensitiveGC;
-
-#if defined(LesstifVersion)
-	    XtClass(_w)->core_class.resize = oldResizeProc;
-#endif
 	}
     }
 }
