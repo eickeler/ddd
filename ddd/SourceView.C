@@ -2008,10 +2008,10 @@ String SourceView::read_local(const string& file_name, long& length,
     if ((fd = open(file_name.chars(), O_RDONLY)) < 0)
     {
 	delay.outcome = strerror(errno);
-	if (!silent)
-	    post_file_error(file_name, 
-			    file_name + ": " + delay.outcome, 
-			    "source_file_error", source_text_w);
+	//if (!silent)
+	//    post_file_error(file_name, 
+	//		    file_name + ": " + delay.outcome, 
+	//		    "source_file_error", source_text_w);
         return 0;
     }
 
