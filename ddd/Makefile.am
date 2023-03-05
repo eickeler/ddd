@@ -1277,18 +1277,8 @@ $(srcdir)/gpl.texinfo: $(texidir)/gpl.texinfo
 $(srcdir)/gfdl.texinfo: $(texidir)/gfdl.texinfo
 	$(RM) $@; cp $(texidir)/gfdl.texinfo $@
 
-ddd.dvi: $(PDF_IMAGES) $(ddd_TEXINFOS)
-
-ddd-themes.dvi: $(ddd_themes_TEXINFOS)
-
-
-# The DDD manual in PostScript format, including all pictures.
-
 docdir = $(srcdir)/../doc
 builddocdir = $(top_builddir)/doc
-
-.PHONY: ps
-ps: $(builddocdir)/ddd.ps $(builddocdir)/ddd-themes.ps
 
 # The DDD manual in PDF format, including all pictures.
 
@@ -1405,16 +1395,6 @@ GSOPT = -q -sDEVICE=pdfwrite -dCompatibilityLevel=1.4
 	@-test -d $(buildpicdir) || mkdir $(buildpicdir)
 	@-test -f texinfo.tex || $(LN_S) $(texidir)/texinfo.tex .
 	$(TEXI2PDF) -I $(srcdir) -I $(texidir) $<
-
-.texi.dvi:
-	@-test -d $(buildpicdir) || mkdir $(buildpicdir)
-	@-test -f texinfo.tex || $(LN_S) $(texidir)/texinfo.tex .
-	$(TEXI2DVI) -I $(srcdir) -I $(texidir) $<
-
-.pdf.ps:
-	test -d $(docdir) || mkdir $(docdir)
-	pdf2ps $< $@
-
 
 # PostScript pictures in the DDD manual.
 # All of these are generated from FIG and XPM files.
@@ -1611,7 +1591,6 @@ PROG_STUFF = $(LEXTOCXX).flex $(LEXTOCXX).sun \
 DIST_STUFF = $(srcdir)/header.ps $(srcdir)/trailer.ps \
 	     $(builddocdir)/ddd.pdf \
 	     $(builddocdir)/ddd-themes.pdf \
-	     $(builddocdir)/ddd-paper.ps \
 	     $(htmldir)/ddd.html $(srcdir)/ad2c.sed \
 	     style.css $(srcdir)/fix-html.sed \
 	     $(srcdir)/unumlaut.sed ddd.desktop
@@ -1629,9 +1608,9 @@ DISTCLEANFILES = build.h host.h root.h ../config.cache \
 
 # `make mostlyclean' should also remove these temporary Texinfo files.
 MOSTLYCLEANFILES = ddd.au ddd.cm ddd.cms ddd.en ddd.fl ddd.fls ddd.lb ddd.lbs \
-	ddd.tmp ddd.html ddd.pdf ddd.ps \
+	ddd.tmp ddd.html ddd.pdf \
 	ddd-themes.au ddd-themes.fl ddd-themes.fls \
-	ddd-themes.tmp ddd-themes.html ddd-themes.pdf ddd-themes.ps
+	ddd-themes.tmp ddd-themes.html ddd-themes.pdf
 
 # Have `make maintainer-clean' remove _all_ derived files.
 MAINTAINERCLEANFILES = Ddd.in ddd.vsl.h ddd.info.txt.gz gfdl.texinfo \
