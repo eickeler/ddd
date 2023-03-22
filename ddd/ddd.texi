@@ -194,8 +194,8 @@ GERMANY
 @noindent
 Distributed by @*
 Free Software Foundation, Inc. @*
-59 Temple Place -- Suite 330 @*
-Boston, MA 02111-1307 @*
+51 Franklin Street, Fifth Floor @*
+Boston, MA 02110-1335 @*
 USA
 @sp 1
 
@@ -890,16 +890,6 @@ pre-formatted info files; you can also download them from @*
 @uref{http://www.gnu.org/software/ddd/, the @DDD{} @WWW{} page}.
 
 @item
-@cindex PostScript manual
-The @emph{PostScript} format is used for printing on paper; it comes
-with pictures as well.  
-
-The @DDD{} source distribution
-@file{@value{ddd}-@value{VERSION}.tar.gz} contains this manual as
-pre-formatted PostScript file; you can also download it from @*
-@uref{http://www.gnu.org/software/ddd/, the @DDD{} @WWW{} page}.
-
-@item
 @cindex PDF manual
 The @emph{PDF} format is used for printing on paper as well as for
 online browsing; it comes with pictures as well.
@@ -1022,30 +1012,19 @@ just copy it.
 @node Getting @DDD{}
 @unnumberedsec Getting @value{DDD}
 
-If you have access to the Internet, you can get the latest version of
+You can get the latest version of
 @DDD{} from the anonymous @FTP{} server @samp{ftp.gnu.org} in the
-directory @file{/gnu/ddd}.  This should contain the following files:
+directory @file{/gnu/ddd}.  
+This server is also available by directing your web browser to the same address.
+This should contain the following files:
 
 @table @file
 @item @file{@value{ddd}-@var{version}.tar.gz}
 @flindex ddd-@var{version}.tar.gz
 The @DDD{} source distribution.  This should be all you need.
-
-@item @file{@value{ddd}-@var{version}-html-manual.tar.gz}
-@flindex ddd-@var{version}-html-manual.tar.gz
-The @DDD{} manual in HTML format.  You need this only if you want to 
-install a local copy of the @DDD{} manual in HTML format.
-
-@item @file{@value{ddd}-@var{version}-pics.tar.gz}
-@flindex ddd-@var{version}-pics.tar.gz
-Sources of images included in the @DDD{} manual.  You need this
-only if you want to recreate the @DDD{} manual.
+The source distribution also contains the @DDD{} manual and the @DDD() Themes 
+manuals in both PDF and HTML formats.
 @end table
-
-@DDD{} can also be found at numerous other archive sites around the
-world; check the file @file{ANNOUNCE} in a @DDD{} distribution for
-the latest known list.
-
 
 @node Contributors
 @unnumberedsec Contributors to @value{DDD}
@@ -1146,6 +1125,9 @@ to Daniel Schepler.
 @item Feb, 2009
 @DDD{} 3.3.12: First mainstream release to include improved support
 for Python, Bash and Make.
+
+@item March, 2023
+@DDD() 3.4.0:  Update host system support; bug fixes.
 @end table
 
 
