@@ -1603,11 +1603,12 @@ DISTCLEANFILES = build.h host.h root.h ../config.cache \
 	$(top_builddir)/ddd/stamp-h $(man_MANS) \
 	version.h Ddd.ad.h
 
-# `make mostlyclean' should also remove these temporary Texinfo files.
-MOSTLYCLEANFILES = ddd.au ddd.cm ddd.cms ddd.en ddd.fl ddd.fls ddd.lb ddd.lbs \
-	ddd.tmp ddd.html ddd.pdf \
+# `make clean' should also remove these temporary Texinfo files.
+CLEANFILES = ddd.au ddd.cm ddd.cms ddd.en ddd.fl ddd.fls ddd.lb ddd.lbs \
+	ddd.tmp ddd.html ../doc/html/ddd.html ddd.pdf ../doc/ddd.pdf \
 	ddd-themes.au ddd-themes.fl ddd-themes.fls \
-	ddd-themes.tmp ddd-themes.html ddd-themes.pdf
+	ddd-themes.tmp ddd-themes.html ../doc/html/ddd-themes.html \
+	ddd-themes.pdf ../doc/ddd-themes.pdf
 
 # Have `make maintainer-clean' remove _all_ derived files.
 MAINTAINERCLEANFILES = Ddd.in ddd.vsl.h ddd.info.txt.gz gfdl.texinfo \
