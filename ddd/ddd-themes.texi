@@ -171,8 +171,7 @@ Send bug reports to @email{bug-ddd@@gnu.org}. @*
 
 @vskip 0pt plus 1filll
 @noindent
-Copyright @copyright{} 2023 Michael J. Eager @email{eager@@eagercon.com} @*
-Stefan Eickeler @email{stefan.eickeler@@iais.fraunhofer.de}.
+Copyright @copyright{} 2023 Michael J. Eager and Stefan Eickeler.
 @sp 1
 
 @noindent
