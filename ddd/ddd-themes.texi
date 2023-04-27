@@ -253,7 +253,7 @@ lists all the lower level nodes in the document.
 @group
 @noindent
 Copyright @copyright{} 2023 Michael J. Eager and
-Stefan Eickeler.
+Stefan Eickeler @*
 
 @noindent
 Copyright @copyright{} 2001 Universität Passau @*
