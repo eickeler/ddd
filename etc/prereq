@@ -39,7 +39,7 @@ usage()
 
 for ARG in $*; do
   case "$ARG" in 
-    -maint | -maintainer)
+    -maint | --maint | -maintainer)
 	MAINTAINER=1
 	;;
     -h | -help | --help)
@@ -74,12 +74,28 @@ FEDORADEVPKGS=( \
   "ImageMagick" "texinfo-tex" \
   )
 
+SUSEPKGS=( \
+  "binutils" "gcc-c++" "gcc" "make" "motif-devel" "libX11-devel" "libXpm-devel" \
+  "libXaw-devel" "libXt-devel" "ncurses-devel" "gdb" "liberation-fonts" \
+  "netpbm" \
+  )
+SUSEDEVPKGS=( \
+  "automake" "autoconf" "libtool" "bison" "flex" "texinfo" "netpbm" "transfig" \
+  "ImageMagick" "texinfo" "texlive-cm-lgc" \
+  )
+
 NEEDED=""
 
 if grep -E "Ubuntu|Raspbian" /etc/os-release > /dev/null; then
   DISTRO="DEBIAN"
   INSTALLED=$(dpkg -l | cut -d ' ' -f 3 | cut -d ':' -f 1)
   INSTALLED=" $INSTALLED "
+elif grep USE /etc/os-release > /dev/null; then
+  DISTRO="SUSE"
+  INSTALLED=$(zypper search -i | tr -s ' ' | cut -d ' ' -f 3)
+  if [ "$ARCH" = "x86_64" ]; then
+    INSTALLED=$(echo $INSTALLED | grep -v '32bit')
+  fi
 elif grep Fedora /etc/redhat-release > /dev/null; then
   DISTRO="FEDORA"
 else
@@ -111,7 +127,6 @@ if [ "$DISTRO" = "DEBIAN" ]; then
       NEEDED="$NEEDED $PKG"
     fi
   done
-
 fi
 
 if [ "$DISTRO" = "FEDORA" ]; then
@@ -132,7 +147,27 @@ if [ "$DISTRO" = "FEDORA" ]; then
       NEEDED="$NEEDED $PKG"
     fi
   done
+fi
 
+if [ "$DISTRO" = "SUSE" ]; then
+  echo "Checking pre-req's for $DISTRO distro"
+  echo ""
+
+  if [ $MAINTAINER = 1 ]; then
+    PKGS=( ${SUSEPKGS[*]} ${SUSEDEVPKGS[*]} )
+  else
+    PKGS=( ${SUSEPKGS[*]} )
+  fi
+  
+  for PKG in ${PKGS[@]}
+  do 
+    if echo $INSTALLED | grep " $PKG " | grep $ARCH &> /dev/null ; then
+      echo "$PKG installed"
+    else
+      echo "$PKG not installed"
+      NEEDED="$NEEDED $PKG"
+    fi
+  done
 fi
 
 echo " "
