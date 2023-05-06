@@ -1,279 +1,97 @@
-DDD is available					-*- text -*-
-****************
-
+DDD 3.4.0 is available					-*- text -*-
+**********************
 
 What is DDD?
 ============
 
-DDD is a graphical front-end for command-line debuggers such as GDB,
-the Perl debugger, or the Python debugger.  Besides ``usual''
-front-end features such as viewing source texts, DDD has become famous
-through its interactive graphical data display, where data structures
-are displayed as graphs.
+DDD is a graphical front-end for command-line debuggers such as GDB 
+or CUDA-GDB.  Besides common GUI front-end features such as viewing 
+source texts, DDD has become famous through its interactive graphical 
+data display, where data structures are displayed as graphs.
 
 More information is available at the GNU DDD homepage at
 
       http://www.gnu.org/software/ddd/
 
 
+Who are the maintainers?
+========================
+
+Michael Eager and Stefan Eickeler took over as co-maintainers of 
+DDD in August, 2021.  
+
 
 What's new in DDD?
 ==================
-(For recent releases, please see the file "NEWS".)
 
-DDD-3.3.8
-========
-
-- The settings, signals, themes, and status-display windows are now resizable
-  (if your window-manager can resize transient dialog windows).
-- The settings are now read correctly when using gdb 5.x and 6.0.
-- A memory corruption has been fixed in strclass.h.
-- Several other memory management problems have been fixed.
-- configure options --enable-builtin-app-defaults and --enable-builtin-vsllib
-  should work again.
-- Speed improvements, partly by avoiding the creation of temporary objects.
-- Bug fixes in perl mode (1).
-- Builds on HPUX-10.20 now work OK (see the PROBLEMS file).
-- The libiberty distributed with ddd has been upgraded to the one released
-  with gcc-3.3.1.  This helps DDD to build on NetBSD.
-
-(1) Thanks to Christian Hattemer and Peter Ernst.
-
-DDD-3.3.7
-========
-
-- libiberty was missing from the 3.3.6 release
-- libtermcap was built but not linked on systems which needed it
-  (suse-axp-linux 8.1; probably others too)
-
-DDD-3.3.6
-=========
-
-- Andreas Zeller handed the role of maintainter to
-  Andrew Gaylard <apg@users.sf.net> 
-- The source tree was merged back from the bashdb project's CVS into the
-  original ddd CVS
-
-DDD-3.3.3 to DDD-3.3.5
-======================
-
-- These releases were made by the bashdb project: www.sf.net/projects/bashdb
-- Debugging of bash scripts was added
-- DDD was updated to build with recent versions of g++ (the 3.x series)
-- Several bugs were squashed
-
-DDD 3.3.1
-=========
-
-DDD 3.3.1 brings a couple of minor bug fixes:
-
-- The option to create new displays `left-to-right' is restored upon startup.
-- Fortran struct members are accessed as `A%B' instead of `A.B'.
-- Structure changes in plotted displays no longer crash DDD.
-- You can specify the top-level geometry via `-geometry'.
-- The `pydb' debugger has been fixed to work with recent Python releases.
-- Ornamented Perl debugger prompts are handled correctly.
-- DDD honors the TMPDIR environment variable for creating temporary files.
-- `config.guess' and `config.sub' scripts have been updated.
-- Minor compilation problems with GCC 2.7.2 have been fixed.
-- Minor compilation problems with GCC 3.0 (prerelease) have been fixed.
-- Minor compilation problems with Sun CC have been fixed.
-- Minor potential problems with 64 bit pointers have been fixed.
-
-
-DDD 3.3
-=======
-
-DDD 3.3 brings data themes, debugger interaction while the program is
-running, support for JDB 1.2, and several bug fixes.
-
-
-Data Themes
------------
-
-- DDD supports _data themes_ - modifiers that change the appearance of 
-  program data.  Try `Data->Themes'.
-
-- Data themes included with this release are:
-  * Show specific expressions in a smaller font (useful for arrays).
-  * Show display titles in a smaller font.
-  * Suppress specific structure members or expressions.
-
-- New data themes can be defined by users and installed at run-time.
-
-- More themes are in preparation, such as rendering of C++ STL data structures.
-
-
-Debuggers and Languages
------------------------
-
-- JDB as of JDK 1.2 is supported.
-
-- GDB 5.0 is supported.
-
-- You can use `ddd --wdb' to have DDD startup with WDB.  
-
-- When choosing a debugger automatically, DDD will try `wdb' if `gdb'
-  is not available.
-
-- WindRiver's version of GDB (within the Tornado/vxworks environment)
-  is supported.  See the DDD Reference, Section `WindRiver GDB' for
-  details. (5)
-
-- SGI DBX, Sun DBX, other DBXes as well as Compaq Ladebug can now
-  attach to processes via DDD. (1)
-
-- Parsing of GDB breakpoint information has been improved. (2)
-
-- Parsing of Perl breakpoint information has been improved.
-
-- Perl hash keys containing spaces are supported. (8)
-
-- Using the separate execution window now improves parsing debugger
-  output.  See the DDD documentation for the new `bufferGDBOutput'
-  resource.
-
-
-Examining Data
---------------
-
-- New displays can be created left-to-right.  
-  See `Edit => Preferences => Data => Placement'.  (6)
-
-- Handling of Ladebug array output has been improved.  (7)
-
-- Handling of multiple C++ base classes has been improved.
-
-- Names that are keywords in some programming languages (such as
-  `interface', `object', `class') should no longer impose problems when
-  occurring in programs of other languages.
-
-- Several memory leaks have been plugged. (1)
-
-
-User Interface
---------------
-
-- The default DDD font has been changed from `helvetica-bold' to
-  `helvetica-medium', thus integrating better into KDE and GNOME
-  environments.
-
-- You can interact with the debugger while the program is running;
-  DDD automatically interrupts and resumes debuggee execution.  See the
-  `stopAndContinue' resource for details.
-
-- Undo and Redo now apply on logical groups of commands.  If an action
-  caused multiple commands, Undo will undo them with one click.
-
-- Interrupts (Ctrl+C) from the controlling TTY can be issued multiple times.
-
-- With LessTif, the source window no longer scrolls around when
-  setting or deleting breakpoints.
-
-- With LessTif, combo boxes (drop-down text boxes) no longer shrink.
-
-- With LessTif, Text selection works better.
-
-- With LessTif, typing in the debugger console works better.
-
-- With LessTif, switching the register set works.
-
-- Drag and Drop of breakpoints in the machine code is supported.
-
-- Names of debuggee files and directories may contain spaces.
-
-- Spin boxes (used to step values) have been slightly improved.
-
-- Forwarding of keyboard events from the source window into the
-  debugger console is now optional.  See the `consoleHasFocus' resource. (10)
-
-
-Printing
---------
-
-- PostScript printing includes background colors (e.g. changed values)
-
-
-
-Installation
-------------
-
-- PLEASE NOTE: Several installation details have changed.  Be sure to
-  read the `INSTALL' file for new installation instructions.
-
-- Several DDD resources (such as the application defaults) now reside
-  in separate files, reducing DDD executable size and memory footprint 
-  by about 300k.
-
-- To run DDD from the build directory (i.e. before installing), you
-  must set the DDD_HOME and XUSERFILESEARCH environment variables.
-  See the `INSTALL' file for details.
-
-- The configure `--enable-rpath' option allows you to specify a path
-  to be searched for dynamic libraries at run-time.
-
-- DDD Makefiles are now GNU standards-compliant and generated by automake.
-
-- DDD Makefiles use libtool for generic shared library support.
-
-- A bad dependency on $(SHELL) in the Makefile has been fixed.  This
-  caused unnecessary calls of flex and bison in the distribution. (9)
-
-- A bad wildcard use in the Makefile has been fixed. (3)
-
-- A compilation problem in `PannedGE.C' with some GCC variants has been fixed.
-
-- DDD now compiles cleanly even with `gcc -Wwrite-strings'.  This
-  avoids several warnings/errors on C++ compilers other than GCC. (1)
-
-- The `--configuration' option now gives more information about the
-  compiler being used to compile DDD. (1)
-
-- ddd.texi rules in the Makefile have been fixed. (4)
-
-- The release includes the `libiberty' and `readline' packages as of GDB 5.0.
-
-
-License
--------
-
-- All remaining parts of DDD that used the GNU Library Public General
-  License (LGPL) have been changed to use the GNU General Public 
-  License (GPL) instead.
-
-- The DDD Manual is released under the new GNU Free Documentation License.
-
-
-Acknowledgments
----------------
-
-Thanks to: 
-    (1) Arnaud Desitter <arnaud@nag.co.uk>
-    (2) Hiro Sugawara <hiro@lynx.com>
-    (3) Yann Dirson <Yann.Dirson@france.sun.com>
-    (4) H. Nanosecond <aldomel@ix.netcom.com>
-    (5) Gary Cliff <gary.cliff@cdott.com>
-    (6) Danny Van Elsen <Danny_Van_Elsen@village.uunet.be>
-    (7) Philippe Midol-Monnet <Philippe.MIDOL-MONNET@airbus.aeromatra.com>
-    (8) Felipe Rivera <felipe@informador.com.mx>
-    (9) Thomas Anders <anders@hmi.de>
-   (10) Colin <cbyh@yahoo.com>
-
+DDD has been updated to build and run on the latest releases of
+Ubuntu, Fedora, and OpenSuse.  The build process has been streamlined
+and all warnings resolved.  There have been improvements in font 
+handling, including removing dependance on Adobe fonts.  There 
+have been a number of functional improvements.  Finally, approximately
+30 bugs have been fixed.  
+
+(For detailed information about the most recent release, please 
+see the file "NEWS".  Information about past releases is in the 
+file "NEWS-OLD".)
 
 
 Where can you get it?  How can you compile it?
 ==============================================
 
-The ddd-3.3.1.tar.gz distribution file has been placed on `ftp.gnu.org'
-in `gnu/ddd'.
+The ddd-3.4.0.tar.gz distribution file can be found here:
+http://ftp.gnu.org/gnu/ddd/.
 
-DDD 3.3.1 requires 
-- LessTif 0.90 or later, available from `http://www.lesstif.org/' 
-  (or any other M*tif library)
-- GCC 2.95 or later (or any other C++ compiler)
+You can also build DDD from the project Subversion repository.  
+Information about viewing or downloading these sources can be
+found here: https://savannah.gnu.org/svn/?group=ddd
 
-The most recent (not necessarily tested) snapshots of DDD will be
-placed on `alpha.gnu.org' in `gnu/ddd'.
+The releases can be found under 'branches' while the current (and
+possibly unstable) sources are found under 'trunk'.  The current 
+ddd-3.4) release is svn.savannah.gnu.org/ddd/branch/DDD_3_4_0..
+
+For a list of prequisites and instruction for building DDD, see 
+the INSTALL file.
+
+The most recent release candidates of DDD are available at
+http://alpha.gnu.org/gnu/ddd/
+
+
+Known and unknown problems
+==========================
+
+DDD is based on X Window System (also called X or X11) and the 
+Motif Toolkit.  Both have a decades-long history.  X is being 
+replaced on several Linux distributions by Wayland, with improvements 
+in speed and security.  The XWayland server supports X clients on 
+systems running Wayland.  DDD has not been tested using XWayland.
+
+DDD uses server-side fonts while most modern applications use client
+side client-side fonts.  If you wish to change fonts, please read 
+the FONTS file.
+
+This release of DDD has not been built or tested on MacOS or z/OS.
+Testers are welcomed and invited to submit bug reports.
+
+The previous release, ddd-3.3.12 (released in 2009), supported a 
+variety of Unix or Linux hosts distributions which are no longer 
+available.  It also supported a variety of debug engines such as
+DBX, PYDB, BASHDB, and PERLDB.  While the code to support building
+on these hosts or using these debuggers has been retained in the 
+current version of DDD, there has been no testing of either.
+Support for obsolete hosts or debuggers may be removed in the future.
+
+DDD depends on recognizing the prompt used by GDB to tell when 
+GDB has completed printing and is ready for input.  Changing the 
+GDB prompt, for example, in a .gdbinit file, will result in DDD
+being unable to communicate with GDB.
+
+
+What if I need help with DDD?
+=============================
+
+Please sign up to either the DDD discussion mailing list or the 
+DDD bug mailing list here: https://savannah.gnu.org/mail/?group=ddd
 
 
 Where do I send bug reports?
@@ -282,242 +100,14 @@ Where do I send bug reports?
 Bug reports can be submitted at `http://savannah.gnu.org/bugs/?group=ddd'.
 
 
+How can I help?
+===============
+
+Join the DDD discussion mailing list and send an email letting us
+know how you would like to contribute.  
+
+
 Enjoy!
 
 The DDD maintainers <ddd@gnu.org>
 
-
-
-Obtaining GNU Software
-======================
-
-   Check out the GNU web site. (`http://www.gnu.org/')
-
-   Most GNU software is packed using the GNU `gzip' compression program.
-Source code is available on most sites distributing GNU software.
-
-   For information on how to order GNU software on tape, floppy or
-cd-rom, or printed GNU manuals, check the file etc/ORDERS in the GNU
-Emacs distribution or in GNUinfo/ORDERS on prep, or e-mail a request to:
-<gnu@gnu.org>
-
-   By ordering your GNU software from the FSF, you help us continue to
-develop more free software.  Media revenues are our primary source of
-support.  Donations to FSF are deductible on US tax returns.
-
-   The above software will soon be at these ftp sites as well.  Please
-try them before `ftp.gnu.org' as it is very busy!
-
-   thanx <gnu@gnu.org>
-
-*ASIA:*
-        - `ftp://ftp.cs.titech.ac.jp'
-
-        - `ftp://utsun.s.u-tokyo.ac.jp/ftpsync/prep'
-
-        - `ftp://cair.kaist.ac.kr/pub/gnu'
-
-        - `ftp://ftp.nectec.or.th/pub/mirrors/gnu'
-
-*AUSTRALIA:*
-        - `ftp://archie.au/gnu' (archie.oz or archie.oz.au for ACSnet)
-
-*AFRICA:*
-        - `ftp://ftp.sun.ac.za/pub/gnu'
-
-*MIDDLE-EAST:*
-        - `ftp://ftp.technion.ac.il/pub/unsupported/gnu'
-
-*EUROPE:*
-        - `ftp://irisa.irisa.fr/pub/gnu'
-
-        - `ftp://ftp.univ-lyon1.fr/pub/gnu'
-
-        - `ftp://ftp.mcc.ac.uk'
-
-        - `ftp://unix.hensa.ac.uk/pub/uunet/systems/gnu'
-
-        - `ftp://src.doc.ic.ac.uk/gnu'
-
-        - `ftp://ftp.ieunet.ie/pub/gnu'
-
-        - `ftp://ftp.eunet.ch'
-
-        - `ftp://sunsite.cnlab-switch.ch/mirror/gnu'
-
-        - `ftp://ftp.informatik.rwth-aachen.de/pub/gnu'
-
-        - `ftp://ftp.informatik.tu-muenchen.de'
-
-        - `ftp://ftp.win.tue.nl/pub/gnu'
-
-        - `ftp://ftp.funet.fi/pub/gnu'
-
-        - `ftp://ftp.denet.dk'
-
-        - `ftp://ftp.stacken.kth.se'
-
-        - `ftp://isy.liu.se'
-
-        - `ftp://ftp.luth.se/pub/unix/gnu'
-
-        - `ftp://ftp.sunet.se/pub/gnu'
-
-        - `ftp://archive.eu.net'
-
-*SOUTH AMERICA:*
-        - `ftp://ftp.unicamp.br/pub/gnu'
-
-*WESTERN CANADA:*
-        - `ftp://ftp.cs.ubc.ca/mirror2/gnu'
-
-*USA:*
-        - `ftp://wuarchive.wustl.edu/systems/gnu'
-
-        - `ftp://labrea.stanford.edu'
-
-        - `ftp://ftp.digex.net/pub/gnu'
-
-        - `ftp://ftp.kpc.com/pub/mirror/gnu'
-
-        - `ftp://f.ms.uky.edu/pub3/gnu'
-
-        - `ftp://jaguar.utah.edu/gnustuff'
-
-        - `ftp://ftp.hawaii.edu/mirrors/gnu'
-
-        - `ftp://vixen.cso.uiuc.edu/gnu'
-
-        - `ftp://mrcnext.cso.uiuc.edu/pub/gnu'
-
-        - `ftp://ftp.cs.columbia.edu/archives/gnu/prep'
-
-        - `ftp://col.hp.com/mirrors/gnu'
-
-        - `ftp://gatekeeper.dec.com/pub/GNU'
-
-        - `ftp://ftp.uu.net/systems/gnu'
-
-
-[ Most GNU software is compressed using the GNU `gzip' compression program.
-  Source code is available on most sites distributing GNU software.
-  Executables for various systems and information about using gzip can be
-  found at the URL http://www.gzip.org.
-
-  For information on how to order GNU software on CD-ROM and
-  printed GNU manuals, see http://www.gnu.org/order/order.html
-  or e-mail a request to: gnu@gnu.org
-
-  By ordering your GNU software from the FSF, you help us continue to
-  develop more free software.  Media revenues are our primary source of
-  support.  Donations to FSF are deductible on US tax returns.
-
-  The above software will soon be at these ftp sites as well.
-  Please try them before ftp.gnu.org as ftp.gnu.org is very busy!
-  A possibly more up-to-date list is at the URL
-        http://www.gnu.org/order/ftp.html
-
-  thanx -gnu@gnu.org
-
-  Here are the mirrored ftp sites for the GNU Project, listed by country:
-
-  
-  
-  United States:
-  
-  
-  California - labrea.stanford.edu/pub/gnu, gatekeeper.dec.com/pub/GNU
-  Hawaii - ftp.hawaii.edu/mirrors/gnu
-  Illinois - uiarchive.cso.uiuc.edu/pub/gnu (Internet address 128.174.5.14)
-  Kentucky -  ftp.ms.uky.edu/pub/gnu
-  Maryland - ftp.digex.net/pub/gnu (Internet address 164.109.10.23)
-  Massachusetts - aeneas.mit.edu/pub/gnu
-  Michigan - gnu.egr.msu.edu/pub/gnu
-  Missouri - wuarchive.wustl.edu/systems/gnu
-  New Mexico - ftp.cs.unm.edu/mirrors/gnu
-  New York - ftp.cs.columbia.edu/archives/gnu/prep
-  Ohio - ftp.cis.ohio-state.edu/mirror/gnu
-  Virginia - ftp.uu.net/archive/systems/gnu
-  Washington - ftp.nodomainname.net/pub/mirrors/gnu
-  
-  Africa:
-  
-  South Africa - ftp.sun.ac.za/gnu
-  
-  The Americas:
-  
-  Brazil - ftp.unicamp.br/pub/gnu
-  Brazil - master.softaplic.com.br/pub/gnu
-  Brazil - linuxlabs.lci.ufrj.br/gnu
-  Brazil - ftp.matrix.com.br/pub/gnu
-  Canada - ftp.cs.ubc.ca/mirror2/gnu
-  Chile - ftp.inf.utfsm.cl/pub/gnu (Internet address 146.83.198.3)
-  Costa Rica - sunsite.ulatina.ac.cr/GNU
-  Mexico - ftp.uaem.mx/pub/gnu
-  
-  Australia:
-  
-  Australia - archie.au/gnu (archie.oz or archie.oz.au for ACSnet)
-  Australia - ftp.progsoc.uts.edu.au/pub/gnu
-  Australia - mirror.aarnet.edu.au/pub/gnu
-  
-  Asia:
-  
-  Japan - tron.um.u-tokyo.ac.jp/pub/GNU/prep
-  Japan - ftp.cs.titech.ac.jp/pub/gnu
-  Japan - mirror.nucba.ac.jp/mirror/GNU/
-  Korea - cair-archive.kaist.ac.kr/pub/gnu (Internet address 143.248.186.3)
-  Saudi Arabia - ftp.isu.net.sa/pub/mirrors/prep.ai.mit.edu/pub/gnu
-  Taiwan - coda.nctu.edu.tw/UNIX/gnu
-  Taiwan - ftp1.sinica.edu.tw/pub3/GNU/gnu/
-  Thailand - ftp.nectec.or.th/pub/mirrors/gnu (Internet address - 192.150.251.32)
-  
-  Europe:
-  
-  Austria - ftp.univie.ac.at/packages/gnu
-  Austria - gd.tuwien.ac.at/gnu/gnusrc
-  Belgium - ftp.be.gnu.org/
-  Austria - http://gd.tuwien.ac.at/gnu/gnusrc/
-  Czech Republic - ftp.fi.muni.cz/pub/gnu/
-  Denmark - ftp.denet.dk/mirror/ftp.gnu.org/pub/gnu
-  Denmark - ftp.dkuug.dk/pub/gnu/
-  Finland - ftp.funet.fi/pub/gnu
-  France - ftp.univ-lyon1.fr/pub/gnu
-  France - ftp.irisa.fr/pub/gnu
-  Germany - ftp.informatik.tu-muenchen.de/pub/comp/os/unix/gnu/
-  Germany - ftp.informatik.rwth-aachen.de/pub/gnu
-  Germany - ftp.de.uu.net/pub/gnu
-  Greece - ftp.forthnet.gr/pub/gnu
-  Greece - ftp.ntua.gr/pub/gnu
-  Greece - ftp.duth.gr/pub/gnu
-  Greece - ftp.aua.gr/pub/mirrors/GNU (Internet address 143.233.187.61)
-  Hungary - ftp.kfki.hu/pub/gnu
-  Ireland - ftp.esat.net/pub/gnu (Internet address 193.120.14.241)
-  Italy - ftp.oasi.gpa.it/pub/gnu
-  Netherlands - ftp.eu.net/gnu (Internet address 192.16.202.1)
-  Netherlands - ftp.nluug.nl/pub/gnu
-  Netherlands - ftp.win.tue.nl/pub/gnu (Internet address 131.155.70.19)
-  Netherlands - ftp.mirror.nl/pub/mirror/gnu
-  Norway - ftp.ntnu.no/pub/gnu (Internet address 129.241.11.142)
-  Norway - sunsite.uio.no/pub/gnu
-  Poland - ftp.task.gda.pl/pub/gnu
-  Portugal - ftp.ci.uminho.pt/pub/mirrors/gnu 
-  Portugal - http://ciumix.ci.uminho.pt/mirrors/gnu/
-  Portugal - ftp.ist.utl.pt/pub/gnu
-  Russia - ftp.chg.ru/pub/gnu/
-  Slovenia - ftp.arnes.si/gnu
-  Spain - ftp.etsimo.uniovi.es/pub/gnu
-  Sweden - ftp.isy.liu.se/pub/gnu
-  Sweden - ftp.stacken.kth.se
-  Sweden - ftp.luth.se/pub/unix/gnu
-  Sweden - ftp.sunet.se/pub/gnu (Internet address 130.238.127.3)
-  	   Also mirrors the Mailing List Archives.
-  Sweden - ftp.chl.chalmers.se/pub/gnu/
-  Switzerland - ftp.eunet.ch/mirrors4/gnu
-  Switzerland - sunsite.cnlab-switch.ch/mirror/gnu (Internet address 193.5.24.1)
-  United Kingdom - ftp.mcc.ac.uk/pub/gnu (Internet address 130.88.203.12)
-  United Kingdom - unix.hensa.ac.uk/mirrors/gnu
-  United Kingdom - ftp.warwick.ac.uk (Internet address 137.205.192.14)
-  United Kingdom - SunSITE.doc.ic.ac.uk/gnu (Internet address 193.63.255.4)
-  
-]
