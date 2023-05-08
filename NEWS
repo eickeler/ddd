@@ -3,7 +3,6 @@ DDD News						-*- text -*-
 
 DDD-3.4.0
 =========
-
 New maintainers: 
 Michael Eager <eager@eagercon.com> and Stefan Eickeler <mail@eickeler.de>
 
@@ -12,7 +11,6 @@ Changes in DDD-3.4.0
 
 Build issues
 ------------
-
 Fix Ubuntu compilation errors.
 Fix GCC warnings.
 Update to current flex & bison.
@@ -37,10 +35,8 @@ Use autoconf-2.71.
 Use "make dist" to create distribution tarball.
 Cleanup generation of graphics.
 
-
 Bug fixes
 ---------
-
 Bug #25109, All-registers display doesn't work.
 Bug #33172: DDD has problems parsing Temporary breakpoints.
 Bug #58191: Improper handling of GDB's extended-prompt setting
@@ -73,10 +69,8 @@ Bug: remake problem with empty command line
 SR #110812: Recognize GDB question with "(y or [n])"
 Bug #746806 from Red Hat Bugzilla: DDD does't honor the --args parameter when executed from the commandline
 
-
 Enhancements
 ------------
-
 Workaround for UTF-8 - the source code is internally converted to latin1 
 Cursor follows the scrollbar in source window to improve usage of mouse wheel.
 Add display of STL data types based on gdb pretty-printers.

@@ -3,7 +3,6 @@ DDD 3.4.0 is available					-*- text -*-
 
 What is DDD?
 ============
-
 DDD is a graphical front-end for command-line debuggers such as GDB 
 or CUDA-GDB.  Besides common GUI front-end features such as viewing 
 source texts, DDD has become famous through its interactive graphical 
@@ -13,17 +12,13 @@ More information is available at the GNU DDD homepage at
 
       http://www.gnu.org/software/ddd/
 
-
 Who are the maintainers?
 ========================
-
 Michael Eager and Stefan Eickeler took over as co-maintainers of 
 DDD in August, 2021.  
 
-
 What's new in DDD?
 ==================
-
 DDD has been updated to build and run on the latest releases of
 Ubuntu, Fedora, and OpenSuse.  The build process has been streamlined
 and all warnings resolved.  There have been improvements in font 
@@ -35,10 +30,8 @@ have been a number of functional improvements.  Finally, approximately
 see the file "NEWS".  Information about past releases is in the 
 file "NEWS-OLD".)
 
-
 Where can you get it?  How can you compile it?
 ==============================================
-
 The ddd-3.4.0.tar.gz distribution file can be found here:
 http://ftp.gnu.org/gnu/ddd/.
 
@@ -56,10 +49,8 @@ the INSTALL file.
 The most recent release candidates of DDD are available at
 http://alpha.gnu.org/gnu/ddd/
 
-
 Known and unknown problems
 ==========================
-
 DDD is based on X Window System (also called X or X11) and the 
 Motif Toolkit.  Both have a decades-long history.  X is being 
 replaced on several Linux distributions by Wayland, with improvements 
@@ -86,26 +77,21 @@ GDB has completed printing and is ready for input.  Changing the
 GDB prompt, for example, in a .gdbinit file, will result in DDD
 being unable to communicate with GDB.
 
-
 What if I need help with DDD?
 =============================
-
 Please sign up to either the DDD discussion mailing list or the 
 DDD bug mailing list here: https://savannah.gnu.org/mail/?group=ddd
 
 
 Where do I send bug reports?
 ============================
-
 Bug reports can be submitted at `http://savannah.gnu.org/bugs/?group=ddd'.
 
 
 How can I help?
 ===============
-
 Join the DDD discussion mailing list and send an email letting us
 know how you would like to contribute.  
-
 
 Enjoy!
 
