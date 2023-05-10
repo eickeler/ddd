@@ -2011,7 +2011,7 @@ void DataDisp::deleteArgCB(Widget dialog, XtPointer client_data,
 // Redraw graph and update display list
 //-----------------------------------------------------------------------------
 
-struct GraphEditState {
+struct GraphEditStateDD {
     Boolean autoLayout;
     Boolean snapToGrid;
 };
@@ -2019,7 +2019,7 @@ struct GraphEditState {
 void DataDisp::refresh_graph_edit(bool silent)
 {
     // Save current graph editor state
-    static GraphEditState state;
+    static GraphEditStateDD state;
 
     XtVaGetValues(graph_edit,
 		  XtNautoLayout, &state.autoLayout,
@@ -2045,14 +2045,14 @@ void DataDisp::RefreshGraphEditCB(XtPointer client_data, XtIntervalId *id)
     assert(*id == refresh_graph_edit_timer);
     refresh_graph_edit_timer = 0;
 
-    static GraphEditState state;
+    static GraphEditStateDD state;
 
     XtVaGetValues(graph_edit,
 		  XtNautoLayout, &state.autoLayout,
 		  XtNsnapToGrid, &state.snapToGrid,
 		  XtPointer(0));
 
-    const GraphEditState& old_state = *((GraphEditState *) client_data);
+    const GraphEditStateDD& old_state = *((GraphEditStateDD *) client_data);
 
     static Graph *dummy = new Graph;
 
