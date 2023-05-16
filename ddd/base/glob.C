@@ -394,11 +394,12 @@ glob_dir_to_array (char *dir, char **array)
 
   for (i = 0; array[i] != 0; i++)
     {
-      result[i] = (char *) malloc (l + (add_slash ? 1 : 0)
-				   + strlen (array[i]) + 1);
+      int strsize = (l + (add_slash ? 1 : 0) + strlen (array[i]) + 1);
+      result[i] = (char *) malloc (strsize);
+
       if (result[i] == 0)
 	return 0;
-      sprintf (result[i], "%s%s%s", dir, add_slash ? "/" : "", array[i]);
+      snprintf (result[i], strsize, "%s%s%s", dir, add_slash ? "/" : "", array[i]);
     }
   result[i] = 0;
 

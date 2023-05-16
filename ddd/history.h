@@ -82,7 +82,7 @@ extern void add_to_recent(const string& file);
 extern void get_recent(StringArray& arr);
 
 // Tie a menu to recent files
-class MMDesc;
+struct MMDesc;
 extern void tie_menu_to_recent_files(MMDesc *items);
 
 #endif // _DDD_history_h

@@ -543,7 +543,7 @@ void TTYAgent::open_master()
 	for (int i = 0; i < highpty; i++)
 	{
 	    char nr[32];
-	    sprintf(nr, "%03d", i);
+	    snprintf(nr, sizeof(nr), "%03d", i);
 	    const string pty = string("/dev/pty/") + nr;
 	    const string tty = string("/dev/ttyp") + nr;
 		

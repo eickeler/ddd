@@ -72,7 +72,7 @@ const char *statusName(int state)
     {
 	static char buffer[256];
 
-	sprintf(buffer, "Exit %d", (int)WEXITSTATUS(((state))));
+	snprintf(buffer, sizeof(buffer), "Exit %d", (int)WEXITSTATUS(((state))));
 	return buffer;
     }
     else if (WIFSIGNALED(((state))))

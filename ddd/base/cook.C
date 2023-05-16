@@ -107,7 +107,7 @@ string _cook(const string& raw, bool for_postscript)
 	    else
 	    {
 		char buffer[256];
-		sprintf(buffer, "\\%03o", int(c));
+		snprintf(buffer, sizeof(buffer), "\\%03o", int(c));
 		cooked << buffer;
 	    }
 	    break;

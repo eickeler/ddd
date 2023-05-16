@@ -52,7 +52,8 @@ enum SelfEdgePosition {
 // How to align edges pointing at self
 enum SelfEdgeDirection { Clockwise, Counterclockwise };
 
-struct GraphGC {
+class GraphGC {
+  public:
     DECLARE_TYPE_INFO
 
     // Drawing stuff
