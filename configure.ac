@@ -976,6 +976,9 @@ AC_DEFINE(RUNTIME_REGEX, 0,
 [Define if you want support for runtime-compiled regexps. Default in
 DDD 2.1 and earlier.  Requires ~30% more memory; slightly slower,
 too. Requires WITH_RUNTIME_REGEX to be set. Required in ICE.])
+dnl Display host system type
+AC_MSG_CHECKING([host system type])
+AC_MSG_RESULT($host_os)
 dnl
 dnl Terry Teague <terry_teague@users.sourceforge.net> reports Mac OS X
 dnl requires some fixes
@@ -989,6 +992,20 @@ LDFLAGS="-bind_at_load ${LDFLAGS}"
 [Define if your inferior debugger has an ambigious "show path" command (e.g. gdb for Mac OS X).])
   AC_DEFINE(GDB_BROKEN_SET_INTERPRETER,1,
 [Define if your inferior debugger has a broken "set interpreter" command (e.g. gdb for Mac OS X).])
+  AC_MSG_RESULT(yes)
+  ;;
+*)
+  AC_MSG_RESULT(no)
+  ;;
+esac
+ dnl
+dnl Solaris fixes
+ dnl
+AC_MSG_CHECKING([fixes needed for Solaris])
+case "$host_os" in
+*solaris*)
+CFLAGS="-m64 $CFLAGS"
+CXXOPT="-m64 $CXXOPT"
   AC_MSG_RESULT(yes)
   ;;
 *)

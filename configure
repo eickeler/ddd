@@ -30186,6 +30186,10 @@ printf "%s\n" "#define WITH_RUNTIME_REGEX 0" >>confdefs.h
 
 printf "%s\n" "#define RUNTIME_REGEX 0" >>confdefs.h
 
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking host system type" >&5
+printf %s "checking host system type... " >&6; }
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $host_os" >&5
+printf "%s\n" "$host_os" >&6; }
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking fixes needed for Mac OS X" >&5
 printf %s "checking fixes needed for Mac OS X... " >&6; }
 case "$host_os" in
@@ -30200,6 +30204,20 @@ printf "%s\n" "#define GDB_AMBIGUOUS_SHOW_PATH 1" >>confdefs.h
 
 printf "%s\n" "#define GDB_BROKEN_SET_INTERPRETER 1" >>confdefs.h
 
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+printf "%s\n" "yes" >&6; }
+  ;;
+*)
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+  ;;
+esac
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking fixes needed for Solaris" >&5
+printf %s "checking fixes needed for Solaris... " >&6; }
+case "$host_os" in
+*solaris*)
+CFLAGS="-m64 $CFLAGS"
+CXXOPT="-m64 $CXXOPT"
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 printf "%s\n" "yes" >&6; }
   ;;
