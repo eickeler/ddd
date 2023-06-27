@@ -50,7 +50,7 @@ DDD from the repository, you may also need:
    * `epstopdf' and PDFLaTeX (for recreating the PDF manual)
 
 For Ubuntu and Fedora distributions, you can check if the packages
-required to build a DDD tarball are installed by running ./etc/install-prereq.
+required to build a DDD tarball are installed by running ./etc/prereq.
 If you specify the '-maint' command line option, this will additionally 
 check for the prerequisites for building from the source repository.
 
