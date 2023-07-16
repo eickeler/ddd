@@ -815,9 +815,10 @@ bool GUIGraphEdit::RedrawCB(void)
 
     if (redraw_all)
     {
-	internal()->get_window()->clear_area(highlight_thickness, highlight_thickness, 
-					     internal()->get_width()  - highlight_thickness * 2, 
-					     internal()->get_height() - highlight_thickness * 2);
+        if (internal()->get_height()>2*highlight_thickness && internal()->get_width()>2*highlight_thickness)
+            internal()->get_window()->clear_area(highlight_thickness, highlight_thickness, 
+                                                internal()->get_width()  - highlight_thickness * 2, 
+                                                internal()->get_height() - highlight_thickness * 2);
 
 	graph->draw(this, EVERYWHERE, graphGC);
     }

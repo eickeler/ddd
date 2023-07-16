@@ -931,6 +931,9 @@ void
 Drawable::draw_line(RefPtr<GC> gc,
 		    int x1, int y1, int x2, int y2)
 {
+    if (gc==nullptr)
+        return;
+    
     internal()->draw_line(gc->internal(), x1, y1, x2, y2);
 }
 
@@ -938,6 +941,9 @@ void
 Drawable::draw_rectangle(RefPtr<GC> gc, bool filled,
 			 int x, int y, int w, int h)
 {
+    if (gc==nullptr)
+        return;
+    
     internal()->draw_rectangle(gc->internal(), filled, x, y, w, h);
 }
 
@@ -946,6 +952,9 @@ Drawable::draw_arc(RefPtr<GC> gc, bool filled,
 		   int x, int y, int w, int h,
 		   int angle1, int angle2)
 {
+    if (gc==nullptr)
+        return;
+    
     internal()->draw_arc(gc->internal(), filled, x, y, w, h, angle1, angle2);
 }
 
@@ -953,6 +962,9 @@ void
 Drawable::draw_polygon(RefPtr<GC> gc, bool filled,
 		       std::vector<Point> &points)
 {
+    if (gc==nullptr)
+        return;
+
     std::vector<Gdk::Point> gpoints;
     std::vector<Point>::iterator i;
     for (i = points.begin(); i != points.end(); i++) {
@@ -965,6 +977,9 @@ void
 Drawable::draw_layout(RefPtr<GC> &gc, int x, int y,
 		      RefPtr<Layout> &layout)
 {
+    if (gc==nullptr)
+        return;
+
     internal()->draw_layout(gc->internal(), x, y,
 			    layout->internal());
 }
