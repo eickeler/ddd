@@ -102,6 +102,9 @@ Ddd*Separate: off
 ! Ddd*separateDataWindow: on
 ! Ddd*separateSourceWindow: on
 
+! You may show the source window and data window side by side.
+! Ddd*sideBySideWindows: on
+
 
 ! The windows may be initially on or off.  By default, the data window 
 ! remains closed since it will be opened anyway as soon as we create
@@ -3596,6 +3599,7 @@ Ddd*preferences*startup*adjustMargin:		off
 
 Ddd*preferences*windows.labelString:		Window Layout
 Ddd*windowsMenu*attached.labelString:		Stacked Windows
+Ddd*windowsMenu*sidebyside.labelString:		Side by Side Windows
 Ddd*windowsMenu*separate.labelString:		Separate Windows
 
 Ddd*preferences*cutCopyPaste.labelString:	Ctrl+C is

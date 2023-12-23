@@ -735,6 +735,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+        XTRESSTR(XtNsideBySideWindows),
+        XTRESSTR(XtCSideBySide),
+        XtRBoolean,
+        sizeof(Boolean),
+        XtOffsetOf(AppData, side_by_side_windows),
+        XtRImmediate,
+        XtPointer(False)
+    },
+
+    {
         XTRESSTR(XtNopenDataWindow),
         XTRESSTR(XtCWindow),
         XtRBoolean,

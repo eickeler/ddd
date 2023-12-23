@@ -842,27 +842,32 @@ void dddSetSeparateWindowsCB (Widget w, XtPointer client_data, XtPointer)
     int state = (int)(long)client_data;
     switch (state)
     {
-    case 0:
-        app_data.separate_data_window   = True;
-        app_data.separate_source_window = True;
-        app_data.common_toolbar         = False;
-        break;
+        case 0:
+            app_data.separate_data_window   = True;
+            app_data.separate_source_window = True;
+            app_data.common_toolbar         = False;
+            app_data.side_by_side_windows   = False;
+            break;
 
-    case 1:
-        app_data.separate_data_window   = False;
-        app_data.separate_source_window = False;
-        app_data.common_toolbar         = True;
-        break;
+        case 1:
+            app_data.separate_data_window   = False;
+            app_data.separate_source_window = False;
+            app_data.common_toolbar         = True;
+            app_data.side_by_side_windows   = False;
+            break;
 
-    case 2:
-        app_data.separate_data_window   = False;
-        app_data.separate_source_window = False;
-        app_data.common_toolbar         = False;
-        break;
+        case 2:
+            app_data.separate_data_window   = False;
+            app_data.separate_source_window = False;
+            app_data.common_toolbar         = True;
+            app_data.side_by_side_windows   = True;
+            break;
     }
 
     if (app_data.separate_data_window || app_data.separate_source_window)
         set_status(next_ddd_will_start_with + "separate windows.");
+    else if (app_data.side_by_side_windows)
+        set_status(next_ddd_will_start_with + "one window, side by side.");
     else if (app_data.common_toolbar)
         set_status(next_ddd_will_start_with + "one window, one toolbar.");
     else
@@ -2419,7 +2424,6 @@ bool save_options(unsigned long flags)
         delay.outcome = "failed";
         return false;
     }
-
     os << dddinit << delimiter << " -- " DDD_NAME " WILL OVERWRITE IT\n";
     os << string_app_value(XtNdddinitVersion, DDD_VERSION) << '\n';
 
@@ -2765,7 +2769,7 @@ bool save_options(unsigned long flags)
         }
 
         string bash_display_shortcuts = app_data.bash_display_shortcuts;
-         string dbg_display_shortcuts  = app_data.dbg_display_shortcuts;
+        string dbg_display_shortcuts  = app_data.dbg_display_shortcuts;
         string dbx_display_shortcuts  = app_data.dbx_display_shortcuts;
         string gdb_display_shortcuts  = app_data.gdb_display_shortcuts;
         string jdb_display_shortcuts  = app_data.jdb_display_shortcuts;
@@ -2777,7 +2781,7 @@ bool save_options(unsigned long flags)
         switch (gdb->type())
         {
         case BASH: bash_display_shortcuts = expr; break;
-         case DBG:  dbg_display_shortcuts  = expr; break;
+        case DBG:  dbg_display_shortcuts  = expr; break;
         case DBX:  dbx_display_shortcuts  = expr; break;
         case GDB:  gdb_display_shortcuts  = expr; break;
         case JDB:  jdb_display_shortcuts  = expr; break;
@@ -2789,7 +2793,7 @@ bool save_options(unsigned long flags)
 
         os << string_app_value(XtNbashDisplayShortcuts,
                                bash_display_shortcuts.chars(), True) << '\n';
-         os << string_app_value(XtNdbgDisplayShortcuts,
+        os << string_app_value(XtNdbgDisplayShortcuts,
                                 dbg_display_shortcuts.chars(), True)  << '\n';
         os << string_app_value(XtNdbxDisplayShortcuts,
                                dbx_display_shortcuts.chars(), True) << '\n';
@@ -2854,6 +2858,10 @@ bool save_options(unsigned long flags)
         !app_data.separate_source_window && !app_data.separate_data_window)
     {
         os << bool_app_value(XtCSeparate, False) << '\n';
+        if (app_data.side_by_side_windows)
+            os << bool_app_value(XtCSideBySide, True) << '\n';
+        else
+            os << bool_app_value(XtCSideBySide, False) << '\n';
     }
     else if (!save_session &&
              app_data.separate_source_window && app_data.separate_data_window)

@@ -149,6 +149,8 @@
 #define XtNseparateSourceWindow  "separateSourceWindow"
 #define XtNseparateExecWindow    "separateExecWindow"
 #define XtCSeparate              "Separate"
+#define XtNsideBySideWindows     "sideBySideWindows"
+#define XtCSideBySide            "SideBySide"
 #define XtNopenDataWindow        "openDataWindow"
 #define XtNopenSourceWindow      "openSourceWindow"
 #define XtNopenDebuggerConsole   "openDebuggerConsole"
@@ -496,6 +498,7 @@ struct AppData {
     Boolean   separate_data_window;
     Boolean   separate_source_window;
     Boolean   separate_exec_window;
+    Boolean   side_by_side_windows;
     Boolean   data_window;
     Boolean   source_window;
     Boolean   debugger_console;

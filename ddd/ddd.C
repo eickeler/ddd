@@ -1457,10 +1457,13 @@ static MMDesc data_preferences_menu[] =
 // Startup preferences
 static Widget set_separate_windows_w;
 static Widget set_attached_windows_w;
-static MMDesc window_mode_menu [] = 
+static Widget set_sidebyside_windows_w;
+static MMDesc window_mode_menu [] =
 {
     { "attached",  MMToggle, { dddSetSeparateWindowsCB, XtPointer(1) },
       0, &set_attached_windows_w, 0, 0 },
+    { "sidebyside",  MMToggle, { dddSetSeparateWindowsCB, XtPointer(2) },
+      0, &set_sidebyside_windows_w, 0, 0 },
     { "separate",  MMToggle, { dddSetSeparateWindowsCB, XtPointer(0) },
       0, &set_separate_windows_w, 0, 0 },
     MMEnd
@@ -2293,9 +2296,17 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     }
     session_id = app_data.session;
     
-    // activaste at least one window
+    // activate at least one window
     if (!app_data.data_window && !app_data.source_window && !app_data.debugger_console)
         app_data.debugger_console = True;
+
+    // activate all windows for side by side view
+    if (app_data.side_by_side_windows)
+    {
+        app_data.debugger_console = True;
+        app_data.data_window = True;
+        app_data.source_window = True;
+    }
 
     // From this point on, APP_DATA is valid.
 
@@ -2615,16 +2626,54 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     verify_buttons(menubar);
     register_menu_shell(menubar);
 
-    // Create Paned Window
+    // Create horizontal or vertical Paned Window
     arg = 0;
     XtSetArg(args[arg], XmNborderWidth,     0); arg++;
     XtSetArg(args[arg], XmNmarginWidth,     0); arg++;
     XtSetArg(args[arg], XmNshadowThickness, 0); arg++;
+    if (app_data.side_by_side_windows)
+    {
+        XtSetArg(args[arg], XmNorientation, XmHORIZONTAL); arg++;
+    }
     Widget paned_work_w = 
         verify(XmCreatePanedWindow(main_window,
                                    XMST("paned_work_w"),
                                    args, arg));
     XtManageChild(paned_work_w);
+
+    Widget left_paned_work_w = paned_work_w;
+    Widget right_paned_work_w = paned_work_w;
+
+    if (app_data.side_by_side_windows)
+    {
+        // Create left Paned Window
+        arg = 0;
+        XtSetArg(args[arg], XmNborderWidth,     0); arg++;
+        XtSetArg(args[arg], XmNmarginWidth,     0); arg++;
+        XtSetArg(args[arg], XmNshadowThickness, 0); arg++;
+        XtSetArg(args[arg], XmNorientation, XmVERTICAL); arg++;
+        XtSetArg(args[arg], XmNpaneMaximum, 10000);              arg++;
+        XtSetArg(args[arg], XmNpaneMinimum, 100);              arg++;
+        left_paned_work_w =
+        verify(XmCreatePanedWindow(paned_work_w,
+                    XMST("left_paned_work_w"),
+                    args, arg));
+        XtManageChild(left_paned_work_w);
+
+        // Create right Paned Window
+        arg = 0;
+        XtSetArg(args[arg], XmNborderWidth,     0); arg++;
+        XtSetArg(args[arg], XmNmarginWidth,     0); arg++;
+        XtSetArg(args[arg], XmNshadowThickness, 0); arg++;
+        XtSetArg(args[arg], XmNorientation, XmVERTICAL); arg++;
+        XtSetArg(args[arg], XmNpaneMaximum, 10000);              arg++;
+        XtSetArg(args[arg], XmNpaneMinimum, 100);              arg++;
+        right_paned_work_w =
+        verify(XmCreatePanedWindow(paned_work_w,
+                    XMST("right_paned_work_w"),
+                    args, arg));
+        XtManageChild(right_paned_work_w);
+    }
 
     // Status line
     if (!app_data.separate_source_window && !app_data.status_at_bottom)
@@ -2645,7 +2694,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
         app_data.common_toolbar)
     {
         arg_cmd_area[ArgItems::Display].type |= MMUnmanaged;
-        arg_cmd_w = create_toolbar(paned_work_w, "common",
+        arg_cmd_w = create_toolbar(left_paned_work_w, "common",
                                    arg_cmd_area, DataDisp::graph_cmd_area,
                                    arg_label, source_arg, XmPIXMAP);
 
@@ -2653,19 +2702,19 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 
         if (command_toolbar_w == 0)
         {
-            command_toolbar_w = make_buttons(paned_work_w, 
+            command_toolbar_w = make_buttons(left_paned_work_w,
                                              "command_toolbar", 
                                              app_data.tool_buttons);
         }
     }
     
     // Install icons if not already done
-    install_icons(command_shell, 
+    install_icons(command_shell,
                   app_data.button_color_key,
                   app_data.active_button_color_key);
 
     // Data window
-    Widget data_disp_parent = paned_work_w;
+    Widget data_disp_parent = right_paned_work_w;
     Widget data_menubar_w = 0;
     Widget data_main_window_w = 0;
     if (app_data.separate_data_window)
@@ -2723,7 +2772,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
                                       app_data.data_buttons);
 
     // Source window
-    Widget source_view_parent = paned_work_w;
+    Widget source_view_parent = left_paned_work_w;
     Widget source_menubar_w = 0;
     Widget source_main_window_w = 0;
     if (app_data.separate_source_window)
@@ -2846,11 +2895,11 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 
     // Debugger console
     if (console_buttons_w == 0 && !app_data.toolbars_at_bottom)
-        console_buttons_w = make_buttons(paned_work_w, "console_buttons", 
+        console_buttons_w = make_buttons(left_paned_work_w, "console_buttons",
                                          app_data.console_buttons);
 
     arg = 0;
-    gdb_w = verify(XmCreateScrolledText(paned_work_w, 
+    gdb_w = verify(XmCreateScrolledText(left_paned_work_w, 
                                         XMST("gdb_w"), args, arg));
 
     XtAddCallback (gdb_w,
@@ -2890,7 +2939,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 #endif
 
     if (console_buttons_w == 0)
-        console_buttons_w = make_buttons(paned_work_w, "console_buttons", 
+        console_buttons_w = make_buttons(left_paned_work_w, "console_buttons",
                                          app_data.console_buttons);
 
     // Status line
@@ -2899,6 +2948,12 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 
     // Paned Window is done
     XtManageChild (paned_work_w);
+    if (app_data.side_by_side_windows)
+    {
+        XtManageChild (left_paned_work_w);
+        XtManageChild (right_paned_work_w);
+    }
+
 
     // More values for main window
     XtVaSetValues (main_window,
@@ -4121,7 +4176,8 @@ void update_options()
     set_toggle(set_tool_buttons_in_command_tool_w, !app_data.command_toolbar);
 
     set_toggle(set_separate_windows_w, separate);
-    set_toggle(set_attached_windows_w, !separate);
+    set_toggle(set_attached_windows_w, !separate && !app_data.side_by_side_windows);
+    set_toggle(set_sidebyside_windows_w, app_data.side_by_side_windows);
 
     DebuggerType debugger_type = DebuggerType(-1);
     get_debugger_type(app_data.debugger, debugger_type);
@@ -4768,6 +4824,9 @@ static bool startup_preferences_changed()
     Boolean separate = (app_data.separate_data_window || 
                         app_data.separate_source_window);
     if (separate != initial_separate)
+        return true;
+
+    if (app_data.side_by_side_windows != initial_app_data.side_by_side_windows)
         return true;
 
     if (app_data.button_images != initial_app_data.button_images)

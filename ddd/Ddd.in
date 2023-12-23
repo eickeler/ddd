@@ -101,6 +101,9 @@
 ! @Ddd@*separateDataWindow: on
 ! @Ddd@*separateSourceWindow: on
 
+! You may show the source window and data window side by side.
+! @Ddd@*sideBySideWindows: on
+
 
 ! The windows may be initially on or off.  By default, the data window 
 ! remains closed since it will be opened anyway as soon as we create
@@ -590,7 +593,7 @@ set height 0\n\
 set width 0\n\
 set annotate 1\n\
 set print repeats unlimited\n\
- set verbose off\n
+set verbose off\n
 
 ! The GDB settings.  Usually overridden in `~/.@ddd@/init'.
 @Ddd@*gdbSettings: \
@@ -4745,6 +4748,7 @@ Click on @bf Reset@rm  to restore the saved preferences.
 
 @Ddd@*preferences*windows.labelString:		Window Layout
 @Ddd@*windowsMenu*attached.labelString:		Stacked Windows
+@Ddd@*windowsMenu*sidebyside.labelString:		Side by Side Windows
 @Ddd@*windowsMenu*separate.labelString:		Separate Windows
 
 @Ddd@*preferences*cutCopyPaste.labelString:	Ctrl+C is

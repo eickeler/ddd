@@ -1144,7 +1144,7 @@ void gdbToggleCommandWindowCB(Widget w, XtPointer client_data,
 
     if (info->set)
         gdbOpenCommandWindowCB(w, client_data, call_data);
-    else
+    else if (!app_data.side_by_side_windows)
         gdbCloseCommandWindowCB(w, client_data, call_data);
 }
 
@@ -1182,7 +1182,7 @@ void gdbToggleDataWindowCB(Widget w, XtPointer client_data,
 
     if (info->set)
         gdbOpenDataWindowCB(w, client_data, call_data);
-    else
+    else if (!app_data.side_by_side_windows)
         gdbCloseDataWindowCB(w, client_data, call_data);
 }
 
@@ -1659,7 +1659,7 @@ void unmanage_paned_child(Widget w)
     {
         // Resize the other child, but keep the command window intact
         Dimension height = 0;
-        Dimension max = 5000;
+        Dimension max = 1000;
         XtVaGetValues(command, 
                       XmNheight, &height,
                       XmNpaneMaximum, &max,
