@@ -63,7 +63,8 @@
 // DDD includes
 #include "ArgField.h"
 #include "GDBAgent.h"
-#include "BreakPM.h"
+#include "template/Map.h"
+#include "BreakPoint.h"
 #include "CodeCache.h"
 #include "x11/Delay.h"
 #include "template/StringSA.h"
@@ -314,7 +315,7 @@ class SourceView {
     static int tab_width;
 
     // The breakpoint map
-    static BreakPointMap bp_map;
+    static Map<int, BreakPoint> bp_map;
 
     // File attributes
     static string current_file_name;
