@@ -28,7 +28,7 @@
 #ifndef _DDD_BreakPointMap_h
 #define _DDD_BreakPointMap_h
 
-#include "Map.h"
+#include "template/Map.h"
 #include "BreakPoint.h"
 
 typedef Map<int, BreakPoint> BreakPointMap;

@@ -28,7 +28,7 @@
 #ifndef _DDD_DispNodeMap_h
 #define _DDD_DispNodeMap_h
 
-#include "Map.h"
+#include "template/Map.h"
 #include "DispNode.h"
 
 typedef Map<int, DispNode> DispNodeMap;

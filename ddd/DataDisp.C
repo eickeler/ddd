@@ -75,7 +75,7 @@ char DataDisp_rcsid[] =
 #include "template/IntIntAA.h"
 #include "motif/MString.h"
 #include "motif/MakeMenu.h"
-#include "Map.h"
+#include "template/Map.h"
 #include "graph/PannedGE.h"
 #include "PosBuffer.h"
 #include "ProgressM.h"

@@ -119,6 +119,7 @@ BASE_SRC = \
 TEMPLATE_SRC = \
 	template/Assoc.h      \
 	template/IntIntAA.h   \
+	template/Map.h        \
 	template/Queue.h      \
 	template/StatArray.h  \
 	template/StringA.h    \
@@ -551,7 +552,6 @@ DDD_SRC = \
 	HistoryD.h   \
 	HistoryF.h   \
 	IntArray.h   \
-	Map.h        \
 	MinMaxA.h    \
 	PlotAgent.C  \
 	PlotAgent.h  \
