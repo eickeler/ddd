@@ -2158,6 +2158,7 @@ static void Follow(Widget w, XEvent *event, String *, Cardinal *)
     BoxPoint& endAction         = _w->graphEditP.endAction;
     GraphEditState& state       = _w->graphEditP.state;
     BoxPoint& lastOffset        = _w->graphEditP.lastOffset;
+    Time& lasttime              = _w->graphEditP.lastMoveTime;
     const Dimension moveDelta   = _w->res_.graphEdit.moveDelta;
 
     BoxPoint p = point(event);
@@ -2174,10 +2175,13 @@ static void Follow(Widget w, XEvent *event, String *, Cardinal *)
 	    // Draw new move frames
 	    endAction = p;
 	    BoxPoint newOffset = actionOffset(w);
-	    if (newOffset != lastOffset)
+            Time t = time(event);
+            // restict update intervall to 33ms (30 fps)
+	    if (newOffset != lastOffset && lasttime + 33 < t)
 	    {
 		drawOutlines(w, lastOffset);
 		drawOutlines(w, lastOffset = newOffset);
+                lasttime = t;
 	    }
 	    break;
 	}

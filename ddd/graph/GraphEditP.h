@@ -170,6 +170,7 @@ typedef struct _GraphEditPartPrivate {
     BoxPoint endAction;		// End point action
     BoxPoint minimalOffset;	// Minimal offset for moving
     BoxPoint lastOffset;	// Last offset for moving
+    Time lastMoveTime;          // Last time of move event
 
     Time lastSelectTime;	// Last selection time (for multi-clicks)
     XtIntervalId redrawTimer;	// Timer used for redrawing
