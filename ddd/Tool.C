@@ -135,6 +135,9 @@ void create_command_tool()
     XtQueryGeometry(tool_buttons_w, (XtWidgetGeometry *)0, &size);
 #endif
 
+    // some window manager cannot move window with a width below 100 pixel
+    size.width = std::max(size.width, Dimension(110));
+
     // Set shell geometry
     Position pos_x, pos_y;
     get_transient_pos(XtScreen(tool_shell_parent), pos_x, pos_y);
