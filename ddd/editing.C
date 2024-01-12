@@ -79,17 +79,25 @@ static void move_to_end_of_line(XtPointer, XtIntervalId *)
 
 static XmTextPosition start_of_line()
 {
+    XmTextPosition end = XmTextGetLastPosition(gdb_w);
+    XmTextPosition start;
+    char search1[] = "\n(";
+    bool res = XmTextFindString(gdb_w, end, search1, XmTEXT_BACKWARD, &start);
+    if (res)
+        return start + 1; // advance by '\n'
+
+    char search2[] = "\n>";
+    res = XmTextFindString(gdb_w, end, search2, XmTEXT_BACKWARD, &start);
+    if (res)
+        return start + 1;
+
     String str = XmTextGetString(gdb_w);
     string s = str;
     XtFree(str);
+    if (!s.contains('(', 0) && !s.contains('>', 0)) // ok for utf-8, no position needed
+        return XmTextPosition(-1);
 
-    int start = s.index("\n(", -1);
-    if (start < 0)
-	start = s.index("\n>", -1);
-    if (start < 0 && !s.contains('(', 0) && !s.contains('>', 0))
-	return XmTextPosition(-1);
-
-    return start + 1;
+    return 0;
 }
 
 
@@ -114,10 +122,14 @@ string current_line()
     if (have_isearch_line)
 	return isearch_line;
 
-    String str = XmTextGetString(gdb_w);
-    string input(str + promptPosition, 
-		 XmTextGetLastPosition(gdb_w) - promptPosition);
-    XtFree(str);
+    int lastpos = XmTextGetLastPosition(gdb_w);
+    int num_chars =  lastpos - promptPosition;
+    int buffer_size = (num_chars* MB_CUR_MAX) + 1;
+    char *buffer = new char[buffer_size];
+    // this works for latin1 and utf-8
+    XmTextGetSubstring(gdb_w, promptPosition, num_chars, buffer_size, buffer);
+    string input(buffer);
+    delete [] buffer;
     return input;
 }
 
@@ -166,7 +178,7 @@ static void show_isearch()
     promptPosition = start + prompt.length();
 
     XmTextPosition pos = promptPosition;
-    int index = input.index(isearch_string);
+    int index = input.index(isearch_string); // FIXME: this should not work with utf-8
     if (isearch_state == ISEARCH_NONE || index < 0)
     {
 	XmTextSetHighlight(gdb_w, 0, XmTextGetLastPosition(gdb_w),
