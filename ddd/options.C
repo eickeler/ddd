@@ -2111,7 +2111,7 @@ static string orientation_app_value(const string& name, unsigned char v,
     return app_value(name, value, check_default);
 }
 
-static string paned_widget_size(Widget w, bool height_only = false)
+static string paned_widget_size(Widget w, bool height_only = false, bool width_only = false)
 {
     string s;
     const Boolean check_default = False;
@@ -2129,7 +2129,7 @@ static string paned_widget_size(Widget w, bool height_only = false)
                                check_default);
         }
 
-        if (XmIsText(w))
+        if (XmIsText(w) && !width_only)
         {
             short rows = 0;
             XtVaGetValues(w, XmNrows, &rows, XtPointer(0));
@@ -2161,10 +2161,13 @@ static string paned_widget_size(Widget w, bool height_only = false)
             s += int_app_value(string(XtName(w)) + "." + XmNwidth, width,
                                check_default);
 
-        if (!s.empty())
-            s += '\n';
-        s += int_app_value(string(XtName(w)) + "." + XmNheight, height,
-                           check_default);
+        if (!width_only)
+        {
+            if (!s.empty())
+                s += '\n';
+            s += int_app_value(string(XtName(w)) + "." + XmNheight, height,
+                               check_default);
+        }
     }
 
     return s;
@@ -2172,7 +2175,12 @@ static string paned_widget_size(Widget w, bool height_only = false)
 
 inline string paned_widget_height(Widget w)
 {
-    return paned_widget_size(w, true);
+    return paned_widget_size(w, true, false);
+}
+
+inline string paned_widget_width(Widget w)
+{
+    return paned_widget_size(w, false, true);
 }
 
 static string widget_geometry(Widget w, bool include_size = false)
@@ -2730,23 +2738,16 @@ bool save_options(unsigned long flags)
     // Command tool
     os << "\n! Command Tool.\n";
     get_tool_offset();
-    os << bool_app_value(XtNcommandToolBar,
-                         app_data.command_toolbar) << '\n';
-    os << int_app_value(XtNtoolRightOffset,
-                        app_data.tool_right_offset, True) << '\n';
-    os << int_app_value(XtNtoolTopOffset,
-                        app_data.tool_top_offset, True) << '\n';
+    os << bool_app_value(XtNcommandToolBar, app_data.command_toolbar) << '\n';
+    os << int_app_value(XtNtoolRightOffset, app_data.tool_right_offset, True) << '\n';
+    os << int_app_value(XtNtoolTopOffset, app_data.tool_top_offset, True) << '\n';
 
     // Buttons
     os << "\n! Buttons.\n";
-    os << string_app_value(XtNconsoleButtons, app_data.console_buttons)
-       << '\n';
-    os << string_app_value(XtNsourceButtons,  app_data.source_buttons)
-       << '\n';
-    os << string_app_value(XtNdataButtons,    app_data.data_buttons)
-       << '\n';
-    os << bool_app_value(XtNverifyButtons,    app_data.verify_buttons)
-       << '\n';
+    os << string_app_value(XtNconsoleButtons, app_data.console_buttons) << '\n';
+    os << string_app_value(XtNsourceButtons,  app_data.source_buttons) << '\n';
+    os << string_app_value(XtNdataButtons,    app_data.data_buttons) << '\n';
+    os << bool_app_value(XtNverifyButtons,    app_data.verify_buttons) << '\n';
 
     // Shortcut expressions
     os << "\n! Display shortcuts.\n";
@@ -2815,32 +2816,24 @@ bool save_options(unsigned long flags)
 
     // Fonts
     os << "\n! Fonts.\n";
-    os << string_app_value(XtNdefaultFont,
-                           app_data.default_font, True) << '\n';
-    os << string_app_value(XtNvariableWidthFont, 
-                           app_data.variable_width_font, True) << '\n';
-    os << string_app_value(XtNfixedWidthFont,
-                           app_data.fixed_width_font, True) << '\n';
-    os << string_app_value(XtNdataFont,
-                           app_data.data_font, True) << '\n';
+    os << string_app_value(XtNdefaultFont, app_data.default_font, True) << '\n';
+    os << string_app_value(XtNvariableWidthFont, app_data.variable_width_font, True) << '\n';
+    os << string_app_value(XtNfixedWidthFont, app_data.fixed_width_font, True) << '\n';
+    os << string_app_value(XtNdataFont, app_data.data_font, True) << '\n';
+
     if (!save_session &&
         app_data.default_font_size == app_data.variable_width_font_size &&
         app_data.default_font_size == app_data.fixed_width_font_size &&
         app_data.default_font_size == app_data.data_font_size)
     {
-        os << int_app_value(XtCFontSize, app_data.default_font_size)
-           << '\n';
+        os << int_app_value(XtCFontSize, app_data.default_font_size) << '\n';
     }
     else
     {
-        os << int_app_value(XtNdefaultFontSize,
-                            app_data.default_font_size) << '\n';
-        os << int_app_value(XtNvariableWidthFontSize, 
-                            app_data.variable_width_font_size) << '\n';
-        os << int_app_value(XtNfixedWidthFontSize, 
-                            app_data.fixed_width_font_size) << '\n';
-        os << int_app_value(XtNdataFontSize, 
-                            app_data.data_font_size) << '\n';
+        os << int_app_value(XtNdefaultFontSize, app_data.default_font_size) << '\n';
+        os << int_app_value(XtNvariableWidthFontSize, app_data.variable_width_font_size) << '\n';
+        os << int_app_value(XtNfixedWidthFontSize, app_data.fixed_width_font_size) << '\n';
+        os << int_app_value(XtNdataFontSize, app_data.data_font_size) << '\n';
     }
 
     // Windows.
@@ -2849,15 +2842,11 @@ bool save_options(unsigned long flags)
     if (!app_data.data_window && !app_data.source_window && !app_data.debugger_console)
         app_data.debugger_console = True;
     
-    os << bool_app_value(XtNopenDataWindow,      
-                         app_data.data_window)      << '\n';
-    os << bool_app_value(XtNopenSourceWindow,    
-                         app_data.source_window)    << '\n';
-    os << bool_app_value(XtNopenDebuggerConsole, 
-                         app_data.debugger_console) << '\n';
+    os << bool_app_value(XtNopenDataWindow, app_data.data_window)      << '\n';
+    os << bool_app_value(XtNopenSourceWindow, app_data.source_window)    << '\n';
+    os << bool_app_value(XtNopenDebuggerConsole, app_data.debugger_console) << '\n';
 
-    if (!save_session && 
-        !app_data.separate_source_window && !app_data.separate_data_window)
+    if (!save_session && !app_data.separate_source_window && !app_data.separate_data_window)
     {
         os << bool_app_value(XtCSeparate, False) << '\n';
         if (app_data.side_by_side_windows)
@@ -2865,24 +2854,18 @@ bool save_options(unsigned long flags)
         else
             os << bool_app_value(XtCSideBySide, False) << '\n';
     }
-    else if (!save_session &&
-             app_data.separate_source_window && app_data.separate_data_window)
+    else if (!save_session && app_data.separate_source_window && app_data.separate_data_window)
     {
         os << bool_app_value(XtCSeparate, True) << '\n';
     }
     else
     {
-        os << bool_app_value(XtNseparateSourceWindow, 
-                             app_data.separate_source_window) << '\n';
-        os << bool_app_value(XtNseparateDataWindow, 
-                             app_data.separate_data_window) << '\n';
+        os << bool_app_value(XtNseparateSourceWindow, app_data.separate_source_window) << '\n';
+        os << bool_app_value(XtNseparateDataWindow, app_data.separate_data_window) << '\n';
     }
-    os << bool_app_value(XtNseparateExecWindow,
-                         app_data.separate_exec_window) << '\n';
-    os << bool_app_value(XtNgroupIconify,
-                         app_data.group_iconify) << '\n';
-    os << bool_app_value(XtNuniconifyWhenReady,
-                         app_data.uniconify_when_ready) << '\n';
+    os << bool_app_value(XtNseparateExecWindow, app_data.separate_exec_window) << '\n';
+    os << bool_app_value(XtNgroupIconify, app_data.group_iconify) << '\n';
+    os << bool_app_value(XtNuniconifyWhenReady, app_data.uniconify_when_ready) << '\n';
 
     // Maintenance
     os << "\n! Maintenance.\n";
@@ -2892,7 +2875,13 @@ bool save_options(unsigned long flags)
     // Window sizes.
     os << "\n! Window sizes.\n";
 
-    os << paned_widget_size(data_disp->graph_edit) << '\n';
+    if (app_data.side_by_side_windows)
+        os << paned_widget_width(data_disp->graph_edit) << '\n';
+    else if (!app_data.separate_data_window)
+        os << paned_widget_height(data_disp->graph_edit) << '\n';
+    else
+        os << paned_widget_size(data_disp->graph_edit) << '\n';
+
     os << paned_widget_size(source_view->source())   << '\n';
     os << paned_widget_size(source_view->code())     << '\n';
     os << paned_widget_size(gdb_w)                   << '\n';
