@@ -484,6 +484,9 @@ static void setup_xft_fonts(AppData& ad, XrmDatabase& db)
     XrmPutLineResource(&db, "Ddd*source_text_w*renderTable: rtfix");
     XrmPutLineResource(&db, "Ddd*gdb_w*renderTable: rtfix");
     XrmPutLineResource(&db, "Ddd*code_text_w*renderTable: rtfix");
+    XrmPutLineResource(&db, "Ddd*edit_breakpoints_dialog*renderTable: rtfix");
+    XrmPutLineResource(&db, "Ddd*register_dialog*renderTable: rtfix");
+    XrmPutLineResource(&db, "Ddd*edit_displays_dialog*renderTable: rtfix");
     XrmPutLineResource(&db, "Ddd*rtfix*fontType: FONT_IS_XFT");
     XrmPutLineResource(&db, (string("Ddd*rtfix*fontName: ") + ad.fixed_width_font).chars());
     XrmPutLineResource(&db, (string("Ddd*rtfix*fontSize: ") + itostring(ad.fixed_width_font_size)).chars());
