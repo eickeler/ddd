@@ -2454,6 +2454,9 @@ bool SourceView::get_line_of_pos (Widget   w,
         line_nr = max(line_nr, 1);
 
         // Check for breakpoints...
+        if (bps_in_line.has(line_nr)==false)
+            return true;
+
         std::vector<int>& bps = bps_in_line[line_nr];
         if (bps.size() == 1)
         {
