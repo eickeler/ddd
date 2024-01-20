@@ -181,7 +181,7 @@ Ddd*openSelection: off
 ! run in the execution window.
 ! The string `@FONT@' is replaced by the current DDD text font.
 Ddd*termCommand: @XTERM@ -bg 'TEXT_BACKGROUND_COLOR' -fg 'black' \
--cr 'RUN_COLOR' -fn '@FONT@' -title 'DDD: Execution Window' -e /bin/sh -c
+-cr 'RUN_COLOR' -fa '@FONT@' -title 'DDD: Execution Window' -e /bin/sh -c
 
 ! The command to invoke to select fonts.
 ! The string `@FONT@' is replaced by the current DDD default font.
@@ -299,7 +299,7 @@ Ddd*paperSize: 210mm x 297mm
 ! `@FILE@' by the file name.  Default is to invoke $XEDITOR first,
 ! then $EDITOR, then VI.
 Ddd*editCommand: \
-${XEDITOR-false} +@LINE@ @FILE@ \
+kdevelop @FILE@:@LINE@ \
 || @XTERM@ -e ${EDITOR-vi} +@LINE@ @FILE@
 
 
@@ -340,7 +340,7 @@ Ddd*wwwPage: http://www.gnu.org/software/ddd/
 
 Ddd*wwwCommand: \
    firefox '@URL@' \
-|| mozilla -remote 'openURL(@URL@)' \
+|| google-chrome '@URL@' \
 || opera -remote 'openURL(@URL@)' \
 || ${WWWBROWSER-false} '@URL@' \
 || konqueror 'openURL(@URL@)' \
@@ -348,12 +348,8 @@ Ddd*wwwCommand: \
 || skipstone 'openURL(@URL@)' \
 || light 'openURL(@URL@)' \
 || netscape -remote 'openURL(@URL@)' \
-|| mozilla '@URL@' \
 || kfmbrowser '@URL@' \
-|| netscape '@URL@' \
 || gnudoit '(w3-fetch \042@URL@\042)' \
-|| mosaic '@URL@' \
-|| Mosaic '@URL@' \
 || @XTERM@ -e lynx '@URL@'
 
 

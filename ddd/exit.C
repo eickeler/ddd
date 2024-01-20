@@ -1285,7 +1285,11 @@ static void debug_ddd(bool core_dumped)
 
     string term_command = app_data.term_command;
     term_command.gsub("Execution", "Debug");
+#ifdef HAVE_FREETYPE
+    term_command.gsub("@FONT@", make_xftfont(app_data, FixedWidthDDDFont));
+#else
     term_command.gsub("@FONT@", make_font(app_data, FixedWidthDDDFont));
+#endif
 
     string gdb_command = string("gdb ") + saved_argv()[0] + " ";
 

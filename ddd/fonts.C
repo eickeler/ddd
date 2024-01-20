@@ -487,6 +487,7 @@ static void setup_xft_fonts(AppData& ad, XrmDatabase& db)
     XrmPutLineResource(&db, "Ddd*edit_breakpoints_dialog*renderTable: rtfix");
     XrmPutLineResource(&db, "Ddd*register_dialog*renderTable: rtfix");
     XrmPutLineResource(&db, "Ddd*edit_displays_dialog*renderTable: rtfix");
+
     XrmPutLineResource(&db, "Ddd*rtfix*fontType: FONT_IS_XFT");
     XrmPutLineResource(&db, (string("Ddd*rtfix*fontName: ") + ad.fixed_width_font).chars());
     XrmPutLineResource(&db, (string("Ddd*rtfix*fontSize: ") + itostring(ad.fixed_width_font_size)).chars());
@@ -498,9 +499,26 @@ static void setup_xft_fonts(AppData& ad, XrmDatabase& db)
     XrmPutLineResource(&db, "Ddd*rtvar*fontType: FONT_IS_XFT");
     XrmPutLineResource(&db, (string("Ddd*rtvar*fontName: ") + ad.variable_width_font).chars());
     XrmPutLineResource(&db, (string("Ddd*rtvar*fontSize: ") + itostring(ad.variable_width_font_size)).chars());
-
-
 }
+
+string make_xftfont(const AppData& ad, DDDFont base)
+{
+    switch(base)
+    {
+        case VariableWidthDDDFont:
+            return string(ad.variable_width_font) +string(":size=") + itostring(ad.variable_width_font_size);
+
+        case DataDDDFont:
+            return string(ad.data_font) +string(":size=") + itostring(ad.data_font_size);
+
+        default:
+        case FixedWidthDDDFont:
+            return string(ad.fixed_width_font) +string(":size=") + itostring(ad.fixed_width_font_size);
+    }
+}
+
+
+
 //-----------------------------------------------------------------------------
 // Set VSL font resources
 //-----------------------------------------------------------------------------

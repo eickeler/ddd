@@ -51,6 +51,8 @@ extern void setup_fonts(AppData& app_data, XrmDatabase db = 0);
 extern string make_font(const AppData& ad, DDDFont base, 
 			const string& override = "");
 
+extern string make_xftfont(const AppData& ad, DDDFont base);
+
 // Set a new font resource
 extern void set_font(DDDFont n, const string& name);
 

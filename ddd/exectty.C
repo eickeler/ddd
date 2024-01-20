@@ -137,8 +137,11 @@ static void launch_separate_tty(string& ttyname, pid_t& pid, string& term,
         return;
 
     string term_command = app_data.term_command;
+#if HAVE_FREETYPE
+    term_command.gsub("@FONT@", make_xftfont(app_data, FixedWidthDDDFont));
+#else
     term_command.gsub("@FONT@", make_font(app_data, FixedWidthDDDFont));
-
+#endif
     static bool canceled;
     canceled = false;
 
