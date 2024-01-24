@@ -2849,10 +2849,7 @@ bool save_options(unsigned long flags)
     if (!save_session && !app_data.separate_source_window && !app_data.separate_data_window)
     {
         os << bool_app_value(XtCSeparate, False) << '\n';
-        if (app_data.side_by_side_windows)
-            os << bool_app_value(XtCSideBySide, True) << '\n';
-        else
-            os << bool_app_value(XtCSideBySide, False) << '\n';
+        os << bool_app_value(XtNsideBySideWindows, app_data.side_by_side_windows) << '\n';
     }
     else if (!save_session && app_data.separate_source_window && app_data.separate_data_window)
     {
