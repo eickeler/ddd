@@ -106,54 +106,6 @@ static void YnButtonCB(Widget dialog,
 
 
 //-----------------------------------------------------------------------------
-// Version stuff
-//-----------------------------------------------------------------------------
-
-// Return true iff old button separators (`:') are used.  These were
-// introduced in DDD 1997-10 or 2.1.
-static bool old_button_format()
-{
-    if (app_data.dddinit_version == 0)
-	return true;
-    const string v = app_data.dddinit_version;
-    int major = atoi(v.chars());
-
-    if (major > 1900)
-    {
-	// YYYY-MM-DD format
-	if (major <= 1996)
-	    return true;	// 1996 or earlier
-	if (major >= 1998)
-	    return false;	// 1998 or later
-
-	assert(major == 1997);
-	const string v2 = v.after('-');
-	int minor = atoi(v2.chars());
-	if (minor <= 9)		// 1997-09 or earlier
-	    return true;
-
-	return false;		// 1997-10 or later
-    }
-    else
-    {
-	// MAJOR.MINOR format
-	if (major <= 1)
-	    return true;	// 1.x or earlier
-	if (major >= 3)
-	    return false;	// 3.x or later
-
-	assert(major == 2);
-	const string v2 = v.after('.');
-	int minor = atoi(v2.chars());
-	if (minor <= 1)
-	    return true;	// 2.1 or earlier
-
-	return false;		// 2.2 or later
-    }
-}
-
-
-//-----------------------------------------------------------------------------
 // Show documentation string in status line
 //-----------------------------------------------------------------------------
 
@@ -1119,15 +1071,6 @@ void set_buttons(Widget buttons, const _XtString _button_list, bool manage)
     // Add new buttons
     string button_list = _button_list;
 
-    if (button_list.contains(':') && old_button_format())
-    {
-	// DDD 2.1 and earlier used `:' to separate buttons
-	button_list.gsub(':', '\n');
-
-	std::cerr << "Warning: converting " << quote(_button_list) << "\n"
-	     << "to new format " << quote(button_list) << "\n";
-    }
-
     int lines = button_list.freq('\n') + 1;
     string *commands = new string[lines];
     split(button_list, commands, lines, '\n');
@@ -1328,12 +1271,6 @@ void set_buttons(Widget buttons, const _XtString _button_list, bool manage)
 // Remove garbage from S
 static string normalize(string s)
 {
-    if (s.contains(':') && old_button_format())
-    {
-	// DDD 2.1 and earlier used `:' to separate buttons
-	s.gsub(':', '\n');
-    }
-
     int lines = s.freq('\n') + 1;
     string *commands = new string[lines];
     split(s, commands, lines, '\n');
