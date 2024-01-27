@@ -481,32 +481,50 @@ static void setup_xft_fonts(AppData& ad, XrmDatabase& db)
         ad.fixed_width_font_size = 11; // size seem to be in points -> set default
 
     // according to hints from Joe Nelson
-    XrmPutLineResource(&db, "Ddd*source_text_w*renderTable: rtfix");
-    XrmPutLineResource(&db, "Ddd*gdb_w*renderTable: rtfix");
-    XrmPutLineResource(&db, "Ddd*code_text_w*renderTable: rtfix");
-    XrmPutLineResource(&db, "Ddd*edit_breakpoints_dialog*ItemsListSW*renderTable: rtfix");
-    XrmPutLineResource(&db, "Ddd*register_dialog*ItemsListSW*renderTable: rtfix");
-    XrmPutLineResource(&db, "Ddd*edit_displays_dialog*ItemsListSW*renderTable: rtfix");
-    XrmPutLineResource(&db, "Ddd*stack_dialog*ItemsListSW*renderTable: rtfix");
-    XrmPutLineResource(&db, "Ddd*thread_dialog*ItemsListSW*renderTable: rtfix");
+    XrmPutLineResource(&db, "Ddd*source_text_w*renderTable: tt");
+    XrmPutLineResource(&db, "Ddd*gdb_w*renderTable: tt");
 
-    XrmPutLineResource(&db, "Ddd*rtfix*fontType: FONT_IS_XFT");
-    XrmPutLineResource(&db, (string("Ddd*rtfix*fontName: ") + ad.fixed_width_font).chars());
-    XrmPutLineResource(&db, (string("Ddd*rtfix*fontSize: ") + itostring(ad.fixed_width_font_size)).chars());
+    XrmPutLineResource(&db, "Ddd*tt*fontType: FONT_IS_XFT");
+    XrmPutLineResource(&db, (string("Ddd*tt*fontName: ") + ad.fixed_width_font).chars());
+    XrmPutLineResource(&db, (string("Ddd*tt*fontSize: ") + itostring(ad.fixed_width_font_size)).chars());
+
+    XrmPutLineResource(&db, "Ddd*tb*fontType: FONT_IS_XFT");
+    XrmPutLineResource(&db, (string("Ddd*tb*fontName: ") + ad.fixed_width_font).chars());
+    XrmPutLineResource(&db, (string("Ddd*tb*fontSize: ") + itostring(ad.fixed_width_font_size)).chars());
+    XrmPutLineResource(&db, "Ddd*tb*fontStyle: Bold");
 
     if (ad.variable_width_font_size>=80)
         ad.variable_width_font_size = 11; // size seem to be in points -> set default
 
-    XrmPutLineResource(&db, "Ddd*renderTable: rtvar");
-    XrmPutLineResource(&db, "Ddd*source_text_w*bp_popup*renderTable: rtvar");
-    XrmPutLineResource(&db, "Ddd*source_text_w*line_popup*renderTable: rtvar");
-    XrmPutLineResource(&db, "Ddd*source_text_w*text_popup*renderTable: rtvar");
-    XrmPutLineResource(&db, "Ddd*source_text_w*breakpoint_properties*renderTable: rtvar");
-    XrmPutLineResource(&db, "Ddd*gdb_w*gdb_popup*renderTable: rtvar");
+    XrmPutLineResource(&db, "Ddd*renderTable: rm,tt,llogo,logo,small,tb,key,bf");
 
-    XrmPutLineResource(&db, "Ddd*rtvar*fontType: FONT_IS_XFT");
-    XrmPutLineResource(&db, (string("Ddd*rtvar*fontName: ") + ad.variable_width_font).chars());
-    XrmPutLineResource(&db, (string("Ddd*rtvar*fontSize: ") + itostring(ad.variable_width_font_size)).chars());
+    XrmPutLineResource(&db, "Ddd*rm*fontType: FONT_IS_XFT");
+    XrmPutLineResource(&db, (string("Ddd*rm*fontName: ") + ad.variable_width_font).chars());
+    XrmPutLineResource(&db, (string("Ddd*rm*fontSize: ") + itostring(ad.variable_width_font_size)).chars());
+
+    XrmPutLineResource(&db, "Ddd*bf*fontType: FONT_IS_XFT");
+    XrmPutLineResource(&db, (string("Ddd*bf*fontName: ") + ad.variable_width_font).chars());
+    XrmPutLineResource(&db, (string("Ddd*bf*fontSize: ") + itostring(ad.variable_width_font_size)).chars());
+    XrmPutLineResource(&db, "Ddd*bf*fontStyle: Bold");
+
+    XrmPutLineResource(&db, "Ddd*small*fontType: FONT_IS_XFT");
+    XrmPutLineResource(&db, (string("Ddd*small*fontName: ") + ad.variable_width_font).chars());
+    XrmPutLineResource(&db, (string("Ddd*small*fontSize: ") + itostring(ad.variable_width_font_size*.8)).chars());
+
+    XrmPutLineResource(&db, "Ddd*llogo*fontType: FONT_IS_XFT");
+    XrmPutLineResource(&db, (string("Ddd*llogo*fontName: ") + ad.variable_width_font).chars());
+    XrmPutLineResource(&db, (string("Ddd*llogo*fontSize: ") + itostring(ad.variable_width_font_size*2)).chars());
+    XrmPutLineResource(&db, (string("Ddd*llogo*fontStyle: Bold").chars()));
+
+    XrmPutLineResource(&db, "Ddd*logo*fontType: FONT_IS_XFT");
+    XrmPutLineResource(&db, (string("Ddd*logo*fontName: ") + ad.variable_width_font).chars() );
+    XrmPutLineResource(&db, (string("Ddd*logo*fontSize: ") + itostring(ad.variable_width_font_size*1.2)).chars());
+    XrmPutLineResource(&db, "Ddd*logo*fontStyle: Bold");
+
+    XrmPutLineResource(&db, "Ddd*key*fontType: FONT_IS_XFT");
+    XrmPutLineResource(&db, (string("Ddd*key*fontName: ") + ad.variable_width_font).chars());
+    XrmPutLineResource(&db, (string("Ddd*key*fontSize: ") + itostring(ad.variable_width_font_size)).chars());
+    XrmPutLineResource(&db, "Ddd*key*fontStyle: Bold");
 }
 
 string make_xftfont(const AppData& ad, DDDFont base)

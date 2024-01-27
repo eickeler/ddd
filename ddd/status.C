@@ -113,24 +113,28 @@ void set_buttons_from_gdb(Widget buttons, string& text)
 
     if (yn && !gdb_keyboard_command)
     {
-	// Fetch previous output lines, in case this is a multi-line message.
-	String s = XmTextGetString(gdb_w);
-	string prompt(s);
-	XtFree(s);
+        // Fetch previous output lines, in case this is a multi-line message.
+        XmTextPosition pos;
+        // FIXME: Handle JDB
+        const char *prompt_start = (gdb->type() == XDB) ? ">" : "(";
+        bool res = XmTextFindString(gdb_w, XmTextGetLastPosition(gdb_w), XMST(prompt_start), XmTEXT_BACKWARD, &pos);
+        if (res)
+            res = XmTextFindString(gdb_w, pos, XMST("\n"), XmTEXT_FORWARD, &pos);
+        if (res)
+            pos++;
+        else
+            pos = messagePosition;
 
-	// FIXME: Handle JDB
-	char prompt_start = (gdb->type() == XDB ? '>' : '(');
-
-	int pos = prompt.index(prompt_start, -1);
-	if (pos >= 0)
-	    pos = prompt.index('\n', pos) + 1;
-	if (pos == 0)
-	    pos = messagePosition;
-
-	XmTextReplace(gdb_w, pos, XmTextGetLastPosition(gdb_w), XMST(""));
+        XmTextReplace(gdb_w, pos, XmTextGetLastPosition(gdb_w), XMST(""));
 	promptPosition = pos;
+        int lastpos = XmTextGetLastPosition(gdb_w);
+        int num_chars =  lastpos - promptPosition;
+        int buffer_size = (num_chars* MB_CUR_MAX) + 1;
+        char *buffer = new char[buffer_size];
+        XmTextGetSubstring(gdb_w, promptPosition, num_chars, buffer_size, buffer);
+        string prompt(buffer);
+        delete [] buffer;
 
-	prompt = prompt.from(pos);
 	if (text.contains('('))
 	    prompt += text.before('(', -1); // Don't repeat `(y or n)'
 	else
@@ -350,12 +354,8 @@ static bool is_prefix(const MString& m1, const MString& m2)
 	}
 
 	case XmSTRING_COMPONENT_TEXT:
-#if XmVersion >= 1002
 	case XmSTRING_COMPONENT_LOCALE_TEXT:
-#endif
-#if XmVersion >= 2000
 	case XmSTRING_COMPONENT_WIDECHAR_TEXT:
-#endif
 	{
 	    if (text1.empty())	// In LessTif 0.82, XmStringGetNextComponent()
 		text1 = cs1;	// swaps CS and TEXT.  Work around this.
