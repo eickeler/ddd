@@ -71,10 +71,10 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const ThemeManager& t);
 
     // Get list of themes for an expression
-    StringArray themes(const string& expr) const;
+    std::vector<string> themes(const string& expr) const;
 
     // Get all themes
-    StringArray themes() const;
+    std::vector<string> themes() const;
 
     // Check wether pattern exists
     bool has_pattern(const string& theme) const

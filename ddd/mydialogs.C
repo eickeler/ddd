@@ -205,10 +205,9 @@ void updateLabelList (Widget  selectionList,
 
 
 // Fill the item numbers in DISP_NRS
-void getItemNumbers(Widget selectionList, IntArray& numbers)
+void getItemNumbers(Widget selectionList, std::vector<int>& numbers)
 {
-    static const IntArray empty;
-    numbers = empty;
+    numbers.clear();
 
     if (selectionList == 0)
 	return;

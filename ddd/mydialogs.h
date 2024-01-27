@@ -38,8 +38,10 @@
 // DDD includes
 #include "base/strclass.h"
 #include "base/bool.h"
-#include "IntArray.h"
 #include "x11/charsets.h"
+
+#include <vector>
+
 
 // Create a selection box with a top-level shell.  This is like
 // XmCreateSelectionDialog, but the parent is a top-level shell.
@@ -47,7 +49,7 @@ Widget createTopLevelSelectionDialog(Widget parent, const _XtString name,
 				     ArgList args, Cardinal num_args);
 
 // Get the item numbers
-void getItemNumbers(Widget selectionList, IntArray& arr);
+void getItemNumbers(Widget selectionList, std::vector<int>& arr);
 
 
 // Set the elements of the display selection list

@@ -29,11 +29,13 @@
 #define _DDD_ThemePattern_h
 
 #include <iostream>
-#include "template/StringA.h"
+#include "base/strclass.h"
+#include <vector>
+
 
 class ThemePattern {
 private:
-    StringArray _patterns;
+    std::vector<string> _patterns;
     bool _active;
 
 protected:
@@ -62,7 +64,7 @@ public:
     bool& active()       { return _active; }
 
     // Patterns
-    const StringArray& patterns() const { return _patterns; }
+    const std::vector<string>& patterns() const { return _patterns; }
 
     // Add pattern
     void add(const string& pattern);

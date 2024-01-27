@@ -111,7 +111,7 @@ int smart_compare(const string& s1, const string& s2)
 
 
 // Sort array A, using smart_compare
-void smart_sort(StringArray& a)
+void smart_sort(std::vector<string>& a)
 {
     SMART_SHELL_SORT(string, a, int(a.size()));
 }
@@ -129,9 +129,9 @@ void smart_sort(string *a, int size)
 }
 
 // Remove adjacent duplicates in A
-void uniq(StringArray& a)
+void uniq(std::vector<string>& a)
 {
-    StringArray b;
+    std::vector<string> b;
 
     for (int i = 0; i < int(a.size()); i++)
     {

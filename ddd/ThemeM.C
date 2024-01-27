@@ -102,9 +102,9 @@ std::ostream& operator<<(std::ostream& os, const ThemeManager& t)
 }
 
 // Get list of themes for an expression
-StringArray ThemeManager::themes(const string& expr) const
+std::vector<string> ThemeManager::themes(const string& expr) const
 {
-    StringArray ret;
+    std::vector<string> ret;
 
     for (StringThemePatternAssocIter i(map); i.ok(); i = i.next())
     {
@@ -123,9 +123,9 @@ StringArray ThemeManager::themes(const string& expr) const
 }
 
 // Get all themes
-StringArray ThemeManager::themes() const
+std::vector< string > ThemeManager::themes() const
 {
-    StringArray ret;
+    std::vector<string> ret;
 
     for (StringThemePatternAssocIter i(map); i.ok(); i = i.next())
 	ret.push_back(i.key());

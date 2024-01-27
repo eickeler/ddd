@@ -28,11 +28,12 @@
 #ifndef _DDD_java_h
 #define _DDD_java_h
 
-#include "template/StringA.h"
+#include "base/strclass.h"
+#include <vector>
 
 // Store all classes in current use path in CLASSES_LIST.  If
 // WITH_SOURCE_ONLY is set, consider only classes with loadable sources.
-void get_java_classes(StringArray& classes_list, bool with_source_only = true);
+void get_java_classes(std::vector<string>& classes_list, bool with_source_only = true);
 
 // Return source file of CLASS_NAME; "" if none
 string java_class_file(const string& class_name, bool search_classes = true);

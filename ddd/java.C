@@ -83,7 +83,7 @@ static string concat_dir(const string& dir, const string& file)
 // Store all classes in DIR in CLASSES_LIST.  BASE is the initial dir.  If
 // WITH_SOURCE_ONLY is set, consider only classes with loadable sources.
 static void get_java_classes(const string& dir, const string& base,
-			     StringArray& classes_list, bool with_source_only,
+			     std::vector<string>& classes_list, bool with_source_only,
 			     StatArray& dirs_seen)
 {
     struct stat sb;
@@ -199,7 +199,7 @@ static void get_java_classes(const string& dir, const string& base,
 
 // Store all classes in current use path in CLASSES_LIST.  If
 // WITH_SOURCE_ONLY is set, consider only classes with loadable sources.
-void get_java_classes(StringArray& classes_list, bool with_source_only)
+void get_java_classes(std::vector<string>& classes_list, bool with_source_only)
 {
     string use = source_view->class_path();
     while (!use.empty())

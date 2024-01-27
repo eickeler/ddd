@@ -104,7 +104,7 @@ void ThemePattern::add(const string& pattern)
 
 void ThemePattern::remove(const string& pattern)
 {
-    StringArray new_patterns;
+    std::vector<string> new_patterns;
     for (int i = 0; i < int(patterns().size()); i++)
 	if (patterns()[i] != pattern)
 	    new_patterns.push_back(patterns()[i]);

@@ -28,7 +28,8 @@
 #ifndef _DDD_SmartCompare_h
 #define _DDD_SmartCompare_h
 
-#include "template/StringA.h"
+#include "base/strclass.h"
+#include <vector>
 
 // Compare S1 and S2, taking numerals into account
 // returns < 0, > 0, or 0 iff S1 < S2, S1 > S2, or S1 == S2.
@@ -37,12 +38,12 @@ extern int smart_compare(const string& s1, const string& s2);
 
 
 // Sort array S, using smart_compare
-extern void smart_sort(StringArray& s);
+extern void smart_sort(std::vector<string>& s);
 extern void smart_sort(char *a[], int size);
 extern void smart_sort(string *a, int size);
 
 // Remove adjacent duplicates in A
-extern void uniq(StringArray& a);
+extern void uniq(std::vector<string>& a);
 
 #endif // _DDD_SmartCompare_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
