@@ -46,7 +46,6 @@ void DDDWWWPageCB(Widget, XtPointer, XtPointer);
 // Manual
 int ddd_man(std::ostream& os);
 void DDDManualCB(Widget, XtPointer, XtPointer);
-void GDBManualCB(Widget, XtPointer, XtPointer);
 
 // License
 int ddd_license(std::ostream& os);
