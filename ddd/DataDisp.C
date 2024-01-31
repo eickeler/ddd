@@ -3858,14 +3858,10 @@ void DataDisp::open_data_window()
 
 void DataDisp::close_data_window()
 {
-    if (app_data.separate_data_window)
-    {
-	// Don't close a separate data window.
-    }
-    else
-    {
-	gdbCloseDataWindowCB(graph_edit, 0, 0);
-    }
+    if (app_data.separate_data_window || app_data.side_by_side_windows)
+        return; // Don't close a separate data window.
+
+    gdbCloseDataWindowCB(graph_edit, 0, 0);
 }
 
 //-----------------------------------------------------------------------------
