@@ -452,6 +452,9 @@ void set_status_from_gdb(const string& text)
     {
         pos++;
         messageEnd = pos;
+
+        if (show_next_line_in_status==false)
+            break;
     }
 
     string message;

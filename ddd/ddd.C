@@ -1660,7 +1660,6 @@ static Widget get_core_command_w;
 static Widget ps_command_w;
 static Widget term_command_w;
 static Widget uncompress_command_w;
-static Widget www_command_w;
 static Widget plot_command_w;
 
 static MMDesc helpers_preferences_menu [] =
@@ -1675,8 +1674,6 @@ static MMDesc helpers_preferences_menu [] =
       0, &term_command_w, 0, 0},
     { "uncompress", MMTextField, { dddSetUncompressCommandCB, 0 },
       0, &uncompress_command_w, 0, 0},
-    { "www",        MMTextField, { dddSetWWWCommandCB, 0 },
-      0, &www_command_w, 0, 0},
     { "plot",       MMTextField, { dddSetPlotCommandCB, 0 }, 
       0, &plot_command_w, 0, 0},
     { "plot_window", MMRadioPanel, MMNoCB, plot_window_menu, 0, 0, 0 },
@@ -4160,7 +4157,6 @@ void update_options()
     set_string(ps_command_w,         app_data.ps_command);
     set_string(term_command_w,       app_data.term_command);
     set_string(uncompress_command_w, app_data.uncompress_command);
-    set_string(www_command_w,        app_data.www_command);
 
     // Set `find' label
     Widget find_label_ref = 0;
@@ -4311,10 +4307,6 @@ void save_option_state()
     static string uncompress_command;
     uncompress_command = initial_app_data.uncompress_command;
     initial_app_data.uncompress_command = uncompress_command.chars();
-
-    static string www_command;
-    www_command = initial_app_data.www_command;
-    initial_app_data.www_command = www_command.chars();
 
     // Fetch data display resources
     XtVaGetValues(data_disp->graph_edit, 
@@ -4812,7 +4804,6 @@ static void ResetHelpersPreferencesCB(Widget, XtPointer, XtPointer)
     set_string(ps_command_w,         initial_app_data.ps_command);
     set_string(term_command_w,       initial_app_data.term_command);
     set_string(uncompress_command_w, initial_app_data.uncompress_command);
-    set_string(www_command_w,        initial_app_data.www_command);
     set_string(plot_command_w,       initial_app_data.plot_command);
 
     notify_set_toggle(builtin_plot_window_w, 
@@ -4839,9 +4830,6 @@ static bool helpers_preferences_changed()
 
     if (string(app_data.uncompress_command) != 
         string(initial_app_data.uncompress_command))
-        return true;
-
-    if (string(app_data.www_command) != string(initial_app_data.www_command))
         return true;
 
     if (string(app_data.plot_term_type) != 
@@ -7141,7 +7129,7 @@ static void setup_version_info()
         + tt("ddd@gnu.org") + rm(">.") + cr();
 
     helpOnVersionExtraText += cr()
-        + rm(DDD_NAME " WWW page: ") + tt(app_data.www_page) + cr()
+        + rm(DDD_NAME " WWW page: ") + tt("http://www.gnu.org/software/ddd/") + cr()
         + rm(DDD_NAME " mailing list: <")
         + tt("ddd-request@gnu.org") + rm(">") + cr();
 

@@ -521,25 +521,6 @@ void show(int (*formatter)(std::ostream& os))
 
 
 //-----------------------------------------------------------------------------
-// WWW Page
-//-----------------------------------------------------------------------------
-
-void DDDWWWPageCB(Widget, XtPointer, XtPointer)
-{
-    string url = app_data.www_page;
-    string cmd = app_data.www_command;
-
-    StatusDelay delay("Invoking WWW browser for " + quote(url));
-
-    cmd.gsub("@URL@", url);
-    cmd += " &";
-    cmd = sh_command(cmd, true);
-    (void)! system(cmd.chars());
-}
-
-
-
-//-----------------------------------------------------------------------------
 // License
 //-----------------------------------------------------------------------------
 
@@ -615,7 +596,6 @@ void DDDNewsCB(Widget w, XtPointer, XtPointer call_data)
     std::ostringstream news;
     int ret = ddd_news(news);
     string s(news);
-    s.prepend("@news@");
 
     TextHelpCB(w, XtPointer(s.chars()), call_data);
 

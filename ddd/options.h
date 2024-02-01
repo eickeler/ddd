@@ -136,7 +136,6 @@ extern void dddSetGetCoreCommandCB          (Widget, XtPointer, XtPointer);
 extern void dddSetPSCommandCB               (Widget, XtPointer, XtPointer);
 extern void dddSetTermCommandCB             (Widget, XtPointer, XtPointer);
 extern void dddSetUncompressCommandCB       (Widget, XtPointer, XtPointer);
-extern void dddSetWWWCommandCB              (Widget, XtPointer, XtPointer);
 extern void dddSetBuiltinPlotWindowCB       (Widget, XtPointer, XtPointer);
 
 extern void DDDSaveOptionsCB                (Widget, XtPointer, XtPointer);

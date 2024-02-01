@@ -1085,26 +1085,6 @@ XtResource ddd_resources[] = {
     },
 
     {
-        XTRESSTR(XtNwwwPage),
-        XTRESSTR(XtCWWWPage),
-        XtRString,
-        sizeof(String),
-        XtOffsetOf(AppData, www_page),
-        XtRString,
-        XtPointer("http://www.gnu.org/software/ddd/")
-    },
-
-    {
-        XTRESSTR(XtNwwwCommand),
-        XTRESSTR(XtCWWWCommand),
-        XtRString,
-        sizeof(String),
-        XtOffsetOf(AppData, www_command),
-        XtRString,
-        XtPointer("netscape @URL@")
-    },
-
-    {
         XTRESSTR(XtNshowInvocation),
         XTRESSTR(XtCShowInvocation),
         XtRBoolean,

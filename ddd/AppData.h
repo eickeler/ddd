@@ -217,10 +217,6 @@
 #define XtCUncompressCommand     "UncompressCommand"
 #define XtNpsCommand             "psCommand"
 #define XtCPsCommand             "PsCommand"
-#define XtNwwwPage               "wwwPage"
-#define XtCWWWPage               "WWWPage"
-#define XtNwwwCommand            "wwwCommand"
-#define XtCWWWCommand            "WWWCommand"
 #define XtNshowInvocation        "showInvocation"
 #define XtCShowInvocation        "ShowInvocation"
 #define XtNshowVersion           "showVersion"
@@ -531,8 +527,6 @@ struct AppData {
     const _XtString    list_dir_command;
     const _XtString    uncompress_command;
     const _XtString    ps_command;
-    const _XtString    www_page;
-    const _XtString    www_command;
     Boolean   show_invocation;
     Boolean   show_version;
     Boolean   show_configuration;

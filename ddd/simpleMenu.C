@@ -334,9 +334,7 @@ MMDesc simple_help_menu[] =
     MMSep,
     {"dddManual",   MMPush, { DDDManualCB, 0}, 0, 0, 0, 0},
     {"news",        MMPush, { DDDNewsCB, 0}, 0, 0, 0, 0},
-    MMSep,
     {"license",     MMPush, { DDDLicenseCB, 0}, 0, 0, 0, 0},
-    {"www",         MMPush, { DDDWWWPageCB, 0}, 0, 0, 0, 0},
     MMSep,
     {"onVersion",   MMPush, { HelpOnVersionCB, 0}, 0, 0, 0, 0},
     MMEnd

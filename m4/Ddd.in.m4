@@ -330,29 +330,6 @@ Ddd*listDirCommand:   \
 Ddd*uncompressCommand: @UNCOMPRESS@
 
 
-! The DDD WWW page.
-Ddd*wwwPage: http://www.gnu.org/software/ddd/
-
-
-! Command to invoke a WWW browser.  @URL@ stands for the URL to open.
-! A large variety of choices, actually.  If you don't have WWW access,
-! letting all these commands fail may take some time...
-
-Ddd*wwwCommand: \
-   firefox '@URL@' \
-|| google-chrome '@URL@' \
-|| opera -remote 'openURL(@URL@)' \
-|| ${WWWBROWSER-false} '@URL@' \
-|| konqueror 'openURL(@URL@)' \
-|| galeon 'openURL(@URL@)' \
-|| skipstone 'openURL(@URL@)' \
-|| light 'openURL(@URL@)' \
-|| netscape -remote 'openURL(@URL@)' \
-|| kfmbrowser '@URL@' \
-|| gnudoit '(w3-fetch \042@URL@\042)' \
-|| @XTERM@ -e lynx '@URL@'
-
-
 ! Plotting stuff.
 
 ! The Gnuplot command.
@@ -3152,20 +3129,10 @@ Ddd*helpMenu.news.mnemonic:			e
 Ddd*helpMenu.news.documentationString:		\
 @rm What's new in this DDD version
 
-Ddd*helpMenu.gdbManual.labelString:		@GDB@ Reference...
-Ddd*helpMenu.gdbManual.mnemonic:		B
-Ddd*helpMenu.gdbManual.documentationString:	\
-@rm The @GDB@ reference manual
-
 Ddd*helpMenu.license.labelString:		DDD License...
 Ddd*helpMenu.license.mnemonic:			L
 Ddd*helpMenu.license.documentationString:	\
 @rm Terms and conditions for copying, distributing, and modifying DDD
-
-Ddd*helpMenu.www.labelString:			DDD WWW Page...
-Ddd*helpMenu.www.mnemonic:			P
-Ddd*helpMenu.www.documentationString:	\
-@rm Invoke a WWW browser with up-to-date DDD information
 
 Ddd*helpMenu.onVersion.labelString:		About DDD...
 Ddd*helpMenu.onVersion.mnemonic:		A
@@ -3708,7 +3675,6 @@ Ddd*preferences*get_core*labelString:		Get Core File
 Ddd*preferences*ps*labelString:			List Processes
 Ddd*preferences*term*labelString:		Execution Window
 Ddd*preferences*uncompress*labelString:		Uncompress
-Ddd*preferences*www*labelString:		Web Browser
 Ddd*preferences*plot*labelString:		Plot
 Ddd*preferences*plot_window*labelString:	Plot Window
 Ddd*preferences*extern*labelString:		External

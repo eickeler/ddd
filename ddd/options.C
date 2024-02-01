@@ -1319,22 +1319,6 @@ void dddSetUncompressCommandCB(Widget w, XtPointer, XtPointer)
 }
 
 
-void dddSetWWWCommandCB(Widget w, XtPointer, XtPointer)
-{
-    String s = XmTextFieldGetString(w);
-    static string command;
-    command = s;
-    XtFree(s);
-
-    app_data.www_command = command.chars();
-    // set_status("Web Browser is " + quote(command));
-    update_reset_preferences();
-}
-
-
-
-
-
 // ---------------------------------------------------------------------------
 // Get core
 // ---------------------------------------------------------------------------
@@ -2693,8 +2677,6 @@ bool save_options(unsigned long flags)
        << '\n';
     os << string_app_value(XtNuncompressCommand, app_data.uncompress_command,
                            True) << '\n';
-    os << string_app_value(XtNwwwCommand,     app_data.www_command, True) 
-       << '\n';
     os << string_app_value(XtNplotCommand,    app_data.plot_command, True)
        << '\n';
     os << string_app_value(XtNplotTermType,   app_data.plot_term_type)

@@ -40,9 +40,6 @@ void show_version(std::ostream& os);
 void show_configuration(std::ostream& os);
 void show(int (*formatter)(std::ostream& os));
 
-// WWW page
-void DDDWWWPageCB(Widget, XtPointer, XtPointer);
-
 // Manual
 int ddd_man(std::ostream& os);
 void DDDManualCB(Widget, XtPointer, XtPointer);
