@@ -57,10 +57,7 @@ extern string make_xftfont(const AppData& ad, DDDFont base);
 extern void set_font(DDDFont n, const string& name);
 
 std::vector<string> GetFixedWithFonts();
-
-std::vector<MMDesc> CreateFontSelectMenu(Widget *font_sizes);
-void SetActivatedFonts(const AppData& ad);
-
+std::vector<string> GetVariableWithFonts();
 
 // Browse fonts
 extern void BrowseFontCB(Widget w, XtPointer, XtPointer);

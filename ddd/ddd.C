@@ -271,6 +271,7 @@ char ddd_rcsid[] =
 #include "windows.h"
 #include "wm.h"
 #include "xconfig.h"
+#include "motif/ComboBox.h"
 
 // Standard stuff
 #include <stdlib.h>
@@ -1606,6 +1607,19 @@ static MMDesc startup_preferences_menu [] =
 static Widget font_names[5] = {};
 static Widget font_sizes[5] = {};
 
+#ifdef HAVE_FREETYPE
+#define FONT_MENU(font) \
+{ \
+    { "name",   MMDropDownList | MMUnmanagedLabel, { SetFontNameCB, XtPointer(font) }, 0, &font_names[int(font)], 0, 0 }, \
+    { "size",   MMSpinBox, { SetFontSizeCB, XtPointer(font) }, 0, &font_sizes[int(font)], 0, 0 }, \
+    MMEnd \
+}
+
+static MMDesc variable_width_font_menu [] = FONT_MENU(VariableWidthDDDFont);
+static MMDesc fixed_width_font_menu    [] = FONT_MENU(FixedWidthDDDFont);
+static MMDesc data_font_menu           [] = FONT_MENU(DataDDDFont);
+
+#else
 
 #define FONT_MENU(font) \
 { \
@@ -1631,14 +1645,19 @@ const char * font_menu_notes =
     "Default and Variable fonts must be proportional (spc=p),\n"
     "Fixed and Data fonts must be monospaced (spc=m).\n"
     DDD_NAME " only supports ISO8859-1 encoding.\n" ;
+#endif
 
 static MMDesc font_preferences_menu [] =
 {
+ #ifndef HAVE_FREETYPE
     { "default",         MMPanel,  MMNoCB, default_font_menu, 0, 0, 0 },
+#endif
     { "variableWidth",   MMPanel,  MMNoCB, variable_width_font_menu, 0, 0, 0 },
     { "fixedWidth",      MMPanel,  MMNoCB, fixed_width_font_menu, 0, 0, 0 },
     { "data",            MMPanel,  MMNoCB, data_font_menu, 0, 0, 0 },
+#ifndef HAVE_FREETYPE
     { font_menu_notes,          MMLabel,  MMNoCB, 0, 0, 0, 0 },
+#endif
     MMEnd
 };
 
@@ -5082,16 +5101,15 @@ static void make_preferences(Widget parent)
               max_width, max_height, false);
     add_panel(change, buttons, "startup", startup_preferences_menu, 
               max_width, max_height, false);
-#ifndef HAVE_FREETYPE
     add_panel(change, buttons, "fonts", font_preferences_menu,
               max_width, max_height, false);
-#else
-    std::vector<MMDesc> fontmenu = CreateFontSelectMenu(font_sizes);
-    add_panel(change, buttons, "fonts", &fontmenu[0],
-              max_width, max_height, false);
 
-    SetActivatedFonts(app_data);
+#ifdef HAVE_FREETYPE
+    ComboBoxSetList(font_names[int(VariableWidthDDDFont)], GetVariableWithFonts());
+    ComboBoxSetList(font_names[int(FixedWidthDDDFont)], GetFixedWithFonts());
+    ComboBoxSetList(font_names[int(DataDDDFont)], GetVariableWithFonts());
 #endif
+
     add_panel(change, buttons, "helpers", helpers_preferences_menu, 
               max_width, max_height, false);
 

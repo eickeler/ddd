@@ -785,17 +785,12 @@ void SetFontNameCB(Widget w, XtPointer client_data, XtPointer)
 {
     DDDFont font = (DDDFont) (long) client_data;
     String s = XmTextFieldGetString(w);
+
+    if (s[0] == 0)
+        return;
+
     set_font(font, s);
     XtFree(s);
-
-    update_reset_preferences();
-}
-
-void SetXTFFontNameCB(Widget w, XtPointer client_data, XtPointer)
-{
-    DDDFont font = (DDDFont) (long) client_data;
-    String s = XtName(w);
-    set_font(font, s);
 
     update_reset_preferences();
 }
@@ -846,133 +841,58 @@ std::vector<string> GetFixedWithFonts()
         }
     }
 
+    std::sort(fontlist.begin(), fontlist.end());
+
+    // remove duplicates
+    fontlist.erase(std::unique(fontlist.begin(), fontlist.end()), fontlist.end());
+
     FcFontSetDestroy(fontSet);
 
     return fontlist;
 }
 
-std::vector<string> GetVarWithFonts()
+std::vector<string> GetVariableWithFonts()
 {
     std::vector<string> fontlist;
-
-    std::vector<string> oklist = {"Arial", "Chandas", "DejaVu Sans", "Free Sans", "Kalimati", "Liberation Sans",
-        "Luxi Sans", "Loma", "Nimbus Sans", "Noto Sans", "Padauk", "Quicksand", "Sawasdee", "Ubuntu", "Umpush",
-        "Verdana", "Waree"};
 
     FcInit();
 
     FcPattern *pattern = FcPatternCreate();
-    FcObjectSet *os = FcObjectSetBuild(FC_FAMILY, FC_STYLE, FC_LANG, NULL);
+    FcObjectSet *os = FcObjectSetBuild(FC_FAMILY, FC_STYLE, FC_CHARSET, NULL);
 
     FcFontSet *fontSet = FcFontList(NULL, pattern, os);
     FcObjectSetDestroy(os);
 
-    if (fontSet)
+    if (!fontSet)
+        return fontlist;
+
+    const FcCharSet *englishCharset = FcLangGetCharSet((const FcChar8 *)"en");
+    for (int i = 0; i < fontSet->nfont; ++i)
     {
-        for (int i = 0; i < fontSet->nfont; ++i)
+        FcPattern *font = fontSet->fonts[i];
+        FcChar8 *family, *style;
+        FcCharSet *charset;
+
+        if (FcPatternGetString(font, FC_FAMILY, 0, &family) == FcResultMatch &&
+            FcPatternGetString(font, FC_STYLE, 0, &style) == FcResultMatch &&
+            FcPatternGetCharSet(font, FC_CHARSET, 0, &charset) == FcResultMatch &&
+            (strcmp((char*)style, "Medium") == 0 || strcmp((char*)style, "Regular") == 0) &&
+            (FcCharSetIsSubset(englishCharset, charset)))
         {
-            FcPattern *font = fontSet->fonts[i];
-            FcChar8 *family, *style;
-            FcLangSet *langset;
-
-            if (FcPatternGetString(font, FC_FAMILY, 0, &family) == FcResultMatch &&
-                FcPatternGetString(font, FC_STYLE, 0, &style) == FcResultMatch &&
-                FcPatternGetLangSet(font, FC_LANG, 0, &langset ) == FcResultMatch &&
-                FcLangSetHasLang(langset, (const FcChar8*)"de") == FcLangEqual &&
-                (strcmp((char*)style, "Medium") == 0 || strcmp((char*)style, "Regular") == 0)
-            )
-            {
-                if(std::find(oklist.begin(), oklist.end(), string((char*)family)) != oklist.end())
-                    fontlist.push_back(string((char*)family));
-            }
+            fontlist.push_back(string((char*)family));
         }
-
-        FcFontSetDestroy(fontSet);
     }
+
+    std::sort(fontlist.begin(), fontlist.end());
+
+    // remove duplicates
+    fontlist.erase(std::unique(fontlist.begin(), fontlist.end()), fontlist.end());
+
+    FcFontSetDestroy(fontSet);
 
     return fontlist;
 }
 
-
-static std::vector<string> fixedfonts;
-static std::vector<string> varfonts;
-
-static std::vector<MMDesc> varw_fonts;
-static std::vector<MMDesc> varw_fonts_menu;
-static std::vector<MMDesc> fixedw_fonts;
-static std::vector<MMDesc> fixedw_fonts_menu;
-static std::vector<MMDesc> data_fonts;
-static std::vector<MMDesc> data_font_menu;
-
-static Widget varwFontWidget;
-static Widget fixedwFontWidget;
-static Widget dataFontWidget;
-
-std::vector<MMDesc> CreateFontSelectMenu(Widget *font_sizes)
-{
-    fixedfonts = GetFixedWithFonts();
-    varfonts = GetVarWithFonts();
-
-    // variable width fonts
-    varw_fonts.clear();
-    for (string &font : varfonts)
-        varw_fonts.push_back({ font.chars(), MMPush, { SetXTFFontNameCB, XtPointer(VariableWidthDDDFont) }, 0, 0, 0, 0});
-    varw_fonts.push_back(MMEnd);
-
-    varw_fonts_menu.clear();
-    varw_fonts_menu.push_back({ "name",   MMOptionMenu , MMNoCB, &varw_fonts[0], &varwFontWidget, 0, 0 });
-    varw_fonts_menu.push_back({ "size",   MMTextField, { SetFontSizeCB, XtPointer(VariableWidthDDDFont) }, 0, &font_sizes[int(VariableWidthDDDFont)], 0, 0 });
-    varw_fonts_menu.push_back(MMEnd);
-
-    // fixed width fonts
-    fixedw_fonts.clear();
-    for (string &font : fixedfonts)
-        fixedw_fonts.push_back({ font.chars(), MMPush, { SetXTFFontNameCB, XtPointer(FixedWidthDDDFont) }, 0, 0, 0, 0});
-    fixedw_fonts.push_back(MMEnd);
-
-    fixedw_fonts_menu.clear();
-    fixedw_fonts_menu.push_back({ "name",   MMOptionMenu , MMNoCB, &fixedw_fonts[0], &fixedwFontWidget, 0, 0 });
-    fixedw_fonts_menu.push_back({ "size",   MMTextField, { SetFontSizeCB, XtPointer(FixedWidthDDDFont) }, 0, &font_sizes[int(FixedWidthDDDFont)], 0, 0 });
-    fixedw_fonts_menu.push_back(MMEnd);
-
-    // data fonts
-    data_fonts.clear();
-    for (string &font : fixedfonts)
-        data_fonts.push_back({ font.chars(), MMPush, { SetXTFFontNameCB, XtPointer(DataDDDFont) }, 0, 0, 0, 0});
-    data_fonts.push_back(MMEnd);
-
-    data_font_menu.clear();
-    data_font_menu.push_back({ "name",   MMOptionMenu , MMNoCB, &data_fonts[0], &dataFontWidget, 0, 0 });
-    data_font_menu.push_back({ "size",   MMTextField, { SetFontSizeCB, XtPointer(DataDDDFont) }, 0, &font_sizes[int(DataDDDFont)], 0, 0 });
-    data_font_menu.push_back(MMEnd);
-
-
-    std::vector<MMDesc> menu;
-    menu.push_back({ "variableWidth", MMPanel,  MMNoCB, &varw_fonts_menu[0], 0, 0, 0 });
-    menu.push_back({ "fixedWidth",    MMPanel,  MMNoCB, &fixedw_fonts_menu[0], 0, 0, 0 });
-    menu.push_back({ "data",          MMPanel,  MMNoCB, &data_font_menu[0], 0, 0, 0 });
-    menu.push_back(MMEnd);
-
-    return menu;
-}
-
-void SetActivatedFonts(const AppData& ad)
-{
-    // variable width font
-    for (MMDesc &desc : varw_fonts)
-        if (desc.name!=nullptr && strcmp(desc.name, ad.variable_width_font)==0 && desc.widget!=nullptr)
-            XtVaSetValues(varwFontWidget, XmNmenuHistory, desc.widget, XtPointer(0));
-
-    // fixed width font
-    for (MMDesc &desc : fixedw_fonts)
-        if (desc.name!=nullptr && strcmp(desc.name, ad.fixed_width_font)==0 && desc.widget!=nullptr)
-            XtVaSetValues(fixedwFontWidget, XmNmenuHistory, desc.widget, XtPointer(0));
-
-    // data font
-    for (MMDesc &desc : data_fonts)
-        if (desc.name!=nullptr && strcmp(desc.name, ad.data_font)==0 && desc.widget!=nullptr)
-            XtVaSetValues(dataFontWidget, XmNmenuHistory, desc.widget, XtPointer(0));
-}
 #endif
 
 //-----------------------------------------------------------------------------
