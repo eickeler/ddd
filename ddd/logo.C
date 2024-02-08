@@ -733,6 +733,9 @@ void install_icons(Widget shell,
     Pixel background;
     XtVaGetValues(shell, XmNbackground, &background, XtPointer(0));
 
+    if (app_data.dark_mode)
+        background ^= 0x00ffffff; // invert color in dark mode
+
     // Determine default arm background
     Pixel foreground, top_shadow, bottom_shadow, select;
     XmGetColors(XtScreen(shell), win_attr.colormap, background,

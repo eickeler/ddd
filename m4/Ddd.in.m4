@@ -3558,6 +3558,10 @@ Ddd*windowsMenu*attached.labelString:		Stacked Windows
 Ddd*windowsMenu*sidebyside.labelString:		Side by Side Windows
 Ddd*windowsMenu*separate.labelString:		Separate Windows
 
+Ddd*preferences*colortheme.labelString:		Color Theme
+Ddd*colorthemeMenu*lightmode.labelString:		Light Mode
+Ddd*colorthemeMenu*darkmode.labelString:		Dark Mode
+
 Ddd*preferences*cutCopyPaste.labelString:	Ctrl+C is
 Ddd*cutCopyPasteMenu*kde.labelString:		Copy
 Ddd*cutCopyPasteMenu*motif.labelString:		Interrupt

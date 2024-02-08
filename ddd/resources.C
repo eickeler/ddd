@@ -735,6 +735,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+        XTRESSTR(XtNdarkMode),
+        XTRESSTR(XtCDarkMode),
+        XtRBoolean,
+        sizeof(Boolean),
+        XtOffsetOf(AppData, dark_mode),
+        XtRImmediate,
+        XtPointer(False)
+    },
+
+    {
         XTRESSTR(XtNopenDataWindow),
         XTRESSTR(XtCWindow),
         XtRBoolean,

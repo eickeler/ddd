@@ -879,6 +879,15 @@ void dddSetSeparateWindowsCB (Widget w, XtPointer client_data, XtPointer)
     post_startup_warning(w);
 }
 
+void dddColorModeCB(Widget w, XtPointer client_data, XtPointer)
+{
+    int state = (int)(long)client_data;
+    app_data.dark_mode = state;
+
+    update_options();
+    post_startup_warning(w);
+}
+
 void dddSetStatusAtBottomCB (Widget w, XtPointer client_data, XtPointer)
 {
     Boolean state = (int)(long)client_data;
@@ -2842,6 +2851,7 @@ bool save_options(unsigned long flags)
         os << bool_app_value(XtNseparateSourceWindow, app_data.separate_source_window) << '\n';
         os << bool_app_value(XtNseparateDataWindow, app_data.separate_data_window) << '\n';
     }
+    os << bool_app_value(XtNdarkMode, app_data.dark_mode) << '\n';
     os << bool_app_value(XtNseparateExecWindow, app_data.separate_exec_window) << '\n';
     os << bool_app_value(XtNgroupIconify, app_data.group_iconify) << '\n';
     os << bool_app_value(XtNuniconifyWhenReady, app_data.uniconify_when_ready) << '\n';

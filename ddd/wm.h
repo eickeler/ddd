@@ -32,6 +32,8 @@
 #include "base/strclass.h"
 
 // Window manager
+void setColorMode(Widget w, bool darkmode);
+
 extern void wm_set_icon(Widget shell, Pixmap icon, Pixmap mask);
 extern void wm_set_icon(Display *display, Window shell,
 			Pixmap icon, Pixmap mask);

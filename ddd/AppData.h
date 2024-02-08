@@ -149,6 +149,8 @@
 #define XtCSeparate              "Separate"
 #define XtNsideBySideWindows     "sideBySideWindows"
 #define XtCSideBySide            "SideBySide"
+#define XtNdarkMode              "darkMode"
+#define XtCDarkMode              "DarkMode"
 #define XtNopenDataWindow        "openDataWindow"
 #define XtNopenSourceWindow      "openSourceWindow"
 #define XtNopenDebuggerConsole   "openDebuggerConsole"
@@ -492,6 +494,7 @@ struct AppData {
     Boolean   separate_source_window;
     Boolean   separate_exec_window;
     Boolean   side_by_side_windows;
+    Boolean   dark_mode;
     Boolean   data_window;
     Boolean   source_window;
     Boolean   debugger_console;

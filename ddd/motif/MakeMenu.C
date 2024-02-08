@@ -63,6 +63,7 @@ char MakeMenu_rcsid[] =
 #include "ComboBox.h"
 #include "SpinBox.h"
 #include "x11/AutoRaise.h"
+#include "AppData.h"
 
 #ifndef LOG_FLATTENING
 #define LOG_FLATTENING 0
@@ -313,7 +314,9 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 	    {
 		Pixel background;
 		XtVaGetValues(shell, XmNbackground, &background, XtPointer(0));
-		Pixmap empty = XmGetPixmap(XtScreen(shell), 
+                if (app_data.dark_mode)
+                    background ^= 0x00ffffff;
+		Pixmap empty = XmGetPixmap(XtScreen(shell),
 					   XMST("background"), 
 					   background, background);
 

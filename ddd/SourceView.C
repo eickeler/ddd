@@ -2454,7 +2454,7 @@ bool SourceView::get_line_of_pos (Widget   w,
         line_nr = max(line_nr, 1);
 
         // Check for breakpoints...
-        if (bps_in_line.has(line_nr)==false)
+        if (display_glyphs || bps_in_line.has(line_nr)==false)
             return true;
 
         std::vector<int>& bps = bps_in_line[line_nr];
@@ -7227,6 +7227,15 @@ Widget SourceView::create_glyph(Widget form_w,
     XtSetArg(args[arg], XmNarmColor,           background);    arg++;
     XtSetArg(args[arg], XmNbackground,         background);    arg++;
     Widget w = verify(XmCreatePushButton(form_w, XMST(name), args, arg));
+
+    if (app_data.dark_mode)
+    {
+        Pixel foreground;
+        XtVaGetValues(w, XmNforeground, &foreground, XtPointer(0));
+	// brighten color of glyphs in dark mode
+        foreground += 0x00202020;
+        XtVaSetValues(w, XmNforeground, foreground, XtPointer(0));
+    }
 
     if (XtIsRealized(form_w))
         XtRealizeWidget(w);

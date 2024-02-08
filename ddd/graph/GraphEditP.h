@@ -140,6 +140,9 @@ typedef struct _GraphEditPart {
     Cursor selectTopLeftCursor;
     Cursor selectTopRightCursor;
 
+    // Dark mode
+    Boolean darkMode;
+
     // Colors
     Pixel nodeColor;		          // Color to use for nodes
     Pixel edgeColor;		          // Color to use for edges

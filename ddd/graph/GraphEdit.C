@@ -192,6 +192,9 @@ static XtResource resources[] = {
     { XTRESSTR(XtNselectTopRightCursor), XTRESSTR(XtCCursor), XtRCursor, sizeof(Cursor),
 	offset(selectTopRightCursor), XtRImmediate, XtPointer(0)},
 
+    { XTRESSTR(XtNdataDarkMode), XTRESSTR(XtCDataDarkMode), XtRBoolean, sizeof(Boolean),
+	offset(darkMode), XtRImmediate, XtPointer(False) },
+
     { XTRESSTR(XtNnodeColor), XTRESSTR(XtCColor), XtRPixel, sizeof(Pixel),
 	offset(nodeColor), XtRCallProc, XtPointer(defaultForeground) },
     { XTRESSTR(XtNedgeColor), XTRESSTR(XtCColor), XtRPixel, sizeof(Pixel),
@@ -455,6 +458,15 @@ GraphEditClassRec graphEditClassRec = {
 
 WidgetClass graphEditWidgetClass = (WidgetClass)&graphEditClassRec;
 
+Pixel InvertColor(bool inv, Pixel color)
+{
+    if (inv)
+        color ^= 0x00ffffff;
+
+    return color;
+}
+
+
 
 // Method function definitions
 
@@ -557,7 +569,8 @@ Graph *graphEditGetGraph(Widget w)
 static void setGrid(Widget w, Boolean reset = False)
 {
     const GraphEditWidget _w   = GraphEditWidget(w);
-    const Pixel     gridColor  = _w->res_.graphEdit.gridColor;
+    bool inv = _w->res_.graphEdit.darkMode;
+    const Pixel     gridColor  = InvertColor(inv, _w->res_.graphEdit.gridColor);
     const Pixel     background = _w->res_.core.background_pixel;
     const Boolean   showGrid   = _w->res_.graphEdit.showGrid;
     Dimension& gridHeight      = _w->res_.graphEdit.gridHeight;
@@ -1160,14 +1173,16 @@ static void setGCs(Widget w)
 {
     const GraphEditWidget _w        = GraphEditWidget(w);
 
+    bool inv = _w->res_.graphEdit.darkMode;
+
     // read-only
     const Dimension edgeWidth       = _w->res_.graphEdit.edgeWidth;
     const Pixmap selectTile         = _w->res_.graphEdit.selectTile;
-    const Pixel background          = _w->res_.core.background_pixel;
-    const Pixel nodeColor           = _w->res_.graphEdit.nodeColor;
-    const Pixel edgeColor           = _w->res_.graphEdit.edgeColor;
-    const Pixel frameColor          = _w->res_.graphEdit.frameColor;
-    const Pixel outlineColor        = _w->res_.graphEdit.outlineColor;
+    const Pixel background          = InvertColor(inv, _w->res_.core.background_pixel);
+    const Pixel nodeColor           = InvertColor(inv, _w->res_.graphEdit.nodeColor);
+    const Pixel edgeColor           = InvertColor(inv, _w->res_.graphEdit.edgeColor);
+    const Pixel frameColor          = InvertColor(inv, _w->res_.graphEdit.frameColor);
+    const Pixel outlineColor        = InvertColor(inv, _w->res_.graphEdit.outlineColor);
     const Pixel selectColor         = _w->res_.graphEdit.selectColor;
     const Boolean dashedLines       = _w->res_.graphEdit.dashedLines;
 
@@ -1491,7 +1506,8 @@ static Boolean SetValues(Widget old, Widget, Widget new_w,
 	before->res_.graphEdit.frameColor     != after->res_.graphEdit.frameColor ||
 	before->res_.graphEdit.outlineColor   != after->res_.graphEdit.outlineColor ||
 	before->res_.graphEdit.gridColor      != after->res_.graphEdit.gridColor ||
-	before->res_.graphEdit.selectColor    != after->res_.graphEdit.selectColor)
+	before->res_.graphEdit.selectColor    != after->res_.graphEdit.selectColor ||
+        before->res_.graphEdit.darkMode       != after->res_.graphEdit.darkMode)
     {    
 	setGCs(new_w);
 	new_gcs = True;

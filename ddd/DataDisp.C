@@ -6940,6 +6940,8 @@ DataDisp::DataDisp(Widget parent, Widget& data_buttons_w)
     Arg args[10];
     int arg = 0;
     XtSetArg (args[arg], ARGSTR(XtNgraph), (Graph *)disp_graph); arg++;
+    XtSetArg (args[arg], ARGSTR(XtNdataDarkMode), app_data.dark_mode); arg++;
+
 
     if (app_data.panned_graph_editor)
     {

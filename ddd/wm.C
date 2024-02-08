@@ -29,6 +29,7 @@ char wm_rcsid[] =
     "$Id$";
 
 #include "wm.h"
+#include "AppData.h"
 
 #include "Command.h"
 #include "ddd.h"
@@ -48,6 +49,34 @@ char wm_rcsid[] =
 // Window Manager Functions
 //-----------------------------------------------------------------------------
     
+void setColorMode(Widget w, bool darkmode)
+{
+    // Fetch children
+    WidgetList children;
+    Cardinal numChildren = 0;
+    XtVaGetValues(w, XmNchildren, &children, XmNnumChildren, &numChildren, XtPointer(0));
+
+    for (int i = 0; i < int(numChildren); i++)
+    {
+        Widget child = children[i];
+        Pixel color;
+        XtVaGetValues(child, XmNbackground, &color,  XtPointer(0));
+        int sumcolor = ((color & 0xff0000)>>16) + ((color & 0x00ff00)>>8) + (color & 0x0000ff);
+        if (darkmode && sumcolor>3*128)
+        {
+            color = color ^ 0xffffff;
+            XmChangeColor(child, color);
+        }
+        else if (!darkmode && sumcolor<=3*128)
+        {
+            color = color ^ 0xffffff;
+            XmChangeColor(child, color);
+        }
+
+        setColorMode (child, darkmode);
+    }
+}
+
 void wm_set_icon(Display *display, Window shell, Pixmap icon, Pixmap mask)
 {
     XWMHints *wm_hints = XAllocWMHints();
@@ -159,35 +188,38 @@ void raise_shell(Widget w)
 
 void manage_and_raise(Widget w)
 {
-    if (w != 0)
+    if (w == 0)
+        return;
+
+    // If top-level shell is withdrawn or iconic, realize dialog as icon
+    bool iconic = false;
+    Widget shell = find_shell(w);
+    if (shell != 0)
     {
-	// If top-level shell is withdrawn or iconic, realize dialog as icon
-	bool iconic = false;
-	Widget shell = find_shell(w);
-	if (shell != 0)
-	{
-	    XWindowAttributes attr;
-	    iconic = (!XtIsRealized(shell)
-		      || (XGetWindowAttributes(XtDisplay(shell), XtWindow(shell), &attr)
-		      && attr.map_state != IsViewable));
+        XWindowAttributes attr;
+        iconic = (!XtIsRealized(shell)
+                    || (XGetWindowAttributes(XtDisplay(shell), XtWindow(shell), &attr)
+                    && attr.map_state != IsViewable));
 
-	    if (iconic)
-		XtVaSetValues(w, XmNinitialState, IconicState, XtPointer(0));
-	}
-
-	XtManageChild(w);
-
-	shell = w;
-	while (shell != 0 && !XtIsShell(shell))
-	    shell = XtParent(shell);
-
-	if (shell != 0 && !XmIsDialogShell(shell))
-	{
-	    if (!XtIsRealized(shell))
-		XtRealizeWidget(shell);
-	    XtPopup(shell, XtGrabNone);
-	}
-
-	raise_shell(w);
+        if (iconic)
+            XtVaSetValues(w, XmNinitialState, IconicState, XtPointer(0));
     }
+
+    XtManageChild(w);
+
+    shell = w;
+    while (shell != 0 && !XtIsShell(shell))
+        shell = XtParent(shell);
+
+    if (shell != 0 && !XmIsDialogShell(shell))
+    {
+        if (!XtIsRealized(shell))
+            XtRealizeWidget(shell);
+        XtPopup(shell, XtGrabNone);
+    }
+
+    raise_shell(w);
+
+    setColorMode(XtParent(w), app_data.dark_mode);
 }
+

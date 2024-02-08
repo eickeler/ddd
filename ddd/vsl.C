@@ -72,6 +72,9 @@ int main(void)
 #include "box/StringBox.h"
 #include "box/ListBox.h"
 
+// this is a workaround to allow access to app_data in MakeMenu.C
+#include "AppData.h"
+AppData app_data;
 
 
 // Graphics functions

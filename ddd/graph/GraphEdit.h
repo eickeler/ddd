@@ -81,6 +81,7 @@ class GraphNode;
 #define XtNselectTile               "selectTile"
 #define XtNrotation		    "rotation"
 #define XtNautoLayout		    "autoLayout"
+#define XtNdataDarkMode             "dataDarkMode"
 #define XtNnodeColor                "nodeColor"
 #define XtNedgeColor                "edgeColor"
 #define XtNframeColor               "frameColor"
@@ -124,6 +125,7 @@ class GraphNode;
 #define XtCSelfEdgePosition  "SelfEdgePosition"
 #define XtCSelfEdgeDirection "SelfEdgeDirection"
 #define XtCDashedLines       "DashedLines"
+#define XtCDataDarkMode      "DataDarkMode"
 
 
 // Representation types

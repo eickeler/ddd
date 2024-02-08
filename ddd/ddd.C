@@ -1464,6 +1464,19 @@ static MMDesc window_mode_menu [] =
     MMEnd
 };
 
+// Color theme
+static Widget set_light_mode_w;
+static Widget set_dark_mode_w;
+static MMDesc color_theme_menu [] =
+{
+    { "lightmode",  MMToggle, { dddColorModeCB, XtPointer(False) },
+      0, &set_light_mode_w, 0, 0 },
+    { "darkmode",  MMToggle, { dddColorModeCB, XtPointer(True) },
+      0, &set_dark_mode_w, 0, 0 },
+    MMEnd
+};
+
+
 static Widget set_button_images_w;
 static Widget set_button_captions_w;
 static Widget set_flat_buttons_w;
@@ -1589,6 +1602,7 @@ static MMDesc select_all_menu [] =
 static MMDesc startup_preferences_menu [] =
 {
     { "windows",         MMRadioPanel,  MMNoCB, window_mode_menu, 0, 0, 0 },
+    { "colortheme",     MMRadioPanel,  MMNoCB, color_theme_menu, 0, 0, 0 },
     { "cutCopyPaste",    MMRadioPanel,  MMNoCB, cut_copy_paste_menu, 0, 0, 0 },
     { "selectAll",       MMRadioPanel,  MMNoCB, select_all_menu, 0, 0, 0 },
     { "buttons",         MMButtonPanel, MMNoCB, 
@@ -3164,6 +3178,8 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
         initial_popup_shell(command_shell);
     }
 
+    setColorMode(main_window, app_data.dark_mode);
+
     // Trace positions and visibility of all DDD windows
     if (command_shell)
         XtAddEventHandler(command_shell, STRUCTURE_MASK, False,
@@ -4090,9 +4106,12 @@ void update_options()
     set_toggle(set_tool_buttons_in_toolbar_w,      app_data.command_toolbar);
     set_toggle(set_tool_buttons_in_command_tool_w, !app_data.command_toolbar);
 
-    set_toggle(set_separate_windows_w, separate);
+    set_toggle(set_separate_windows_w, separate && !app_data.side_by_side_windows);
     set_toggle(set_attached_windows_w, !separate && !app_data.side_by_side_windows);
     set_toggle(set_sidebyside_windows_w, app_data.side_by_side_windows);
+
+    set_toggle(set_light_mode_w, !app_data.dark_mode);
+    set_toggle(set_dark_mode_w, app_data.dark_mode);
 
     DebuggerType debugger_type = DebuggerType(-1);
     get_debugger_type(app_data.debugger, debugger_type);
@@ -4732,6 +4751,9 @@ static bool startup_preferences_changed()
         return true;
 
     if (app_data.side_by_side_windows != initial_app_data.side_by_side_windows)
+        return true;
+
+    if (app_data.dark_mode != initial_app_data.dark_mode)
         return true;
 
     if (app_data.button_images != initial_app_data.button_images)
