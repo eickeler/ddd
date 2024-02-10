@@ -36,6 +36,7 @@ char PannedGraphEdit_rcsid[] =
 #include "x11/verify.h"
 #include "base/strclass.h"
 #include "Graph.h"
+#include "AppData.h"
 
 #if HAVE_ATHENA && \
     HAVE_X11_XAW_FORM_H && \
@@ -180,6 +181,19 @@ Widget createPannedGraphEdit(Widget parent, const _XtString name,
 	verify(XtCreateManagedWidget(form_name.chars(), 
 				     formWidgetClass, parent, args, arg));
 
+    // determine colors of parent widget
+    XWindowAttributes win_attr;
+    XGetWindowAttributes(XtDisplay(parent), RootWindowOfScreen(XtScreen(parent)), &win_attr);
+    Pixel background;
+    XtVaGetValues(parent, XmNbackground, &background, XtPointer(0));
+
+    if (app_data.dark_mode)
+        background ^= 0x00ffffff; // invert color in dark mode
+
+    Pixel foreground, top_shadow, bottom_shadow, select;
+    XmGetColors(XtScreen(parent), win_attr.colormap, background,
+                &foreground, &top_shadow, &bottom_shadow, &select);
+
     string panner_name = string(name) + "_panner";
     arg = 0;
     XtSetArg(args[arg], ARGSTR(XtNresize),    False);          arg++;
@@ -189,10 +203,11 @@ Widget createPannedGraphEdit(Widget parent, const _XtString name,
     XtSetArg(args[arg], ARGSTR(XtNleft),      XawChainRight);  arg++;
     XtSetArg(args[arg], ARGSTR(XtNright),     XawChainRight);  arg++;
     XtSetArg (args[arg], ARGSTR(XtNshadowThickness), 2);       arg++;
-    XtSetArg (args[arg], ARGSTR(XtNinternalSpace), 2);       arg++;
-    XtSetArg (args[arg], ARGSTR(XtNbackground), 0x00A7A7A7);     arg++;    
-    XtSetArg (args[arg], ARGSTR(XtNbottmShadowColor),0x00E3E3E3);     arg++;    
-    XtSetArg (args[arg], ARGSTR(XtNbottmShadowColor),0x00676767);     arg++;    
+    XtSetArg (args[arg], ARGSTR(XtNinternalSpace), 2);         arg++;
+    XtSetArg (args[arg], ARGSTR(XtNforeground), background);   arg++;
+    XtSetArg (args[arg], ARGSTR(XtNbackground), select);       arg++;
+    XtSetArg (args[arg], ARGSTR(XtNtopShadowColor), top_shadow); arg++;
+    XtSetArg (args[arg], ARGSTR(XtNbottmShadowColor), bottom_shadow); arg++;
     Widget panner = 
 	verify(XtCreateWidget(panner_name.chars(), 
 			      pannermWidgetClass, form, args, arg));

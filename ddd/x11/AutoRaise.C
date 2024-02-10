@@ -35,6 +35,8 @@ char AutoRaise_rcsid[] =
 #include "base/bool.h"
 #include "frame.h"
 #include "longName.h"
+#include "AppData.h"
+#include "darkmode.h"
 
 #ifndef LOG_AUTO_RAISE
 #define LOG_AUTO_RAISE 0
@@ -83,6 +85,8 @@ static void DontIgnoreAutoRaiseCB(XtPointer client_data, XtIntervalId *)
 // auto-raise windows which would otherwise hide menu panels.
 static void AutoRaiseEH(Widget shell, XtPointer, XEvent *event, Boolean *)
 {
+    setColorMode(shell, app_data.dark_mode);
+
     static bool ignore = false;
 
     if (event->type != VisibilityNotify)
