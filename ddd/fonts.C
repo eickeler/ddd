@@ -399,7 +399,7 @@ static void get_derived_sizes(Dimension size,
     }
 }
 
-static void setup_x_fonts(const AppData& ad, XrmDatabase& db)
+void setup_x_fonts(const AppData& ad, XrmDatabase& db)
 {
     Dimension small_size, tiny_size, llogo_size;
     get_derived_sizes(ad.default_font_size, small_size, tiny_size, llogo_size);
@@ -813,7 +813,7 @@ std::vector<string> GetFixedWithFonts()
     FcInit();
 
     FcPattern *pattern = FcPatternCreate();
-    FcObjectSet *os = FcObjectSetBuild(FC_FAMILY, FC_STYLE,  FC_SPACING, FC_CHARSET, NULL);
+    FcObjectSet *os = FcObjectSetBuild(FC_FAMILY, FC_STYLE, FC_SPACING, FC_CHARSET, NULL);
 
     FcFontSet *fontSet = FcFontList(NULL, pattern, os);
     FcObjectSetDestroy(os);
@@ -858,7 +858,7 @@ std::vector<string> GetVariableWithFonts()
     FcInit();
 
     FcPattern *pattern = FcPatternCreate();
-    FcObjectSet *os = FcObjectSetBuild(FC_FAMILY, FC_STYLE, FC_CHARSET, NULL);
+    FcObjectSet *os = FcObjectSetBuild(FC_FAMILY, FC_STYLE, FC_SPACING, FC_CHARSET, NULL);
 
     FcFontSet *fontSet = FcFontList(NULL, pattern, os);
     FcObjectSetDestroy(os);
@@ -871,10 +871,12 @@ std::vector<string> GetVariableWithFonts()
     {
         FcPattern *font = fontSet->fonts[i];
         FcChar8 *family, *style;
+        int spacing;
         FcCharSet *charset;
 
         if (FcPatternGetString(font, FC_FAMILY, 0, &family) == FcResultMatch &&
             FcPatternGetString(font, FC_STYLE, 0, &style) == FcResultMatch &&
+            FcPatternGetInteger(font, FC_SPACING, 0, &spacing) == FcResultNoMatch &&
             FcPatternGetCharSet(font, FC_CHARSET, 0, &charset) == FcResultMatch &&
             (strcmp((char*)style, "Medium") == 0 || strcmp((char*)style, "Regular") == 0) &&
             (FcCharSetIsSubset(englishCharset, charset)))

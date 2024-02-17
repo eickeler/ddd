@@ -155,12 +155,9 @@ char ddd_rcsid[] =
 #include <Xm/ArrowB.h>
 #include <Xm/MwmUtil.h>
 #include <X11/Shell.h>
-
-#if XmVersion >= 1002
 #include <Xm/Display.h>
 #include <Xm/DragDrop.h>
 #include <Xm/RepType.h>                // XmRepTypeInstallTearOffModelConverter()
-#endif
 
 #if HAVE_X11_XMU_EDITRES_H
 #include <X11/Xmu/Editres.h>
@@ -2156,16 +2153,11 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 
         string Nsession   = string(DDD_CLASS_NAME ".") + XtNsession;
         string CSessionID = string(DDD_CLASS_NAME ".") + XtCSessionID;
-#if XtSpecificationRelease >= 6
         string NsessionID = string(DDD_CLASS_NAME ".") + XtNsessionID;
-#endif
 
         // Try resource or option
-        if (
-#if XtSpecificationRelease >= 6
-            XrmGetResource(dddinit, NsessionID.chars(), CSessionID.chars(),
+        if (XrmGetResource(dddinit, NsessionID.chars(), CSessionID.chars(),
                            &session_rtype, &session_value) ||
-#endif
             XrmGetResource(dddinit, Nsession.chars(), CSessionID.chars(),
                            &session_rtype, &session_value))
         {
@@ -2239,7 +2231,6 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     arg = 0;
     XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
 
-#if XtSpecificationRelease >= 6
     if (session_id != 0)
     {
         XtSetArg(args[arg], XtNsessionID, session_id); arg++;
@@ -2255,14 +2246,6 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 
     XtAddCallback(toplevel, XtNsaveCallback, SaveSmSessionCB, XtPointer(0));
     XtAddCallback(toplevel, XtNdieCallback, ShutdownSmSessionCB, XtPointer(0));
-#else
-    // Note: the cast on ddd_fallback_resources is safe.
-    Widget toplevel =
-        XtAppInitialize(&app_context, DDD_CLASS_NAME,
-                        XrmOptionDescList(0), 0,
-                        &argc, argv, (String *)ddd_fallback_resources,
-                        args, arg);
-#endif
     ddd_install_xt_error(app_context);
 
     // Check Motif version.  We can do this only now after the first
@@ -5128,9 +5111,16 @@ static void make_preferences(Widget parent)
               max_width, max_height, false);
 
 #ifdef HAVE_FREETYPE
-    ComboBoxSetList(font_names[int(VariableWidthDDDFont)], GetVariableWithFonts());
-    ComboBoxSetList(font_names[int(FixedWidthDDDFont)], GetFixedWithFonts());
-    ComboBoxSetList(font_names[int(DataDDDFont)], GetVariableWithFonts());
+    std::vector<string> varwidthlist =  GetVariableWithFonts();
+    std::vector<string> fixedwidthlist = GetFixedWithFonts();
+    std::vector<string> combinedlist;
+    combinedlist.reserve(fixedwidthlist.size() + varwidthlist.size());
+    combinedlist.insert(combinedlist.end(), fixedwidthlist.begin(), fixedwidthlist.end());
+    combinedlist.insert(combinedlist.end(), varwidthlist.begin(), varwidthlist.end());
+
+    ComboBoxSetList(font_names[int(VariableWidthDDDFont)], varwidthlist);
+    ComboBoxSetList(font_names[int(FixedWidthDDDFont)], fixedwidthlist);
+    ComboBoxSetList(font_names[int(DataDDDFont)], combinedlist);
 #endif
 
     add_panel(change, buttons, "helpers", helpers_preferences_menu, 

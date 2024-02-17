@@ -102,7 +102,7 @@
 ! @Ddd@*separateSourceWindow: on
 
 ! You may show the source window and data window side by side.
-@Ddd@*sideBySideWindows: on
+@Ddd@*sideBySideWindows: off
 
 
 ! The windows may be initially on or off.  By default, the data window 
