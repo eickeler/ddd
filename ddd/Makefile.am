@@ -783,7 +783,7 @@ VSLSRC = \
 	$(vsldir)/colors.vsl \
 	$(vsldir)/list.vsl
 
-$(srcdir)/ddd.vsl.h: $(vsldir)/ddd.vsl $(srcdir)/vsl2c.sed $(VSLSRC)
+$(top_builddir)/ddd.vsl.h: $(vsldir)/ddd.vsl $(srcdir)/vsl2c.sed $(VSLSRC)
 	$(CAT) $(vsldir)/ddd.vsl > tmp.c
 	$(VSL_CPP) tmp.c | $(SED) -f $(srcdir)/vsl2c.sed | $(DELETE_CR) > $@
 	$(RM) tmp.c
@@ -1570,7 +1570,7 @@ PROG_STUFF = vsl-lex.L vsl-lex.C \
 	     $(srcdir)/../m4/macros.m4 $(srcdir)/../m4/colors.m4 \
              $(srcdir)/../m4/Ddd.in.m4 $(srcdir)/Ddd.in \
 	     host.h.in $(srcdir)/vsl2c.sed \
-             $(srcdir)/../m4/ddd.vsl.m4 $(vsldir)/ddd.vsl $(srcdir)/ddd.vsl.h \
+             $(srcdir)/../m4/ddd.vsl.m4 $(vsldir)/ddd.vsl $(top_builddir)/ddd.vsl.h \
              root.h.in $(top_builddir)/COPYING.gz $(top_builddir)/NEWS.gz \
 	     $(srcdir)/ddd.info \
              xlibdir.txt xlibdir.C $(srcdir)/header.str \
