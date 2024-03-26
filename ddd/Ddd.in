@@ -733,7 +733,7 @@ main_vxworks
 ! scrollbars as a default: Many OSF/Motif installations choke
 ! on intermixed Motif/Athena applications and we don't want to get bug
 ! reports that should be directed to OSF.
-@Ddd@*pannedGraphEditor:		on
+@Ddd@*pannedGraphEditor:		off
 
 ! Nodes are moved when dragged more than 4 pixels.
 @Ddd@*graph_edit.moveDelta:	4
@@ -8789,7 +8789,6 @@ the current execution position, or the active displays.\n\
 ! xrdb-master-file: "~/.Xdefaults"
 ! End:
 ! Generated automatically from TIPS by tips2m4 -- DO NOT EDIT
-
 ! Initial tip (number 0) - shown after wrap-around.
 
 @Ddd@*tip0: \
