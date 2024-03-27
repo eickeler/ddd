@@ -1329,8 +1329,7 @@ man_MANS = ddd.1
 
 # `ddd.man' has 8-bit format, `ddd.1' has 7-bit format
 ddd.1:   ddd.man $(srcdir)/unumlaut.sed
-	-$(SED) -f $(srcdir)/unumlaut.sed ddd.man | $(DELETE_CR) > $@~ \
-	    && $(MV) $@~ $@
+	$(MV) $< $@
 
 
 

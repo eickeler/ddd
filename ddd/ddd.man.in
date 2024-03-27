@@ -254,13 +254,13 @@ The Python Language\c
 .PP
 .I
 \s-1DDD\s+1\(em\&A Free Graphical Front-End for \s-1UNIX\s+1 Debuggers\c
-\&, by Andreas Zeller and Dorothea Lütkehaus, Computer Science Report
-95-07, Technische Universität Braunschweig, 1995.
+\&, by Andreas Zeller and Dorothea LÃ¼tkehaus, Computer Science Report
+95-07, Technische UniversitÃ¤t Braunschweig, 1995.
 .PP
 .I
 \s-1DDD\s+1 \(en ein Debugger mit graphischer Datendarstellung\c
-\&, by Dorothea Lütkehaus, Diploma Thesis, Technische
-Universität Braunschweig, 1994.
+\&, by Dorothea LÃ¼tkehaus, Diploma Thesis, Technische
+UniversitÃ¤t Braunschweig, 1994.
 .PP
 The \s-1@DDD@\s+1 \fI\s-1FTP\s+1 site,\fR
 .sp
@@ -293,7 +293,7 @@ For more information on this list, send a mail to
 .SH "COPYRIGHT"
 .\" ---------------
 .\"
-This manual page is Copyright \(co 2001 Universität Passau, Germany
+This manual page is Copyright \(co 2001 UniversitÃ¤t Passau, Germany
 and \(co 2001-2004 Free Software Foundation, Inc.
 .PP
 Permission is granted to make and distribute verbatim copies of this
