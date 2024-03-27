@@ -745,11 +745,11 @@ AM_CPPFLAGS = -I$(srcdir)/.. -I.. $(X_INCLUDE) $(XFTINCLUDE)
 
 # The resource header and app-default files.
 
-Ddd.ad.h: Ddd $(srcdir)/ad2c.sed
-	$(CAT) Ddd | $(DELETE_CR) | \
+Ddd.ad.h: x11/Ddd $(srcdir)/ad2c.sed
+	$(CAT) x11/Ddd | $(DELETE_CR) | \
 	$(SED) -n -f $(srcdir)/ad2c.sed > $@~ && $(MV) $@~ $@
 
-$(srcdir)/Ddd.in: $(srcdir)/../m4/Ddd.in.m4 $(srcdir)/../m4/tips.m4 \
+$(srcdir)/x11/Ddd.in: $(srcdir)/../m4/Ddd.in.m4 $(srcdir)/../m4/tips.m4 \
 	$(srcdir)/../m4/macros.m4 $(srcdir)/../m4/colors.m4 
 	$(M4) -D srcdir=$(srcdir) $(srcdir)/../m4/Ddd.in.m4 $(srcdir)/../m4/tips.m4 \
 	  | $(DELETE_CR) > $@
@@ -908,7 +908,7 @@ DDDTARGET = cxxtest$(EXEEXT)
 
 # For demonstration and debugging purposes
 .PHONY: check
-check: Ddd ./$(ddd)$(EXEEXT) cxxtest$(EXEEXT) check-now
+check: x11/Ddd ./$(ddd)$(EXEEXT) cxxtest$(EXEEXT) check-now
 
 .PHONY: check-now
 check-now:
@@ -918,7 +918,7 @@ check-now:
 	./$(ddd)$(EXEEXT) $(DDDFLAGS) $(DDDTARGET)
 
 .PHONY: debug
-debug: Ddd ./$(ddd)$(EXEEXT) cxxtest$(EXEEXT) .gdbinit debug-now
+debug: x11/Ddd ./$(ddd)$(EXEEXT) cxxtest$(EXEEXT) .gdbinit debug-now
 
 .PHONY: debug-now
 debug-now:
@@ -1550,7 +1550,7 @@ root.h: $(srcdir)/root.h.in $(top_builddir)/config.status
 # Installation.
 # -----------------------------------------------------------------------------
 
-dddapp_DATA = Ddd
+dddapp_DATA = x11/Ddd
 
 
 # -----------------------------------------------------------------------------
@@ -1567,7 +1567,7 @@ PROG_STUFF = vsl-lex.L vsl-lex.C \
              $(srcdir)/../TIPS $(srcdir)/../m4/tips.m4 \
 	     $(srcdir)/tips2m4.awk $(top_builddir)/ddd/tips.html \
 	     $(srcdir)/../m4/macros.m4 $(srcdir)/../m4/colors.m4 \
-             $(srcdir)/../m4/Ddd.in.m4 $(srcdir)/Ddd.in \
+             $(srcdir)/../m4/Ddd.in.m4 $(srcdir)/x11/Ddd.in \
 	     host.h.in $(srcdir)/vsl2c.sed \
              $(srcdir)/../m4/ddd.vsl.m4 $(vsldir)/ddd.vsl $(top_builddir)/ddd.vsl.h \
              root.h.in $(top_builddir)/COPYING.gz $(top_builddir)/NEWS.gz \

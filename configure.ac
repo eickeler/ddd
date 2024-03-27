@@ -1154,7 +1154,7 @@ dnl
 dnl That's all, folks!
 dnl
 AC_CONFIG_FILES([Makefile ddd/Makefile ddd/vr.h ddd/bld.h
-		 ddd/Ddd ddd/ddd.man ddd/cfg.texi ddd/.gdbinit 
+		 ddd/x11/Ddd ddd/ddd.man ddd/cfg.texi ddd/.gdbinit 
 		 themes/Makefile vsllib/Makefile])
 AC_CONFIG_COMMANDS([ddd/stamp-h], [date > ddd/stamp-h])
 AC_OUTPUT
