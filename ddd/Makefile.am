@@ -1625,8 +1625,6 @@ desktopdir = $(datadir)/applications
 
 desktop_DATA = ddd.desktop
 
-docdir = $(datarootdir)/doc
-
 doc_DATA = $(srcdir)/../NEWS $(srcdir)/../COPYING
 
 
