@@ -409,9 +409,7 @@ static void show_configuration(std::ostream& os, bool version_only)
 #if WITH_BUILTIN_NEWS
 	"News, "
 #endif
-#if WITH_BUILTIN_APP_DEFAULTS
 	"App defaults, "
-#endif
 #if defined(WITH_VALGRIND)
         "Self Valgrind leak check, "
 #endif

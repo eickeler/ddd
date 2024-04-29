@@ -424,33 +424,11 @@ Optional Features
 By default, `configure' will configure DDD to use all supported
 optional DDD features.  There are five optional features.
 
-   * You can configure DDD such that the `Ddd' application defaults file
-     will be compiled into the DDD executable.
-   
-     To enable the builtin application defaults file, use the `configure'
-     option `--enable-builtin-app-defaults'.
-   
-   
    * You can configure DDD such that the DDD manual will be compiled into
      the DDD executable.
    
      To enable the builtin DDD manual, use the `configure' option
      `--enable-builtin-manual'.
-   
-   
-   * You can configure DDD such that the DDD News will be compiled into
-     the DDD executable.
-   
-     To enable the builtin DDD news, use the `configure' option
-     `--enable-builtin-news'.
-   
-   
-   * You can configure DDD such that the DDD License will be compiled into
-     the DDD executable.
-   
-     To enable the builtin DDD news, use the `configure' option
-     `--enable-builtin-license'.
-   
    
    * You can configure DDD such that the DDD VSL library `ddd.vsl' will
      be compiled into the DDD executable.
@@ -472,6 +450,23 @@ default values for variables like `CC', `cache_file', and `prefix'.
 `PREFIX/etc/config.site' if it exists.  Or, you can set the
 `CONFIG_SITE' environment variable to the location of the site script.
 A warning: not all `configure' scripts look for a site script.
+
+
+X11/Motif Application Defaults
+------------------------------
+
+DDD uses a Motif application defaults file (Ddd) to describe a large 
+number of configuration options.  Starting with ddd-3.4.1, these 
+options are compiled into the DDD binary.  They are overridden by the
+$HOME/.ddd/init file, with many of these options set by the DDD 
+preferences dialog.  The source for the built-in options, including 
+describions, can be found in the build directory under ddd/x11/Ddd.
+
+X11 and Motif search a number of system directories for application
+defaults.  It is recommended that you do NOT install the application 
+default file in any of the X11 system directories or under your home
+directory.  Doing so can result in version mismatches when upgrading
+from one version of DDD to a newer version.  
 
 
 Errors during build

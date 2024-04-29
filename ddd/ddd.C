@@ -7506,16 +7506,8 @@ static void setup_ddd_version_warnings()
     if (app_data.app_defaults_version == 0)
     {
         std::cerr << "Error: No `" DDD_CLASS_NAME "' application defaults file\n"
-            "To resolve this problem, you can:\n"
-            "* set the XAPPLRESDIR environment variable "
-            "to the location of the file `" DDD_CLASS_NAME "', or\n"
-            "* set the " DDD_NAME "_HOME environment variable "
-            "to the location of `" ddd_NAME "/" DDD_CLASS_NAME 
-            "', or\n"
-            "* install the `" DDD_CLASS_NAME "' file in the X "
-            "application defaults directory, or\n"
-            "* recompile " DDD_NAME " with builtin app-defaults file;\n"
-            "  see the `--enable-builtin-app-defaults' option for details.\n";
+	    "This is an internal error -- the application default file is\n"
+	    "compiled into the DDD binary.\n";
 
         exit(EXIT_FAILURE);
     }

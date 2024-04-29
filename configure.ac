@@ -1071,10 +1071,6 @@ dnl
 AC_ARG_ENABLE(builtin-manual,
 AS_HELP_STRING([--enable-builtin-manual],[compile manual into DDD]),
 	builtin_manual="$enableval", builtin_manual=no)
-AC_ARG_ENABLE(builtin-app-defaults,
-AS_HELP_STRING([--enable-builtin-app-defaults],
-               [compile app-defaults file into DDD]),
-	builtin_app_defaults="$enableval", builtin_app_defaults=no)
 AC_ARG_ENABLE(builtin-vsllib,
 AS_HELP_STRING([--enable-builtin-vsllib],[compile VSL library into DDD]),
 	builtin_vsllib="$enableval", builtin_vsllib=no)
@@ -1082,11 +1078,6 @@ dnl
 if test "$builtin_manual" != no; then
 AC_DEFINE(WITH_BUILTIN_MANUAL,1,
 [Define if you want the manual to be compiled into the executable.])
-fi
-if test "$builtin_app_defaults" != no; then
-AC_DEFINE(WITH_BUILTIN_APP_DEFAULTS,1,
-[Define if you want the app-defaults file to be compiled into the
-executable.])
 fi
 if test "$builtin_vsllib" != no; then
 AC_DEFINE(WITH_BUILTIN_VSLLIB,1,

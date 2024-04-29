@@ -2309,9 +2309,7 @@ AppDataInitializer::AppDataInitializer()
 // Fallback resources
 // The resources should be loaded in read-only memory thanks to "const"
 const _XtString const ddd_fallback_resources[] = {
-#if WITH_BUILTIN_APP_DEFAULTS
 #include "Ddd.ad.h"
-#endif
 
 // Terminating null pointer
 0
@@ -2328,44 +2326,6 @@ XrmDatabase app_defaults(Display *display)
     int i = 0;
     while (ddd_fallback_resources[i] != 0)
         XrmPutLineResource(&db, ddd_fallback_resources[i++]);
-
-    // Add app-defaults file, overriding fallback defaults.
-    static String app_name  = 0;
-    static String app_class = 0;
-    if (app_name == 0)
-        XtGetApplicationNameAndClass(display, &app_name, &app_class);
-
-    static string own_app_defaults_file = 
-        resolvePath(string(ddd_NAME) + "/" + app_class);
-
-    if (!own_app_defaults_file.empty())
-    {
-        // We have an application defaults file installed in the
-        // standard place.  Use it.
-        XrmDatabase db2 = XrmGetFileDatabase(own_app_defaults_file.chars());
-        if (db2 != 0)
-            XrmMergeDatabases(db2, &db);
-    }
-    else
-    {
-        // No application defaults file in the standard place.
-        // Search along the usual path.
-        String official_app_defaults_file = 
-            XtResolvePathname(display, 
-                              (String)0, // type
-                              app_class, // filename
-                              (String)0, // suffix
-                              (String)0, // path
-                              Substitution(0), 0, 
-                              XtFilePredicate(0));
-
-        if (official_app_defaults_file != 0)
-        {
-            XrmDatabase db2 = XrmGetFileDatabase(official_app_defaults_file);
-            if (db2 != 0)
-                XrmMergeDatabases(db2, &db);
-        }
-    }
 
     return db;
 }
