@@ -44,7 +44,7 @@ AC_REVISION([$Id$])
 dnl
 dnl Initialization.
 dnl
-AC_CONFIG_SRCDIR([NEWS])
+AC_CONFIG_SRCDIR([ddd])
 AC_CONFIG_HEADERS([ddd/config.h])
 dnl
 dnl Some simple checks.

@@ -9,7 +9,8 @@ https://www.gnu.org/software/ddd/
 Versions of DDD prior to ddd-3.4 can be found at 
 https://ftp.gnu.org/old-gnu/ddd
 
-For further information, consult the following files in the distribution:
+For further information, consult the following files in docs directory 
+of the distribution:
 
     ANNOUNCE         All about this DDD distribution
     COPYING          The DDD license.
@@ -18,7 +19,6 @@ For further information, consult the following files in the distribution:
     FONTS            How to change fonts used by DDD.
     INSTALL          How to build and install DDD.
     NEWS             Release information and recent changes.
-    README           This file.
     TIPS             DDD hints (`tip of the day')
 
 -- 

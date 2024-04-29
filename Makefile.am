@@ -69,7 +69,7 @@ REL = 1
 EXTRA_DIST = \
 	$(srcdir)/etc \
 	$(TEXINFO_DISTFILES) \
-        CREDITS NEWS FONTS NICKNAMES
+        doc/CREDITS doc/NEWS doc/FONTS doc/NICKNAMES
 
 dist-hook:
 	rm -rf `find $(distdir)/ddd/PICS -name CVS -o -name .cvsignore -o -name \*.jpg -o -name \*.pdf -o -name .svn`

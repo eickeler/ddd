@@ -759,12 +759,12 @@ $(srcdir)/x11/Ddd.in: $(srcdir)/../m4/Ddd.in.m4 $(srcdir)/../m4/tips.m4 \
 	$(M4) -D srcdir=$(srcdir) $(srcdir)/../m4/Ddd.in.m4 $(srcdir)/../m4/tips.m4 \
 	  | $(DELETE_CR) > $@
 
-$(srcdir)/../m4/tips.m4: $(srcdir)/../TIPS $(srcdir)/tips2m4.awk
-	$(AWK) -f $(srcdir)/tips2m4.awk $(srcdir)/../TIPS | $(DELETE_CR) \
+$(srcdir)/../m4/tips.m4: $(srcdir)/../doc/TIPS $(srcdir)/tips2m4.awk
+	$(AWK) -f $(srcdir)/tips2m4.awk $(srcdir)/../doc/TIPS | $(DELETE_CR) \
 	    > $@~ && $(MV) $@~ $@
 
-$(top_builddir)/ddd/tips.html: $(srcdir)/../TIPS
-	$(M4) -D srcdir=$(srcdir) -D macros=$(srcdir)/../m4/html.m4 $(srcdir)/TIPS \
+$(top_builddir)/ddd/tips.html: $(srcdir)/../doc/TIPS
+	$(M4) -D srcdir=$(srcdir) -D macros=$(srcdir)/../m4/html.m4 $(srcdir)/../doc/TIPS \
 	  | $(AWK) -f $(srcdir)/tips2html.awk | \
 	$(SED) 's/\\133/\[/g' | $(SED) 's/\\135/\]/g' | \
 	$(SED) 's/@\([A-Z][A-Z]*\)@/\1/g' | $(SED) 's/@ /@/g' \
@@ -1552,7 +1552,7 @@ dddapp_DATA = x11/Ddd
 PROG_STUFF = vsl-lex.L vsl-lex.C \
 	     vsl-gramma.Y vsl-gramma.H vsl-gramma.C \
 	     rxscan.L rxscan.C \
-             $(srcdir)/../TIPS $(srcdir)/../m4/tips.m4 \
+             $(srcdir)/../doc/TIPS $(srcdir)/../m4/tips.m4 \
 	     $(srcdir)/tips2m4.awk $(top_builddir)/ddd/tips.html \
 	     $(srcdir)/../m4/macros.m4 $(srcdir)/../m4/colors.m4 \
              $(srcdir)/../m4/Ddd.in.m4 $(srcdir)/x11/Ddd.in \
@@ -1570,7 +1570,15 @@ DIST_STUFF = $(srcdir)/header.ps $(srcdir)/trailer.ps \
 	     $(builddocdir)/ddd-themes.pdf \
 	     $(htmldir)/ddd.html $(srcdir)/ad2c.sed \
 	     style.css $(srcdir)/fix-html.sed \
-	     $(srcdir)/unumlaut.sed ddd.desktop
+	     $(srcdir)/unumlaut.sed ddd.desktop \
+	     $(srcdir)/../doc/ANNOUNCE $(srcdir)/../doc/AUTHORS  \
+	     $(srcdir)/../doc/COPYING  $(srcdir)/../doc/COPYING.DOC  \
+	     $(srcdir)/../doc/COPYING.LESSER  $(srcdir)/../doc/CREDITS  \
+	     $(srcdir)/../doc/FONTS  $(srcdir)/../doc/INSTALL  \
+	     $(srcdir)/../doc/NEWS  $(srcdir)/../doc/NEWS-OLD  \
+	     $(srcdir)/../doc/NICKNAMES  $(srcdir)/../doc/README  \
+	     $(srcdir)/../doc/TIPS  $(srcdir)/../doc/ddd-paper.pdf  \
+	     $(srcdir)/../doc/ddd-paper.ps  $(srcdir)/../doc/sample.dddinit
 
 # Let automake know what we need.
 EXTRA_DIST = $(PROG_STUFF) $(DIST_STUFF) $(IMAGES)
@@ -1612,6 +1620,7 @@ progstuff: $(PROG_STUFF)
 
 desktop_DATA = ddd.desktop
 
-ddddoc_DATA = $(srcdir)/../NEWS $(srcdir)/../COPYING
+ddddoc_DATA = $(srcdir)/../doc/NEWS $(srcdir)/../doc/COPYING \
+	      $(srcdir)/../doc/CREDITS
 
 
