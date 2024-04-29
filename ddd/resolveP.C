@@ -80,39 +80,21 @@ string resolvePath(const string& file, bool include_user)
 
     if (prefixes.size() == 0)
     {
-	// Look in ~/.ddd.
-	prefixes.push_back(session_state_dir());
-	sys_index = prefixes.size();
-
 	// Look in $DDD_HOME.
 	if (getenv(DDD_NAME "_HOME") != 0)
 	    prefixes.push_back(getenv(DDD_NAME "_HOME"));
 
-	// Look in DDD_ROOT (typically /usr/local/share/ddd-VERSION).
-	prefixes.push_back(DDD_ROOT);
+	// Look in ~/.ddd.
+	prefixes.push_back(session_state_dir());
+	sys_index = prefixes.size();
 
-	// Look in DDD_ALT_ROOT (typically /usr/local/share/ddd)..
-	prefixes.push_back(DDD_ALT_ROOT);
+	string prefix = myPrefix();
 
-	for (int i = 0; i < 3; i++)
-	{
-	    string prefix;
-	    switch (i)
-	    {
-	    case 0: prefix = myPrefix();   break;
-	    case 1: prefix = "/usr/local"; break;
-	    case 2: prefix = "/usr";       break;
-	    }
+	prefixes.push_back(prefix + "/share/" ddd_NAME "-" DDD_VERSION);
+	prefixes.push_back(prefix + "/share/" ddd_NAME);
 
-	    prefixes.push_back(prefix + "/share/" ddd_NAME "-" DDD_VERSION);
-	    prefixes.push_back(prefix + "/share/" ddd_NAME);
-
-	    prefixes.push_back(prefix + "/lib/" ddd_NAME "-" DDD_VERSION);
-	    prefixes.push_back(prefix + "/lib/" ddd_NAME);
-
-	    prefixes.push_back(prefix + "/" ddd_NAME "-" DDD_VERSION);
-	    prefixes.push_back(prefix + "/" ddd_NAME);
-	}
+	prefixes.push_back(prefix + "/" ddd_NAME "-" DDD_VERSION);
+	prefixes.push_back(prefix + "/" ddd_NAME);
     }
 
     StatusDelay delay("Searching " + quote(file));

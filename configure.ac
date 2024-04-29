@@ -1075,13 +1075,6 @@ AC_ARG_ENABLE(builtin-app-defaults,
 AS_HELP_STRING([--enable-builtin-app-defaults],
                [compile app-defaults file into DDD]),
 	builtin_app_defaults="$enableval", builtin_app_defaults=no)
-AC_ARG_ENABLE(builtin-news,
-AS_HELP_STRING([--enable-builtin-news],[compile NEWS file into DDD]),
-	builtin_news="$enableval", builtin_news=no)
-AC_ARG_ENABLE(builtin-license,
-AS_HELP_STRING([--enable-builtin-license],
-               [compile COPYING file into DDD]),
-	builtin_license="$enableval", builtin_license=no)
 AC_ARG_ENABLE(builtin-vsllib,
 AS_HELP_STRING([--enable-builtin-vsllib],[compile VSL library into DDD]),
 	builtin_vsllib="$enableval", builtin_vsllib=no)
@@ -1094,14 +1087,6 @@ if test "$builtin_app_defaults" != no; then
 AC_DEFINE(WITH_BUILTIN_APP_DEFAULTS,1,
 [Define if you want the app-defaults file to be compiled into the
 executable.])
-fi
-if test "$builtin_news" != no; then
-AC_DEFINE(WITH_BUILTIN_NEWS,1,
-[Define if you want the DDD news to be compiled into the executable.])
-fi
-if test "$builtin_license" != no; then
-AC_DEFINE(WITH_BUILTIN_LICENSE,1,
-[Define if you want the DDD license to be compiled into the executable.])
 fi
 if test "$builtin_vsllib" != no; then
 AC_DEFINE(WITH_BUILTIN_VSLLIB,1,

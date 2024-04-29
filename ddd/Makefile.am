@@ -49,8 +49,12 @@ SUFFIXES = .C .c .Y .L .txt .xbm .xbmxx .xpm .xpmxx \
 	   .xface .fig .jpg .png .gif .pdf $(IMGEXT)
 
 # Shared data installation
-dddrootdir    = $(pkgdatadir)-$(VERSION)
-dddappdir     = $(pkgdatadir)-$(VERSION)/$(ddd)
+dddrootdir    = $(pkgdatadir)-@VERSION@
+dddappdir     = $(pkgdatadir)-@VERSION@/@ddd@
+desktopdir    = $(datadir)/applications
+ddddocdir     = $(dddrootdir)/doc
+infodir       = $(dddrootdir)/info
+mandir        = $(dddrootdir)/man
 
 
 # -----------------------------------------------------------------------------
@@ -859,22 +863,7 @@ $(builddocdir)/ddd.info.txt.gz: $(builddocdir)/ddd.info.txt
 $(builddocdir)/ddd.info.txt.gz.C: $(builddocdir)/ddd.info.txt.gz $(STRINGIFY)
 	-$(STRINGIFY) < $< > $@
 
-# License.
-$(top_builddir)/COPYING.gz: $(srcdir)/../COPYING
-	$(COMPRESS) $? > $@
-
-$(top_builddir)/COPYING.gz.C: $(top_builddir)/COPYING.gz $(STRINGIFY)
-	-$(STRINGIFY) < $< > $@
-
-# News.
-$(top_builddir)/NEWS.gz: $(srcdir)/../NEWS
-	$(COMPRESS) $? > $@~ && $(MV) $@~ $@
-
-$(top_builddir)/NEWS.gz.C: $(top_builddir)/NEWS.gz $(STRINGIFY)
-	-$(STRINGIFY) < $< > $@
-
-show.$(OBJEXT): $(top_builddir)/COPYING.gz.C $(top_builddir)/NEWS.gz.C $(builddocdir)/ddd.info.txt.gz.C
-
+show.$(OBJEXT): $(builddocdir)/ddd.info.txt.gz.C
 
 # EPS code stuff.
 $(srcdir)/header.str: $(srcdir)/header.ps
@@ -1274,7 +1263,6 @@ $(srcdir)/gpl.texinfo: $(texidir)/gpl.texinfo
 $(srcdir)/gfdl.texinfo: $(texidir)/gfdl.texinfo
 	$(RM) $@; cp $(texidir)/gfdl.texinfo $@
 
-docdir = $(srcdir)/../doc
 builddocdir = $(top_builddir)/doc
 
 # The DDD manual in PDF format, including all pictures.
@@ -1570,7 +1558,7 @@ PROG_STUFF = vsl-lex.L vsl-lex.C \
              $(srcdir)/../m4/Ddd.in.m4 $(srcdir)/x11/Ddd.in \
 	     host.h.in $(srcdir)/vsl2c.sed \
              $(srcdir)/../m4/ddd.vsl.m4 $(vsldir)/ddd.vsl \
-             root.h.in $(top_builddir)/COPYING.gz $(top_builddir)/NEWS.gz \
+             root.h.in \
 	     $(srcdir)/ddd.info \
              xlibdir.txt xlibdir.C $(srcdir)/header.str \
 	     $(srcdir)/trailer.str $(srcdir)/eps-code.x eps-code.h \
@@ -1604,11 +1592,11 @@ CLEANFILES = ddd.au ddd.cm ddd.cms ddd.en ddd.fl ddd.fls ddd.lb ddd.lbs \
 
 # Have `make maintainer-clean' remove _all_ derived files.
 MAINTAINERCLEANFILES = Ddd.in ddd.vsl.h ddd.info.txt.gz gfdl.texinfo \
-	NEWS.gz.C ddd.info.txt.gz.C ddd.info \
-	NEWS.gz ddd.info.txt tips.m4 gpl.texinfo vsl-lex.C \
-	COPYING.gz config.h.in config.texi vsl-gramma.C \
+	ddd.info.txt.gz.C ddd.info \
+	ddd.info.txt tips.m4 gpl.texinfo vsl-lex.C \
+	config.h.in config.texi vsl-gramma.C \
 	vsl-gramma.H xlibdir.C trailer.str tips.html \
-	COPYING.gz.C header.str version.h rxscan.C \
+	header.str version.h rxscan.C \
 	ddd/PICS/*.gif \
 	ddd/PICS/*.jpg \
 	ddd/PICS/*.pdf \
@@ -1621,10 +1609,9 @@ diststuff: $(EXTRA_DIST)
 # `make progstuff' creates all files required for building DDD.
 progstuff: $(PROG_STUFF)
 
-desktopdir = $(datadir)/applications
 
 desktop_DATA = ddd.desktop
 
-doc_DATA = $(srcdir)/../NEWS $(srcdir)/../COPYING
+ddddoc_DATA = $(srcdir)/../NEWS $(srcdir)/../COPYING
 
 

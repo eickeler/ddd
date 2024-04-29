@@ -439,50 +439,6 @@ void show_configuration(std::ostream& os)
 // Helpers
 //-----------------------------------------------------------------------------
 
-static int uncompress(std::ostream& os, const char *text, int size)
-{
-    string tmpfile = tempfile();
-    FILE *fp = fopen(tmpfile.chars(), "w");
-    if (fp == 0)
-    {
-	os << tmpfile << ": " << strerror(errno);
-	return -1;
-    }
-
-    int i;
-    for (i = 0; i < size; i++)
-    {
-	if (i % 100 == 0)
-	    process_pending_events();
-	putc(text[i], fp);
-    }
-    fclose(fp);
-
-    string cmd = string(app_data.uncompress_command) + " < " + tmpfile;
-
-    const string s1 = sh_command(cmd, true) + " 2>&1";  
-    fp = popen(s1.chars(), "r");
-    if (fp == 0)
-    {
-	os << app_data.uncompress_command << ": " << strerror(errno);
-	return -1;
-    }
-
-    int c;
-    i = 0;
-    while ((c = getc(fp)) != EOF)
-    {
-	if (i % 100 == 0)
-	    process_pending_events();
-	os << (char)c;
-	i++;
-    }
-    pclose(fp);
-
-    unlink(tmpfile.chars());
-    return 0;
-}
-
 void show(int (*formatter)(std::ostream& os))
 {
     FILE *pager = 0;
@@ -526,16 +482,7 @@ void show(int (*formatter)(std::ostream& os))
 
 int ddd_license(std::ostream& os)
 {
-    (void) uncompress;		// Use it
-
-#if WITH_BUILTIN_LICENSE
-    static const char COPYING[] =
-#include "COPYING.gz.C"
-	;
-
-    return uncompress(os, COPYING, sizeof(COPYING) - 1);
-#else
-    const string s1 = resolvePath("COPYING"); 
+    const string s1 = resolvePath("doc/COPYING"); 
     std::ifstream is(s1.chars());
     if (is.bad())
 	return 1;
@@ -545,7 +492,6 @@ int ddd_license(std::ostream& os)
 	os << (char)c;
 
     return 0;
-#endif
 }
 
 void DDDLicenseCB(Widget w, XtPointer, XtPointer call_data)
@@ -560,7 +506,7 @@ void DDDLicenseCB(Widget w, XtPointer, XtPointer call_data)
     TextHelpCB(w, XtPointer(s.chars()), call_data);
 
     if (ret != 0 || !s.contains("GNU"))
-	post_error("The " DDD_NAME " license could not be uncompressed.", 
+	post_error("The " DDD_NAME " license could not be found.", 
 		   "no_license_error", w);
 }
 
@@ -570,14 +516,7 @@ void DDDLicenseCB(Widget w, XtPointer, XtPointer call_data)
 
 int ddd_news(std::ostream& os)
 {
-#if WITH_BUILTIN_NEWS
-    static const char NEWS[] =
-#include "NEWS.gz.C"
-	;
-
-    return uncompress(os, NEWS, sizeof(NEWS) - 1);
-#else
-    const string s1 = resolvePath("NEWS"); 
+    const string s1 = resolvePath("doc/NEWS"); 
     std::ifstream is(s1.chars());
     if (is.bad())
 	return 1;
@@ -586,7 +525,6 @@ int ddd_news(std::ostream& os)
     while ((c = is.get()) != EOF)
 	os << (char)c;
     return 0;
-#endif
 }
 
 void DDDNewsCB(Widget w, XtPointer, XtPointer call_data)
@@ -600,7 +538,7 @@ void DDDNewsCB(Widget w, XtPointer, XtPointer call_data)
     TextHelpCB(w, XtPointer(s.chars()), call_data);
 
     if (ret != 0 || !s.contains(DDD_NAME))
-	post_error("The " DDD_NAME " news could not be uncompressed.", 
+	post_error("The " DDD_NAME " news could not be found.", 
 		   "no_news_error", w);
 }
 
