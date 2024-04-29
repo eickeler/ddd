@@ -3011,6 +3011,7 @@ void SourceView::create_shells()
     // Create stack view
     arg = 0;
     XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
+    XtSetArg(args[arg], XmNheight, 400); arg++;
     stack_dialog_w =
         verify(createTopLevelSelectionDialog(parent, 
                                              "stack_dialog", args, arg));
@@ -3061,6 +3062,7 @@ void SourceView::create_shells()
 
     // Create register view
     arg = 0;
+    XtSetArg(args[arg], XmNheight, 600); arg++;
     XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
     register_dialog_w = 
         verify(createTopLevelSelectionDialog(parent, 

@@ -1789,6 +1789,7 @@ void gdbOpenProcessCB(Widget w, XtPointer, XtPointer)
 					       XmDIALOG_TEXT));
 
 	processes = XmSelectionBoxGetChild(dialog, XmDIALOG_LIST);
+        XtVaSetValues(processes, XmNheight, 600, NULL);
 
 	XtAddCallback(processes, XmNsingleSelectionCallback,
 		      SelectProcessCB, XtPointer(processes));

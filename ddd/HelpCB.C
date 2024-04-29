@@ -1416,6 +1416,7 @@ void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
 					    menubar);
 
     arg = 0;
+    XtSetArg(args[arg], XmNheight, 600); arg++;
     Widget form = verify(XmCreateForm(text_dialog, XMST("form"), args, arg));
 
     arg = 0;
