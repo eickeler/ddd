@@ -1071,17 +1071,10 @@ dnl
 AC_ARG_ENABLE(builtin-manual,
 AS_HELP_STRING([--enable-builtin-manual],[compile manual into DDD]),
 	builtin_manual="$enableval", builtin_manual=no)
-AC_ARG_ENABLE(builtin-vsllib,
-AS_HELP_STRING([--enable-builtin-vsllib],[compile VSL library into DDD]),
-	builtin_vsllib="$enableval", builtin_vsllib=no)
 dnl
 if test "$builtin_manual" != no; then
 AC_DEFINE(WITH_BUILTIN_MANUAL,1,
 [Define if you want the manual to be compiled into the executable.])
-fi
-if test "$builtin_vsllib" != no; then
-AC_DEFINE(WITH_BUILTIN_VSLLIB,1,
-[Define if you want the DDD VSL library to be compiled into DDD.])
 fi
 dnl
 dnl Check for risky LessTif versions.

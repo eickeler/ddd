@@ -430,12 +430,6 @@ optional DDD features.  There are five optional features.
      To enable the builtin DDD manual, use the `configure' option
      `--enable-builtin-manual'.
    
-   * You can configure DDD such that the DDD VSL library `ddd.vsl' will
-     be compiled into the DDD executable.
-   
-     To enable the builtin VSL library, use the `configure' option
-     `--enable-builtin-vsllib'.
-
 See also `External Packages', above, to disable external packages such
 as the Readline library used for command-line editing on standard input.
 

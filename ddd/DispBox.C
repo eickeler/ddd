@@ -117,11 +117,9 @@ void DispBox::init_vsllib(void (*background)())
 
     initializing = true;
 
-#if WITH_BUILTIN_VSLLIB
     static const char *builtin_def = 
 #include "ddd.vsl.h"
 	;
-#endif
 
     // Set include search path
     VSEFlags::include_search_path = 
@@ -141,7 +139,6 @@ void DispBox::init_vsllib(void (*background)())
     string name = vsllib_name;
     if (string(vsllib_name) == "builtin")
     {
-#if WITH_BUILTIN_VSLLIB
 	string defs = string(builtin_def) +
 	    "#line 1 \"" Ddd_NAME "*vslBaseDefs\"\n" +
 	    vsllib_base_defs +
@@ -150,25 +147,6 @@ void DispBox::init_vsllib(void (*background)())
 
 	std::istringstream is(defs.chars());
 	vsllib_ptr = new ThemedVSLLib(is, VSEFlags::optimize_mode());
-#else
-	name = "vsllib/" ddd_NAME ".vsl";
-	vsllib_ptr = new ThemedVSLLib();
-	const string path = resolvePath(name);
-	if (!path.empty())
-	{
-	    vsllib_ptr->update(path);
-
-	    string defs =
-		"#line 1 \"" Ddd_NAME "*vslBaseDefs\"\n" +
-		vsllib_base_defs +
-		"#line 1 \"" Ddd_NAME "*vslDefs\"\n" +
-		vsllib_defs;
-
-	    std::istringstream is(defs.chars());
-	    vsllib_ptr->update(is);
-	    vsllib_ptr->optimize(VSEFlags::optimize_mode());
-	}
-#endif
     }
     else
     {

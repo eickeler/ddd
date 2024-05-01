@@ -36,8 +36,7 @@ dddrootdir   = $(pkgdatadir)-@VERSION@
 # VSL files.
 # -----------------------------------------------------------------------------
 
-vslrootdir = $(dddrootdir)/vsllib
-vslroot_DATA = \
+vsl_files = \
 	arcs.vsl      \
 	builtin.vsl   \
 	colors.vsl    \
@@ -75,7 +74,7 @@ vsl_demos = \
 	DEMOS/slopes \
 	DEMOS/std
 
-EXTRA_DIST = $(vslroot_DATA) $(vsl_demos)
+EXTRA_DIST = $(vsl_files) $(vsl_demos)
 
 ddd.vsl: $(srcdir)/../m4/ddd.vsl.m4 $(srcdir)/../m4/colors.m4
 	$(M4) -D srcdir=$(srcdir) $< > $@

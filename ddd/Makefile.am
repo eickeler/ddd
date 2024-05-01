@@ -778,7 +778,7 @@ $(top_builddir)/ddd/tips.html: $(srcdir)/../doc/TIPS
 
 vsldir  = $(srcdir)/../vsllib
 
-VSL_CPP = $(CPP) -I$(vsldir) -I$(prefix)/lib/vsl-include
+VSL_CPP = $(CPP) -P -I$(vsldir) -I$(prefix)/lib/vsl-include
 
 VSLSRC = \
 	$(vsldir)/std.vsl \
