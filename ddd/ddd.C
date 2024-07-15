@@ -2905,6 +2905,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
                                          app_data.console_buttons);
 
     arg = 0;
+    XtSetArg(args[arg], ARGSTR(XmNpaneMaximum), 5000); arg++;
     gdb_w = verify(XmCreateScrolledText(left_paned_work_w, 
                                         XMST("gdb_w"), args, arg));
 
