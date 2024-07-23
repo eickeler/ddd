@@ -1,6 +1,80 @@
 DDD News						-*- text -*-
 ********
 
+DDD-3.4.1 (Serengeti)
+=====================
+
+Enhancements
+------------
+Font handling has been redesigned to use XFT client-side fonts.  The font 
+preference menu now has a drop-down menu to select compatible fonts.
+
+Add side-by-side view for source and data.
+
+Add dark mode.
+
+Line number width adapts to the size of source file.
+
+Display of UTF-8 in source window and debugger console.
+
+Convert ddd.1 (ddd.man) to UTF-8.
+
+Change default editors gvim or emacs, instead of kdevelop and vi in xterm.
+
+Remove Make and Edit buttons from Tool Bar.
+
+Fix dialogs for register, breakpoints, displays.
+
+
+Build issues
+------------
+Several issues which prevented building on macOS have been resolved.
+
+DDD is now built with internal X11 default attributes, vsl definitions.
+Several --enable-builtin-x options removed.  
+
+Additional derived files are built in the build directory instead of 
+the source directory.
+
+Support parallel make (-j <n>).  
+
+Eliminate unneeded functions and headers.
+
+Cleanup and reorganization in multiple areas: M4 use in Makefile, GDBAgent.
+
+Correct prereq script for Ubuntu/Debian.
+
+
+Miscelaneous
+------------
+Obsolete files have been removed: PROBLEMS, ddd.spec, GDB manual, FONTS
+
+Update splash screen to ddd-3.4
+
+Documents are now in doc directory in distribution tarball and
+are installed in /usr/share/doc.
+
+Bugs fixed:
+#25109, All-registers display doesn't work
+#28923: ddd/Ddd gets overwritten by ddd/ddd when building on os x (r7479)
+#50156: ddd error on i386-apple-darwin15.6.0 
+#65738: Xt error (Unresolved inheritance operation) on launch on macOS (fix upstream macOS)
+#63928: Resource mismanagement causes DDD/GDB interaction to hang
+#64188: ddd 3.4.0 fails to build on macOS without HAVE_SYS_IOCTL_H (r7364)
+#64283: INSTALL refers to incorrect file etc/install-prereq (r7368)
+#64321: HAVE_FNCTL_H never defined (r7366)
+#64322: Splash screen has version '3.3' (r7365)
+#64394: Wrong encoding for version output
+#64398: Empty ddd.1 manpage generated and installed on OS X 10.8 and later
+#64586: FONTS file is missing (r7472)
+#64587: mouse wheel in data display
+#65454: termcap compatible library may be called tinfo (r7471)
+#65455: Fails to build with parallel make (r7469)
+#65456: Build fails with LTO 
+
+==============================================================================
+==============================================================================
+
 DDD-3.4.0
 =========
 New maintainers: 
