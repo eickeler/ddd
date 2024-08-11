@@ -1307,9 +1307,8 @@ $(htmldir)/ddd.html $(htmldir)/ddd-themes.html: $(JPG_IMAGES) \
 # Manual page
 man_MANS = ddd.1
 
-# `ddd.man' has 8-bit format, `ddd.1' has 7-bit format
-ddd.1:   ddd.man $(srcdir)/unumlaut.sed
-	$(MV) $< $@
+ddd.1:	ddd.man 
+	cp $< $@
 
 
 
