@@ -37,6 +37,7 @@
 #include "base/strclass.h"
 #include "base/cwd.h"
 #include "base/tabs.h"
+#include "base/basename.h"
 
 // DDD includes
 #include "GDBAgent.h"
