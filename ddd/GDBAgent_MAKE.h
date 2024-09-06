@@ -31,7 +31,7 @@ public:
     bool ends_with_prompt (const string& ans) override;
     void cut_off_prompt(string& answer) const override;
     string print_command(const char *expr, bool internal) const override;
-    string print_command(const string& expr, bool internal = true) const {
+    string print_command(const string& expr, bool internal = true) const override {
       return print_command(expr.chars(), internal);
     }
     string info_args_command() const override { return info_locals_command(); }

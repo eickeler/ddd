@@ -44,6 +44,8 @@ public:
     string disable_command(string bp = "") const override;
     string delete_command(string bp = "") const override;
     string ignore_command(const string& bp, int count) const override;
+    string condition_command(const string& bp, const char *expr) const override
+	{ return "condition " + bp + " " + expr; }
     string debug_command(const char *file = "", string args = "") const override;
     string signal_command(int sig) const override;
     string run_command(string args) const override;

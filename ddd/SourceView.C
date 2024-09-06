@@ -5529,6 +5529,7 @@ void SourceView::edit_bps(std::vector<int>& breakpoint_nrs, Widget /* origin */)
 
     arg = 0;
     XtSetArg(args[arg], XmNeditMode, XmMULTI_LINE_EDIT); arg++;
+    XtSetArg (args[arg], XmNcolumns, 16); arg++;
     info->editor = XmCreateScrolledText(form, XMST("text"), args, arg);
     XtUnmanageChild(XtParent(info->editor));
     XtManageChild(info->editor);
