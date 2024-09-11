@@ -30,7 +30,7 @@
 #include "config.h"
 
 
-#ifdef HAVE_FREETYPE
+#if HAVE_FREETYPE
 #include <X11/Xft/Xft.h>
 #endif
 #include <X11/Xlib.h>
@@ -39,7 +39,7 @@
 #include "base/assert.h"
 
 
-#ifdef HAVE_FREETYPE
+#if HAVE_FREETYPE
 typedef XftFont BoxFont;
 #else
 typedef XFontStruct BoxFont;
@@ -82,7 +82,7 @@ public:
 
     virtual ~FontTable()
     {
-#ifndef HAVE_FREETYPE
+#if !HAVE_FREETYPE
 	for (unsigned i = 0; i < MAX_FONTS; i++)
 	    if (table[i].font != 0)
 		XFreeFont(_display, table[i].font);

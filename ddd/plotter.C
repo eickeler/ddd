@@ -951,7 +951,7 @@ PlotAgent *new_plotter(const string& name, DispValue *source)
     static int tics = 1;
 
     string cmd = app_data.plot_command;
-#ifdef HAVE_FREETYPE
+#if HAVE_FREETYPE
     cmd.gsub("@FONT@", make_xftfont(app_data, FixedWidthDDDFont));
 #else
     cmd.gsub("@FONT@", make_font(app_data, FixedWidthDDDFont));

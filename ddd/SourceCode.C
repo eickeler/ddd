@@ -654,7 +654,7 @@ String SourceCode::read_indented(string& file_name, long& length,
     // At this point, we have a source text.
     file_name = full_file_name;
 
-#ifndef HAVE_FREETYPE
+#if !HAVE_FREETYPE
 
     // determine utf-8 encoding
     bool utf8 = true;
@@ -886,7 +886,7 @@ int SourceCode::read_current(string& file_name, bool force_reload, bool silent, 
     bytepos_of_line.clear();
     bytepos_of_line.reserve(line_count + 2);
     bytepos_of_line.push_back((XmTextPosition(0)));
-#ifndef HAVE_FREETYPE
+#if !HAVE_FREETYPE
     char_count = current_source.length();
     for (int i = 0; i < int(current_source.length()); i++)
     {

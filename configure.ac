@@ -763,8 +763,14 @@ if test "$freetype_includes" = "no"; then
       fi
     ])
 fi
-XFT_INCLUDE=$freetype_includes
-if test $XFT_INCLUDE; then AC_MSG_RESULT([yes]); fi
+if test "X$freetype_includes" = "Xno"; then
+  AC_MSG_RESULT([no])
+else
+  AC_MSG_RESULT([yes])
+  if test -n "$freetype_includes"; then
+    XFT_INCLUDE=$freetype_includes
+  fi
+fi
 dnl
 dnl Search for Freetype library -lXft
 dnl

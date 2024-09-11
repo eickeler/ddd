@@ -58,7 +58,7 @@ Box *StringBox::resize()
 {
     if (_font != 0)
     {
-#ifndef HAVE_FREETYPE
+#if !HAVE_FREETYPE
 	int direction, font_ascent, font_descent;
 	XCharStruct overall;
 
@@ -94,7 +94,7 @@ void StringBox::_draw(Widget w,
 		      bool) const
 {
     BoxPoint origin = r.origin();
-#ifndef HAVE_FREETYPE
+#if !HAVE_FREETYPE
     if (_font != 0)
 	XSetFont(XtDisplay(w), gc, _font->fid);
 

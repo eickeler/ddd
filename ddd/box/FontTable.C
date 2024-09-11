@@ -62,7 +62,7 @@ BoxFont *FontTable::operator[](const string& name)
     {
 	// Insert new font
 	table[i].name = name;
-#ifdef HAVE_FREETYPE
+#if HAVE_FREETYPE
  	table[i].font = XftFontOpenName(_display, DefaultScreen(_display), (name+":antialias=true").chars());
 #else
 	table[i].font = XLoadQueryFont(_display, name.chars());
@@ -72,7 +72,7 @@ BoxFont *FontTable::operator[](const string& name)
 	    std::cerr << "Warning: Could not load font \"" << name << "\"";
 
 	    // Try default font
-#ifdef HAVE_FREETYPE
+#if HAVE_FREETYPE
             table[i].font = XftFontOpen(_display, DefaultScreen(_display), XFT_FAMILY, XftTypeString, "", NULL);
             std::cerr << ", using default font instead\n";
 #else
@@ -93,7 +93,7 @@ BoxFont *FontTable::operator[](const string& name)
 
         }
 
-#ifndef HAVE_FREETYPE
+#if !HAVE_FREETYPE
 	if (table[i].font == 0)
 	{
 	    // Try "fixed" font

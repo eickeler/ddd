@@ -1619,7 +1619,7 @@ static MMDesc startup_preferences_menu [] =
 static Widget font_names[5] = {};
 static Widget font_sizes[5] = {};
 
-#ifdef HAVE_FREETYPE
+#if HAVE_FREETYPE
 #define FONT_MENU(font) \
 { \
     { "name",   MMDropDownList | MMUnmanagedLabel, { SetFontNameCB, XtPointer(font) }, 0, &font_names[int(font)], 0, 0 }, \
@@ -1661,13 +1661,13 @@ const char * font_menu_notes =
 
 static MMDesc font_preferences_menu [] =
 {
- #ifndef HAVE_FREETYPE
+ #if !HAVE_FREETYPE
     { "default",         MMPanel,  MMNoCB, default_font_menu, 0, 0, 0 },
 #endif
     { "variableWidth",   MMPanel,  MMNoCB, variable_width_font_menu, 0, 0, 0 },
     { "fixedWidth",      MMPanel,  MMNoCB, fixed_width_font_menu, 0, 0, 0 },
     { "data",            MMPanel,  MMNoCB, data_font_menu, 0, 0, 0 },
-#ifndef HAVE_FREETYPE
+#if !HAVE_FREETYPE
     { font_menu_notes,          MMLabel,  MMNoCB, 0, 0, 0, 0 },
 #endif
     MMEnd
@@ -2054,7 +2054,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 #ifdef LC_ALL
     // Let DDD locales be controlled by the locale-specific
     // environment variables -- especially $LANG.
-#ifndef HAVE_FREETYPE
+#if !HAVE_FREETYPE
     // ddd cannot handle UTF-8. As workaround we use the latin1 charset 
     // and try to map UTF-8 characters on this set.
     setlocale(LC_ALL, "C.ISO-8859-1");
@@ -5098,7 +5098,7 @@ static void make_preferences(Widget parent)
     add_panel(change, buttons, "fonts", font_preferences_menu,
               max_width, max_height, false);
 
-#ifdef HAVE_FREETYPE
+#if HAVE_FREETYPE
     std::vector<string> varwidthlist =  GetVariableWithFonts();
     std::vector<string> fixedwidthlist = GetFixedWithFonts();
     std::vector<string> combinedlist;
@@ -7184,7 +7184,7 @@ static void setup_version_info()
     s += "To start, select `Help->What Now?'.";
     XmTextSetString(SourceView::source(), s);
 #else
-#ifdef HAVE_FREETYPE
+#if HAVE_FREETYPE
     XmTextSetString(gdb_w, XMST(
                     "GNU " DDD_NAME " " DDD_VERSION " (" DDD_HOST "), "
                     "by Dorothea L\303\274tkehaus and Andreas Zeller,\n"
@@ -7276,7 +7276,7 @@ static void setup_environment()
     {
         case GDB:
             // reset the internationalization in gdb to allow the correct interpretation of the answers from gdg
-#ifdef HAVE_FREETYPE
+#if HAVE_FREETYPE
             put_environment("LANG", "C.UTF-8");
 #else
             put_environment("LANG", "");

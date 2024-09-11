@@ -474,6 +474,7 @@ void setup_x_fonts(const AppData& ad, XrmDatabase& db)
 //-----------------------------------------------------------------------------
 // Setup XFT fonts
 //-----------------------------------------------------------------------------
+#if HAVE_FREETYPE
 
 static void setup_xft_fonts(AppData& ad, XrmDatabase& db)
 {
@@ -555,7 +556,7 @@ string make_xftfont(const AppData& ad, DDDFont base)
     }
 }
 
-
+#endif
 
 //-----------------------------------------------------------------------------
 // Set VSL font resources
@@ -581,7 +582,7 @@ void replace_vsl_font(string& defs, const string& func,
 static void setup_vsl_fonts(AppData& ad)
 {
     Dimension small_size, tiny_size, llogo_size;
-#ifdef HAVE_FREETYPE
+#if HAVE_FREETYPE
     if (ad.data_font_size >=80)
         ad.data_font_size = 11;
 
@@ -666,7 +667,7 @@ static void setup_vsl_fonts(AppData& ad)
 void setup_fonts(AppData& ad, XrmDatabase db)
 {
     XrmDatabase db2 = db;
-#ifdef HAVE_FREETYPE
+#if HAVE_FREETYPE
     setup_xft_fonts(ad, db2);
 #else
     setup_x_fonts(ad, db2);
@@ -806,7 +807,7 @@ void SetFontSizeCB(Widget w, XtPointer client_data, XtPointer)
     update_reset_preferences();
 }
 
-#ifdef HAVE_FREETYPE
+#if HAVE_FREETYPE
 std::vector<string> GetFixedWithFonts()
 {
     std::vector<string> fontlist;
