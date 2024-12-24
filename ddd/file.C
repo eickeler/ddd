@@ -76,6 +76,10 @@ char file_rcsid[] =
 #include <Xm/Label.h>
 #include <Xm/PushB.h>
 
+#ifdef HAVE_STAT_DECL
+#include <sys/stat.h>
+#endif
+
 // ANSI C++ doesn't like the XtIsRealized() macro
 #ifdef XtIsRealized
 #undef XtIsRealized
@@ -175,9 +179,9 @@ static void ClearStatusCB(Widget, XtPointer, XtPointer)
 // as search procedures for files and directories, respectively, and
 // OK_CALLBACK as the procedure called when a file is selected.
 static Widget file_dialog(Widget w, const string& name,
-			  FileSearchProc do_search_files = 0,
-			  FileSearchProc do_search_dirs  = 0,
-			  XtCallbackProc ok_callback     = 0)
+			  FileSearchProc do_search_files = nullptr,
+			  FileSearchProc do_search_dirs  = nullptr,
+			  XtCallbackProc ok_callback     = nullptr)
 {
     Delay delay(w);
 
@@ -232,11 +236,11 @@ static Widget file_dialog(Widget w, const string& name,
 
 // Create various file dialogs
 static Widget create_file_dialog(Widget w, const _XtString name,
-				 FileSearchProc searchRemoteFiles       = 0,
-				 FileSearchProc searchRemoteDirectories = 0,
-				 FileSearchProc searchLocalFiles        = 0,
-				 FileSearchProc searchLocalDirectories  = 0,
-				 XtCallbackProc openDone = 0)
+				 FileSearchProc searchRemoteFiles       = nullptr,
+				 FileSearchProc searchRemoteDirectories = nullptr,
+				 FileSearchProc searchLocalFiles        = nullptr,
+				 FileSearchProc searchLocalDirectories  = nullptr,
+				 XtCallbackProc openDone = nullptr)
 {			     
     if (remote_gdb())
 	return file_dialog(find_shell(w), name,
@@ -247,7 +251,7 @@ static Widget create_file_dialog(Widget w, const _XtString name,
 			   searchLocalFiles, searchLocalDirectories, 
 			   openDone);
     else
-	return file_dialog(find_shell(w), name, 0, 0, openDone);
+	return file_dialog(find_shell(w), name, nullptr, nullptr, openDone);
 }
 
 
@@ -582,7 +586,7 @@ static void open_file(const string& filename)
 	// files, so we do it explicitly
 	ProgramInfo info;
     	if (info.attached)
-	    gdb_command("detach");
+	    gdb_command(string("detach"));
     }
 
     if (gdb_initialized)
@@ -1506,34 +1510,43 @@ void get_gdb_sources(std::vector<string>& sources_list)
     sources_list.clear();
 
     string ans = gdb_question("info sources");
-    if (ans != NO_GDB_ANSWER)
+    if (ans == NO_GDB_ANSWER)
+        return;
+
+    // Create a newline-separated list of sources
+    string new_ans;
+    while (!ans.empty())
     {
-	// Create a newline-separated list of sources
-	string new_ans;
-	while (!ans.empty())
-	{
-	    string line = ans.before('\n');
-	    ans = ans.after('\n');
+        string line = ans.before('\n');
+        ans = ans.after('\n');
 
-	    if (line.empty() || line.contains(':', -1))
-		continue;
+        if (line.empty() || line.contains(':', -1))
+            continue;
 
-	    line.gsub(", ", "\n");
-	    new_ans += line + '\n';
-	}
-
-	ans = new_ans;
-	while (!ans.empty())
-	{
-	    string line = ans.before('\n');
-	    ans = ans.after('\n');
-	    
-	    sources_list.push_back(line);
-	}
-
-	smart_sort(sources_list);
-	uniq(sources_list);
+        line.gsub(", ", "\n");
+        new_ans += line + '\n';
     }
+
+    ans = new_ans;
+    while (!ans.empty())
+    {
+        string line = ans.before('\n');
+        ans = ans.after('\n');
+
+#ifdef HAVE_STAT_DECL
+        if (!remote_gdb())
+        {
+            // skip entries without source code files
+            struct stat s;
+            if (stat(line.chars(), &s) < 0)
+                continue;
+        }
+#endif
+
+        sources_list.push_back(line);
+    }
+    smart_sort(sources_list);
+    uniq(sources_list);
 }
 
 // Remove adjacent duplicates in A1
@@ -1709,7 +1722,7 @@ void gdbOpenFileCB(Widget w, XtPointer, XtPointer)
 	create_file_dialog(w, "exec_files", 
 			   searchRemoteExecFiles, 
 			   searchRemoteDirectories,
-			   searchLocalExecFiles, 0,
+			   searchLocalExecFiles, nullptr,
 			   openFileDone);
     manage_and_raise(dialog);
 }
@@ -1738,7 +1751,7 @@ void gdbOpenCoreCB(Widget w, XtPointer, XtPointer)
     static Widget dialog = 
 	create_file_dialog(w, "core_files", 
 			   searchRemoteCoreFiles, searchRemoteDirectories,
-			   searchLocalCoreFiles, 0,
+			   searchLocalCoreFiles, nullptr,
 			   openCoreDone);
     manage_and_raise(dialog);
     warn_if_no_program(dialog);
@@ -1749,7 +1762,7 @@ void gdbOpenSourceCB(Widget w, XtPointer, XtPointer)
     static Widget dialog = 
 	create_file_dialog(w, "source_files", 
 			   searchRemoteSourceFiles, searchRemoteDirectories,
-			   searchLocalSourceFiles, 0,
+			   searchLocalSourceFiles, nullptr,
 			   openSourceDone);
     manage_and_raise(dialog);
 
