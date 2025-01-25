@@ -63,6 +63,7 @@ char plotter_rcsid[] =
 #include "DataDisp.h"
 #include "x11/DestroyCB.h"
 #include "agent/TimeOut.h"
+#include "darkmode.h"
 
 #include <stdio.h>
 #include <fstream>
@@ -722,6 +723,8 @@ static PlotWindowInfo *new_decoration(const string& name)
 	Widget scroll = 
 	    XmCreateScrolledWindow(main_window, XMST("scroll"), args, arg);
 	XtManageChild(scroll);
+
+        setColorMode(main_window, app_data.dark_mode);
 
 	// Create work window
         // x11 type - swallow Gnuplot window

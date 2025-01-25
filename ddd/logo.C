@@ -576,7 +576,38 @@ static XImage *get_button_subimage(XImage *image, const _XtString name)
     return 0;			// Leave unchanged
 }
 
+void invert_colors(XImage *image, Pixel background)
+{
+    if (!image)
+        return;
 
+    for (int y = 0; y < image->height; y++)
+    {
+        for (int x = 0; x < image->width; x++)
+        {
+            // Get the pixel color
+            unsigned long pixel = XGetPixel(image, x, y);
+            if (pixel == background)
+                continue;
+
+            // Extract RGB components (assuming 24-bit depth)
+            unsigned char red = (pixel >> 16) & 0xFF;
+            unsigned char green = (pixel >> 8) & 0xFF;
+            unsigned char blue = pixel & 0xFF;
+
+            // Invert the colors
+            red = 255 - red;
+            green = 255 - green;
+            blue = 255 - blue;
+
+            // Combine back into a single pixel value
+            unsigned long inverted_pixel = (red << 16) | (green << 8) | blue;
+
+            // Set the new pixel color
+            XPutPixel(image, x, y, inverted_pixel);
+        }
+    }
+}
 
 static void install_icon(Widget w, const _XtString name,
 			 const char **xpm_data, 
@@ -629,6 +660,9 @@ static void install_icon(Widget w, const _XtString name,
 		    XDestroyImage(image);
 		    image = subimage;
 		}
+
+                if (app_data.dark_mode)
+                    invert_colors(image, background);
 	    }
 	    Boolean ok = InstallImage(image, name);
 	    if (ok)
@@ -661,6 +695,9 @@ static void install_icon(Widget w, const _XtString name,
 	    XFree(image);
 	    image = subimage;
 	}
+
+        if (app_data.dark_mode)
+            invert_colors(image, background);
     }
 
     Boolean ok = InstallImage(image, name);
