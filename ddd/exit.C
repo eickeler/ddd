@@ -109,6 +109,9 @@ char exit_rcsid[] =
 #include <sys/wait.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <execinfo.h>
+#include <cxxabi.h>
+#include <dlfcn.h>
 
 #include <Xm/Xm.h>
 #include <Xm/MessageB.h>
@@ -589,12 +592,38 @@ static void ddd_fatal(int sig)
     // cause.
 
     if (sig != SIGINT)
-	ddd_has_crashed = true;
+        ddd_has_crashed = true;
 
     // Make sure we have a ~/.ddd/log file
     init_dddlog();
 
     dddlog << "!  " << sigName(sig) << "\n";
+    if (sig != SIGINT)
+    {
+        void *array[25];
+        size_t size = backtrace(array, 25);
+        char **symbols = backtrace_symbols(array, size);
+
+        fprintf(stderr, "Error: signal %d:\n", sig);
+        for (size_t i = 0; i < size; i++)
+        {
+            Dl_info info;
+            if (dladdr(array[i], &info) && info.dli_sname)
+            {
+                char *demangled = abi::__cxa_demangle(info.dli_sname, NULL, 0, NULL);
+                fprintf(stderr, "%zu: %s (%p)\n", i, demangled ? demangled : info.dli_sname, array[i]);
+                dddlog << i << ": " << (demangled ? demangled : info.dli_sname) << " (" << array[i] << ")\n";
+                free(demangled);
+            }
+            else
+            {
+                fprintf(stderr, "%zu: %s\n", i, symbols[i]);
+                dddlog << i << ": " << symbols[i] << "\n";
+            }
+        }
+        free(symbols);
+    }
+
     dddlog.flush();
 
     // Reinstall fatal error handlers (for SVR4 and others)

@@ -1037,6 +1037,12 @@ dnl Display host system type
 AC_MSG_CHECKING([host system type])
 AC_MSG_RESULT($host_os)
 dnl
+dnl activate backtraces for linux
+case "$host_os" in
+Linux*|linux*)
+LDFLAGS="-rdynamic ${LDFLAGS}"
+esac
+dnl
 dnl Terry Teague <terry_teague@users.sourceforge.net> reports Mac OS X
 dnl requires some fixes
 AC_MSG_CHECKING([fixes needed for Mac OS X])
