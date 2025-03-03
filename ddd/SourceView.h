@@ -557,6 +557,8 @@ public:
     // Constructor
     SourceView(Widget parent);
 
+    ~SourceView();
+
     // Shell constructor
     void create_shells();
 

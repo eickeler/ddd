@@ -390,6 +390,9 @@ int SourceView::max_popup_expr_length = 20;
 
 int SourceView::max_breakpoint_number_seen = 0;
 
+static void DestroyOldWidgets(WidgetArray& Array);
+
+
 //-----------------------------------------------------------------------
 // Selection stuff
 //-----------------------------------------------------------------------
@@ -1906,6 +1909,9 @@ BreakPoint *SourceView::watchpoint_at(const string& expr)
 // Show position POS in TEXT_W, scrolling nicely
 void SourceView::ShowPosition(Widget text_w, XmTextPosition pos, bool fromTop)
 {
+   if (!XtIsRealized(text_w))
+       return;
+
     if (is_source_widget(text_w))
     {
         if (sourcecode.have_source()==false)
@@ -2786,6 +2792,9 @@ string SourceView::get_word_at_event(Widget text_w,
                                      XmTextPosition& startpos,
                                      XmTextPosition& endpos)
 {
+    if (!XtIsRealized(text_w))
+       return string("");
+
     BoxPoint event_pos = point(event);
     XmTextPosition pos = XmTextXYToPos(text_w, event_pos[X], event_pos[Y]);
 
@@ -2917,6 +2926,26 @@ SourceView::SourceView(Widget parent)
     if (disassemble)
         XtManageChild(code_form_w);
 }
+
+SourceView::~SourceView()
+{
+printf("~SourceView()\n");
+    for (int k = 0; k < 2; k++)
+    {
+        // Destroy old widgets...
+        DestroyOldWidgets(plain_stops[k]);
+        DestroyOldWidgets(multi_stops[k]);
+        DestroyOldWidgets(grey_stops[k]);
+        DestroyOldWidgets(plain_conds[k]);
+        DestroyOldWidgets(multi_conds[k]);
+        DestroyOldWidgets(grey_conds[k]);
+        DestroyOldWidgets(plain_temps[k]);
+        DestroyOldWidgets(multi_temps[k]);
+        DestroyOldWidgets(grey_temps[k]);
+    }
+}
+
+
 
 void SourceView::create_shells()
 {
@@ -5061,7 +5090,7 @@ void SourceView::DeleteInfoCB(Widget, XtPointer client_data,
 
     gdb->removeHandler(Recording, RecordingHP, (void *)info);
     if (gdb->recording())
-        gdb_command("\003");        // Abort recording
+        gdb_command(string("\003"));        // Abort recording
 
     if (XtIsManaged(XtParent(info->editor)))
     {
@@ -6963,7 +6992,7 @@ void SourceView::refresh_threads(bool all_threadgroups)
             // In JDB, `threadgroup system' seems to make `threads' list
             // the threads of *all* threadgroups, not only system threads.
             // This command will also automatically trigger an update.
-            gdb_command("threadgroup system");
+            gdb_command(string("threadgroup system"));
             syncCommandQueue();
         }
 
@@ -7112,20 +7141,19 @@ string SourceView::get_line(string position)
 bool SourceView::cache_glyph_images = true;
 
 static
-void DestroyOldWidgets(WidgetArray& Array){
-  const int size = Array.size();
-  for (int i = 0; i < size; i++)
+void DestroyOldWidgets(WidgetArray& Array)
+{
+    const int size = Array.size();
+    for (int i = 0; i < size; i++)
     {
-      if (Array[i] != 0)
-        XtDestroyWidget(Array[i]);
+        if (Array[i] != 0)
+            XtDestroyWidget(Array[i]);
     }
 }
 
 // Change number of glyphs
 void SourceView::set_max_glyphs (int nmax)
 {
-    static const WidgetArray empty;
-
     for (int k = 0; k < 2; k++)
     {
         // Destroy old widgets...
@@ -7140,17 +7168,17 @@ void SourceView::set_max_glyphs (int nmax)
         DestroyOldWidgets(grey_temps[k]);
 
         // ...make array empty...
-        plain_stops[k] = empty;
-        multi_stops[k] = empty;
-        grey_stops[k]  = empty;
+        plain_stops[k].clear();
+        multi_stops[k].clear();
+        grey_stops[k].clear();
 
-        plain_conds[k] = empty;
-        multi_conds[k] = empty;
-        grey_conds[k]  = empty;
+        plain_conds[k].clear();
+        multi_conds[k].clear();
+        grey_conds[k].clear();
 
-        plain_temps[k] = empty;
-        multi_temps[k] = empty;
-        grey_temps[k]  = empty;
+        plain_temps[k].clear();
+        multi_temps[k].clear();
+        grey_temps[k].clear();
 
         // ...and make room for new widgets.  The last one is a null pointer.
         int i;
@@ -8040,7 +8068,9 @@ Widget SourceView::map_drag_stop_at(Widget glyph, XmTextPosition pos,
 Widget SourceView::map_drag_arrow_at(Widget glyph, XmTextPosition pos, 
                                      Widget origin)
 {
-    assert (is_source_widget(glyph) || is_code_widget(glyph));
+//    assert (is_source_widget(glyph) || is_code_widget(glyph));
+    if (!is_source_widget(glyph) && !is_code_widget(glyph))
+        return nullptr;
 
     Position x, y;
     bool pos_displayed = glyph_pos_to_xy(glyph, pos, x, y);

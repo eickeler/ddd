@@ -89,36 +89,26 @@ private:
     void remove_destroy_callback();
 
 public:
-#define COMMAND(TYPE) \
-    Command(TYPE cmd, Widget w, OQCProc cb, void *d = 0, \
-	    bool v = false, bool c = false, int p = COMMAND_PRIORITY_SYSTEM) \
-	: command(cmd), origin(w), callback(cb), extra_callback(0), data(d), \
-	  echo(v), verbose(v), prompt(v), check(c), \
-	  start_undo(!CommandGroup::active || CommandGroup::first_command), \
-	  priority(p) \
-    { \
-	add_destroy_callback(); \
-	CommandGroup::first_command = false; \
+    Command(const string& cmd, Widget w, OQCProc cb, void *d = 0,
+	    bool v = false, bool c = false, int p = COMMAND_PRIORITY_SYSTEM)
+	: command(cmd), origin(w), callback(cb), extra_callback(0), data(d),
+	  echo(v), verbose(v), prompt(v), check(c),
+	  start_undo(!CommandGroup::active || CommandGroup::first_command),
+	  priority(p)
+    {
+	add_destroy_callback();
+	CommandGroup::first_command = false;
     }
 
-    COMMAND(const string&)
-    COMMAND(const char *)
-#undef COMMAND
-
-#define COMMAND(TYPE) \
-    Command(TYPE cmd, Widget w = 0) \
-	: command(cmd), origin(w), callback(0), extra_callback(0), data(0), \
-	  echo(true), verbose(true), prompt(true), check(true), \
-	  start_undo(!CommandGroup::active || CommandGroup::first_command), \
-	  priority(COMMAND_PRIORITY_USER) \
-    { \
-	add_destroy_callback(); \
-	CommandGroup::first_command = false; \
+    Command(const string& cmd, Widget w = 0)
+	: command(cmd), origin(w), callback(0), extra_callback(0), data(0),
+	  echo(true), verbose(true), prompt(true), check(true),
+	  start_undo(!CommandGroup::active || CommandGroup::first_command),
+	  priority(COMMAND_PRIORITY_USER)
+    {
+	add_destroy_callback();
+	CommandGroup::first_command = false;
     }
-
-    COMMAND(const string&)
-    COMMAND(const char *)
-#undef COMMAND
 
     Command(const Command& c)
 	: command(c.command), origin(c.origin), callback(c.callback),
@@ -176,51 +166,34 @@ public:
 // Enqueue COMMAND in command queue
 extern void gdb_command(const Command& command);
 
-// Custom calls
-#define COMMAND(TYPE) \
-inline void gdb_command(TYPE command, Widget origin, \
-			OQCProc callback, void *data = 0, \
-			bool verbose = false, bool check = false, \
-			int priority = COMMAND_PRIORITY_SYSTEM) \
-{ \
-    gdb_command(Command(command, origin, callback, data, \
-			verbose, check, priority)); \
+inline void gdb_command(const string &command, Widget origin,
+			OQCProc callback, void *data = 0,
+			bool verbose = false, bool check = false,
+			int priority = COMMAND_PRIORITY_SYSTEM)
+{
+    gdb_command(Command(command, origin, callback, data,
+			verbose, check, priority));
 }
-COMMAND(const char *)
-COMMAND(const string &)
-#undef COMMAND
 
-#define COMMAND(TYPE) \
-inline void gdb_command(TYPE command, Widget origin = 0) \
-{ \
-    gdb_command(Command(command, origin)); \
+inline void gdb_command(const string &command, Widget origin = 0)
+{
+    gdb_command(Command(command, origin));
 }
-COMMAND(const char *)
-COMMAND(const string &)
-#undef COMMAND
 
-#define COMMAND(TYPE) \
-inline void gdb_batch(TYPE command, Widget origin, \
-		      OQCProc callback, void *data = 0, \
-		      bool verbose = false, bool check = false, \
-		      int priority = COMMAND_PRIORITY_BATCH) \
-{ \
-    gdb_command(Command(command, origin, callback, data, \
-			verbose, check, priority)); \
+inline void gdb_batch(const string &command, Widget origin,
+		      OQCProc callback, void *data = 0,
+		      bool verbose = false, bool check = false,
+		      int priority = COMMAND_PRIORITY_BATCH)
+{
+    gdb_command(Command(command, origin, callback, data,
+			verbose, check, priority));
 }
-COMMAND(const char *)
-COMMAND(const string &)
-#undef COMMAND
 
-#define COMMAND(TYPE) \
-inline void gdb_batch(TYPE command, Widget origin = 0) \
-{ \
-    gdb_command(Command(command, origin, OQCProc(0), 0, \
-			false, true, COMMAND_PRIORITY_BATCH)); \
+inline void gdb_batch(const string &command, Widget origin = 0)
+{
+    gdb_command(Command(command, origin, OQCProc(0), 0,
+			false, true, COMMAND_PRIORITY_BATCH));
 }
-COMMAND(const char *)
-COMMAND(const string &)
-#undef COMMAND
 
 // True if GDB can run a command
 bool can_do_gdb_command();
