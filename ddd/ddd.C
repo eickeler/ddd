@@ -2126,8 +2126,8 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
         dddinit = XrmGetStringDatabase("");
 
     // Read ~/.ddd/setting configuration
-    if (config_set_app_data(session_settings_file(DEFAULT_SESSION).chars()) != 0)
-	config_set_defaults();
+    if (!config_set_app_data(session_settings_file(DEFAULT_SESSION).chars()))
+	    config_set_defaults();
 
     // Read ~/.ddd/tips resources
     XrmDatabase dddtips =

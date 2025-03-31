@@ -2151,10 +2151,6 @@ AppDataInitializer::AppDataInitializer()
 
         CopyArg(src, dest, size);
     }
-
-    // Set configuration defaults
-    // This should be moved to pre_main_loop();
-    config_set_defaults();
 }
 
 // Fallback resources

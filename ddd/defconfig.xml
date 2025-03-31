@@ -1,0 +1,57 @@
+<DDD>
+    <version>3.4.1</version>
+    <gdb>
+        <init>
+            <commands>set prompt (gdb) \nset height 0\nset width 0\nset annotate 1\nset print repeats unlimited\nset print sevenbit-strings off\nset verbose off\n</commands>
+        </init>
+        <settings>set print asm-demangle on\n</settings>
+    </gdb>
+    <dbx>
+        <init>
+            <commands>sh stty -echo -onlcr\nset $page = 1\n</commands>
+        </init>
+        <settings></settings>
+    </dbx>
+    <xdb>
+        <init>
+            <commands>sm\ndef run r\ndef cont c\ndef next S\ndef step s\ndef quit q\ndef finish { bu \\\\1t ; c ; L }\n</commands>
+        </init>
+        <settings></settings>
+    </xdb>
+    <bash>
+        <init>
+            <commands>set prompt bashdb$_Dbg_less$_Dbg_greater$_Dbg_space \n</commands>
+        </init>
+        <settings></settings>
+    </bash>
+    <dbg>
+        <init>
+            <commands></commands>
+        </init>
+        <settings></settings>
+    </dbg>
+    <jdb>
+        <init>
+            <commands></commands>
+        </init>
+        <settings></settings>
+    </jdb>
+    <make>
+        <init>
+            <commands></commands>
+        </init>
+        <settings></settings>
+    </make>
+    <perl>
+        <init>
+            <commands>o CommandSet=580\n</commands>
+        </init>
+        <settings></settings>
+    </perl>
+    <pydb>
+        <init>
+            <commands></commands>
+        </init>
+        <settings></settings>
+    </pydb>
+</DDD>

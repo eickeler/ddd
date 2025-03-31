@@ -26,8 +26,12 @@
 
 #include "config_manager.h"
 
-#include "AppData.h"
 #include "base/assert.h"
+#include "base/strclass.h"
+#include "AppData.h"
+#include "config_data.h"
+#include "resolveP.h"
+#include "filetype.h"
 
 #include <sys/stat.h>
 #include <tinyxml2.h>
@@ -63,6 +67,8 @@ static void encode(const char *src, char *dest, int len)
     char c;
     char *end = dest + len - 2;
 
+    if (src == NULL) return;
+
     while ((c = *src++))
     {
         switch (c)
@@ -92,6 +98,8 @@ static void decode(const char *src, char *dest, int len)
 {
     char c;
     char *end = dest + len - 2;
+
+    if (src == NULL) return;
 
     while ((c = *src++))
     {
@@ -139,10 +147,8 @@ Configuration::Configuration(const char *filename)
 // Read configuration data from file
 void Configuration::read(const char *filename)
 {
-    struct stat sb;
-
     error = tinyxml2::XML_ERROR_FILE_NOT_FOUND;
-    if ((stat(filename, &sb) == 0) && S_ISREG(sb.st_mode))
+    if (is_regular_file(filename))
     {
         error = settings.LoadFile(filename);
     }
@@ -163,11 +169,7 @@ int Configuration::set(const char *key, const char *value)
     std::vector<string> tokens = split(key, ".");
     const char *tok = key;
     unsigned int num;
-    static char evalue[1024];
-
-    // Ignore if value is null
-    if (value == NULL || *value == '\0')
-        return 0;
+    char evalue[1024] = "";
 
     encode(value, evalue, sizeof evalue);
 
@@ -218,7 +220,8 @@ const char *Configuration::get(const char *key)
     std::vector<string> tokens = split(key, ".");
     const char *tok = key;
     unsigned int num;
-    static char value[1024];
+    char value[1024] = "";
+    char *retval;
 
     node = settings.FirstChild();
     assert (node);
@@ -240,8 +243,11 @@ const char *Configuration::get(const char *key)
     if (!elem)
         return NULL;
 
+    value[0] = '\0';
     decode (elem->GetText(), value, sizeof value);
-    return value;
+    retval = (char *) malloc (strlen(value) + 1);
+    strcpy (retval, value);
+    return retval;
 }
 
 /*****************************************************************/
@@ -250,52 +256,32 @@ const char *Configuration::get(const char *key)
 void config_set_defaults()
 {
     // This will have settings moved from ddd_resources[];
+    
+    const string def_settings = resolvePath("default.xml");
+
+    cfg.read(def_settings.chars());
+    if (cfg.valid())
+    {
+        AppDataFormat *adf;
+        // Parse configuration settings and initialize app_data
+        for (adf = ADFormat; adf->XMLname; adf++)
+        {
+            assert(*adf->AppData == NULL);
+            *adf->AppData = cfg.get(adf->XMLname);
+        }
+        return;
+    }
+
+    std::cerr << "Default configuration not found\n";
 
     app_data.dddinit_version = DDD_VERSION;
-
-    app_data.gdb_init_commands = 
-        "set prompt (gdb) \n"
-        "set height 0\n"
-        "set width 0\n"
-        "set annotate 1\n"
-        "set print repeats unlimited\n"
-        "set print sevenbit-strings off\n"
-        "set verbose off\n";
-    app_data.gdb_settings = 
-        "set print asm-demangle on\n";
-    app_data.dbx_init_commands =
-        "sh stty -echo -onlcr\n"
-        "set $page = 1\n";
-    app_data.dbx_settings = "";
-    app_data.xdb_init_commands =
-        "sm\n"
-        "def run r\n"
-        "def cont c\n"
-        "def next S\n"
-        "def step s\n"
-        "def quit q\n"
-        "def finish { bu \\\\1t ; c ; L }\n";
-    app_data.xdb_settings = "";
-    app_data.bash_init_commands =
-        "set prompt bashdb$_Dbg_less$_Dbg_greater$_Dbg_space \n";
-    app_data.bash_settings = "";
-    app_data.dbg_init_commands = "";
-    app_data.dbg_settings = "";
-    app_data.jdb_init_commands = "";
-    app_data.jdb_settings = "";
-    app_data.make_init_commands = "";
-    app_data.make_settings = "";
-    app_data.perl_init_commands = 
-        "o CommandSet=580\n";
-    app_data.perl_settings = "";
-    app_data.pydb_init_commands = "";
-    app_data.pydb_settings = "";
 }
 
 // Read configuration file into app_data.
 int config_set_app_data(const char *filename)
 {
     const char *res;
+    AppDataFormat *adf;
 
     cfg.read(filename);
     if (cfg.valid())
@@ -303,28 +289,17 @@ int config_set_app_data(const char *filename)
         // Extract configuration info from setting file.
         // Check that setting file version matches DDD version.
         res = cfg.get("version");
-        if (strcmp (res, app_data.dddinit_version) != 0)
+        if (strcmp (res, DDD_VERSION) != 0)
             return ERR_CONFIG_INCORRECT_VERSION;  
 
         // Set app_data from settings file
-        app_data.gdb_init_commands = cfg.get ("gdb.init.commands");
-        app_data.gdb_settings = cfg.get ("gdb.settings");
-        app_data.dbx_init_commands = cfg.get ("dbx.init.commands");
-        app_data.dbx_settings = cfg.get ("dbx.settings");
-        app_data.xdb_init_commands = cfg.get ("xdb.init.commands");
-        app_data.xdb_settings = cfg.get ("dbx.settings");
-        app_data.bash_init_commands = cfg.get ("bash.init.commands");
-        app_data.bash_settings = cfg.get ("bash.settings");
-        app_data.dbg_init_commands = cfg.get ("dbg.init.commands");
-        app_data.dbg_settings = cfg.get ("dbg.settings");
-        app_data.jdb_init_commands = cfg.get ("jdb.init.commands");
-        app_data.jdb_settings = cfg.get ("jdb.settings");
-        app_data.make_init_commands = cfg.get ("make.init.commands");
-        app_data.make_settings = cfg.get ("make.settings");
-        app_data.perl_init_commands = cfg.get ("perl.init.commands");
-        app_data.perl_settings = cfg.get ("perl.settings");
-        app_data.pydb_init_commands = cfg.get ("pydb.init.commands");
-        app_data.pydb_settings = cfg.get ("pydb.settings");
+        // Parse configuration settings and initialize app_data
+        for (adf = ADFormat; adf->XMLname; adf++)
+        {
+            if (*adf->AppData != NULL)
+                free ((void *)*adf->AppData);
+            *adf->AppData = cfg.get(adf->XMLname);
+        }
 
         return 1;
     }
@@ -335,30 +310,15 @@ int config_set_app_data(const char *filename)
 // Create config file from app_data and write file
 int config_write_file(const char *filename)
 {
-    // Set app_data default values if not initialized
-    if (app_data.dddinit_version == 0)
-        config_set_defaults();
+    AppDataFormat *adf;
+
     cfg.set ("version", app_data.dddinit_version);
 
-    // Put configuration info into settings.
-    cfg.set ("gdb.init.commands", app_data.gdb_init_commands);
-    cfg.set ("gdb.settings", app_data.gdb_settings);
-    cfg.set ("dbx.init.commands", app_data.dbx_init_commands);
-    cfg.set ("dbx.settings", app_data.dbx_settings);
-    cfg.set ("xdb.init.commands", app_data.xdb_init_commands);
-    cfg.set ("xdb.settings", app_data.dbx_settings);
-    cfg.set ("bash.init.commands", app_data.bash_init_commands);
-    cfg.set ("bash.settings", app_data.bash_settings);
-    cfg.set ("dbg.init.commands", app_data.dbg_init_commands);
-    cfg.set ("dbg.settings", app_data.dbg_settings);
-    cfg.set ("jdb.init.commands", app_data.jdb_init_commands);
-    cfg.set ("jdb.settings", app_data.jdb_settings);
-    cfg.set ("make.init.commands", app_data.make_init_commands);
-    cfg.set ("make.settings", app_data.make_settings);
-    cfg.set ("perl.init.commands", app_data.perl_init_commands);
-    cfg.set ("perl.settings", app_data.perl_settings);
-    cfg.set ("pydb.init.commands", app_data.pydb_init_commands);
-    cfg.set ("pydb.settings", app_data.pydb_settings);
+    // Set settings file from app_data.
+    for (adf = ADFormat; adf->XMLname; adf++)
+    {
+        cfg.set(adf->XMLname, *adf->AppData);
+    }
 
     cfg.write (filename);
     assert (cfg.valid());

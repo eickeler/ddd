@@ -376,6 +376,7 @@ DDD_SRC = \
 	comm-manag.h \
 	complete.C   \
 	complete.h   \
+	config_data.h 	\
 	config_manager.C	 \
 	config_manager.h	 \
 	ctrl.C       \
@@ -745,6 +746,9 @@ AM_CPPFLAGS = -I$(srcdir)/.. -I.. $(X_INCLUDE) $(XFTINCLUDE)
 Ddd.ad.h: x11/Ddd $(srcdir)/ad2c.sed
 	$(CAT) x11/Ddd | $(DELETE_CR) | \
 	$(SED) -n -f $(srcdir)/ad2c.sed > $@~ && $(MV) $@~ $@
+
+$(top_builddir)/ddd/default.xml: $(srcdir)/defconfig.xml
+	cp $(srcdir)/defconfig.xml $@
 
 $(srcdir)/x11/Ddd.in: $(srcdir)/../m4/Ddd.in.m4 $(srcdir)/../m4/tips.m4 \
 	$(srcdir)/../m4/macros.m4 $(srcdir)/../m4/colors.m4 
@@ -1303,7 +1307,8 @@ man_MANS = ddd.1
 ddd.1:	ddd.man 
 	cp $< $@
 
-
+xmldir = $(datarootdir)/ddd-@VERSION@
+xml_DATA = $(top_builddir)/ddd/default.xml
 
 # -----------------------------------------------------------------------------
 # DDD Manual Pictures.
@@ -1532,14 +1537,15 @@ PROG_STUFF = vsl-lex.L vsl-lex.C \
              $(srcdir)/../doc/TIPS $(srcdir)/../m4/tips.m4 \
 	     $(srcdir)/tips2m4.awk $(top_builddir)/ddd/tips.html \
 	     $(srcdir)/../m4/macros.m4 $(srcdir)/../m4/colors.m4 \
-             $(srcdir)/../m4/Ddd.in.m4 $(srcdir)/x11/Ddd.in \
+         $(srcdir)/../m4/Ddd.in.m4 $(srcdir)/x11/Ddd.in \
+		 $(srcdir)/defconfig.xml \
 	     host.h.in $(srcdir)/vsl2c.sed \
              $(srcdir)/../m4/ddd.vsl.m4 $(vsldir)/ddd.vsl \
              root.h.in \
 	     $(srcdir)/ddd.info \
              xlibdir.txt xlibdir.C $(srcdir)/header.str \
 	     $(srcdir)/trailer.str $(srcdir)/eps-code.x eps-code.h \
-	     .gdbinit $(ICONS)
+	     .gdbinit $(ICONS) 
 
 # Additional files to be included in the distribution.
 DIST_STUFF = $(srcdir)/header.ps $(srcdir)/trailer.ps \
