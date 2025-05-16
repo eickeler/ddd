@@ -609,6 +609,23 @@ void invert_colors(XImage *image, Pixel background)
     }
 }
 
+XImage *scale_image(Widget w, Visual *visual, XImage *inputimage, int scalefactor)
+{
+    XImage *outputimage = XCreateImage(XtDisplay(w), visual, inputimage->depth, inputimage->format, 0, 0,
+                                       scalefactor*inputimage->width, scalefactor*inputimage->height, inputimage->bitmap_pad, 0);
+    outputimage->data =	(char *) malloc(outputimage->bytes_per_line * outputimage->height);
+    for (int y = 0; y < outputimage->height; y++)
+    {
+        for (int x = 0; x < outputimage->width; x++)
+        {
+            unsigned long pixel = XGetPixel(inputimage, x/scalefactor, y/scalefactor);
+            XPutPixel(outputimage, x, y, pixel);
+        }
+    }
+
+    return outputimage;
+}
+
 static void install_icon(Widget w, const _XtString name,
 			 const char **xpm_data, 
 			 const unsigned char *xbm_data,
@@ -639,23 +656,23 @@ static void install_icon(Widget w, const _XtString name,
 	add_color_key(attr, color_key);
 	add_closeness(attr);
 
-	XImage *image = 0;
-	XImage *shape = 0;
+	XImage *image = nullptr;
+	XImage *shape = nullptr;
 
 	int ret = 
 	    xpm(name, XpmCreateImageFromData(XtDisplay(w), (char **)xpm_data, 
 					     &image, &shape, &attr));
 
 	XpmFreeAttributes(&attr);
-	if (shape != 0)
+	if (shape != nullptr)
 	    XDestroyImage(shape);
 
-	if (ret == XpmSuccess && image != 0)
+	if (ret == XpmSuccess && image != nullptr)
 	{
 	    if (is_button)
 	    {
 		XImage *subimage = get_button_subimage(image, name);
-		if (subimage != 0)
+		if (subimage != nullptr)
 		{
 		    XDestroyImage(image);
 		    image = subimage;
@@ -664,13 +681,21 @@ static void install_icon(Widget w, const _XtString name,
                 if (app_data.dark_mode)
                     invert_colors(image, background);
 	    }
-	    Boolean ok = InstallImage(image, name);
+
+            if (app_data.variable_width_font_size>=16)
+            {
+                XImage *scaledimage = scale_image(w, win_attr.visual, image, 2);
+                XDestroyImage(image);
+                image = scaledimage;
+            }
+
+	    Boolean ok = XmInstallImage(image, XMST(name));
 	    if (ok)
 		return;
 	}
 
 	std::cerr << "Could not install " << quote(name) << " pixmap\n";
-	if (image != 0)
+	if (image != nullptr)
 	    XDestroyImage(image);
     }
 #else
@@ -700,7 +725,14 @@ static void install_icon(Widget w, const _XtString name,
             invert_colors(image, background);
     }
 
-    Boolean ok = InstallImage(image, name);
+    if (app_data.variable_width_font_size>=16)
+    {
+        XImage *scaledimage = scale_image(w, win_attr.visual, image, 2);
+        XDestroyImage(image);
+        image = scaledimage;
+    }
+
+    Boolean ok = XmInstallImage(image, XMST(name));
     if (ok)
 	return;
 
