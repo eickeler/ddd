@@ -69,9 +69,6 @@ void read_struct_end(string& value);
 // Read GDB `members of CLASS:' prefix
 bool read_members_prefix (string& value);
 
-// Convert a DBX initial `dump' line into a readable format
-void munch_dump_line (string& value);
-
 // Read in C++ vtable; return "" iff error
 string read_vtable_entries (string& value);
 

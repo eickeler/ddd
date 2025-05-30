@@ -822,36 +822,6 @@ void read_struct_end(string& value)
     read_array_end(value);
 }
 
-// Some DBXes issue the local variables via a frame line, just like
-// `set_date(d = 0x10003060, day_of_week = Sat, day = 24, month = 12,
-// year = 1994) LOCATION', where LOCATION is either `[FRAME]' (DEC
-// DBX) or `, line N in FILE' (AIX DBX).  Make this more readable.
-void munch_dump_line (string& value)
-{
-    if (gdb->type() == DBX)
-    {
-	string initial_line = value.before('\n');
-	strip_trailing_space(initial_line);
-
-#if RUNTIME_REGEX
-	static regex rxdbxframe("[a-zA-Z_$][a-zA-Z_$0-9]*[(].*[)].*"
-				"([[].*[]]|, line .*)");
-#endif
-	if (initial_line.matches(rxdbxframe))
-	{
-	    // Strip enclosing parentheses
-	    initial_line = initial_line.after('(');
-	    int index = initial_line.index(')', -1);
-	    initial_line = initial_line.before(index);
-
-	    // Place one arg per line
-	    initial_line.gsub(", ", "\n");
-
-	    value = initial_line + value.from('\n');
-	}
-    }
-}
-
 // Skip `members of SUBCLASS:' in VALUE.  Return false iff failure.
 bool read_members_prefix (string& value)
 {

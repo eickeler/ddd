@@ -355,3 +355,31 @@ string GDBAgent_DBX::assign_command(const string& var, const string& expr) const
 
     return cmd + " " + expr;
 }
+
+// Some DBXes issue the local variables via a frame line, just like
+// `set_date(d = 0x10003060, day_of_week = Sat, day = 24, month = 12,
+// year = 1994) LOCATION', where LOCATION is either `[FRAME]' (DEC
+// DBX) or `, line N in FILE' (AIX DBX).  Make this more readable.
+void GDBAgent_DBX::clean_frame_line(string &value) 
+{
+    string initial_line = value.before('\n');
+    strip_trailing_space(initial_line);
+
+#if RUNTIME_REGEX
+    static regex rxdbxframe("[a-zA-Z_$][a-zA-Z_$0-9]*[(].*[)].*"
+			    "([[].*[]]|, line .*)");
+#endif
+    if (initial_line.matches(rxdbxframe))
+    {
+        // Strip enclosing parentheses
+        initial_line = initial_line.after('(');
+        int index = initial_line.index(')', -1);
+        initial_line = initial_line.before(index);
+
+        // Place one arg per line
+        initial_line.gsub(", ", "\n");
+       
+        value = initial_line + value.from('\n');
+    }
+}
+
