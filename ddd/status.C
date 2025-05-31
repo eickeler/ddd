@@ -2,6 +2,7 @@
 // Show messages in status line
 
 // Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2025 Free Software Foundation, Inc.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
@@ -116,8 +117,9 @@ void set_buttons_from_gdb(Widget buttons, string& text)
         // Fetch previous output lines, in case this is a multi-line message.
         XmTextPosition pos;
         // FIXME: Handle JDB
-        const char *prompt_start = (gdb->type() == XDB) ? ">" : "(";
-        bool res = XmTextFindString(gdb_w, XmTextGetLastPosition(gdb_w), XMST(prompt_start), XmTEXT_BACKWARD, &pos);
+        bool res = XmTextFindString(gdb_w, XmTextGetLastPosition(gdb_w),
+                                    XMST(gdb->prompt_start().chars()),
+                                    XmTEXT_BACKWARD, &pos);
         if (res)
             res = XmTextFindString(gdb_w, pos, XMST("\n"), XmTEXT_FORWARD, &pos);
         if (res)

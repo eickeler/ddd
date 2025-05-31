@@ -859,6 +859,8 @@ public:
 	/* Unused */ (void (value));
     }
 
+    virtual string prompt_start() { return "("; }
+
     // Clean up member name
     virtual string clean_member_name (string member_name,
                                       bool &strip_qualifiers) {

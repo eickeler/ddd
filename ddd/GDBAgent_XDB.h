@@ -65,4 +65,5 @@ public:
         { return GDBAgent_XDB_init_commands; }
     string settings() const override 
         { return GDBAgent_XDB_settings; }
+    string prompt_start() override { return "("; }
 };
