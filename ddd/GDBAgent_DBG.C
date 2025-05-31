@@ -26,6 +26,7 @@
 
 #include "GDBAgent.h"
 #include "GDBAgent_DBG.h"
+#include "base/cook.h"
 
 char *GDBAgent_DBG_init_commands;
 char *GDBAgent_DBG_settings;
@@ -155,3 +156,16 @@ string GDBAgent_DBG::assign_command(const string& var, const string& expr) const
 
     return cmd + " " + expr;
 }
+
+string GDBAgent_DBG::clean_member_name (string member_name,
+                                        bool &strip_qualifiers) 
+{
+    if (member_name.contains('\'', 0) && member_name.contains('\'', -1))
+    {
+        // Some Perl debugger flavours quote the member name.
+        member_name = unquote(member_name);
+    }
+    strip_qualifiers = false;
+    return member_name;
+}
+

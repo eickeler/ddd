@@ -55,4 +55,6 @@ public:
         { return GDBAgent_PERL_init_commands; }
     string settings() const override 
         { return GDBAgent_PERL_settings; }
+    string clean_member_name (string member_name,
+                              bool &strip_qualifiers) override;
 };

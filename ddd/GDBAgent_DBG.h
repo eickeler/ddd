@@ -49,4 +49,6 @@ public:
         { return GDBAgent_DBG_init_commands; }
     string settings() const override 
         { return GDBAgent_DBG_settings; }
+    string clean_member_name (string member_name,
+                              bool &strip_qualifiers) override;
 };

@@ -957,26 +957,8 @@ string read_member_name (string& value, bool picky)
 	    member_name = m;
     }
 
-    if (gdb->type() == PERL || gdb->type() == DBG)
-    {
-        if (member_name.contains('\'', 0) && member_name.contains('\'', -1))
-        {
-	    // Some Perl debugger flavours quote the member name.
-	    member_name = unquote(member_name);
-        }
-
-	// A PERL hash key can contain spaces. If we try to strip the
-	// qualifiers, the key name will be the word after the last space
-	// in the key name:
-	// 'my key' will be returned as 'key'
-	// This has several effects:
-	// 1. The key name is displayed incorrectly
-	// 2. Since the key name is wrong, you can't access the associated
-	//    value trough the Display Data window.
-	// 3. Could lead to display a value associated to a valid key
-	// so, turn it OFF.
-	strip_qualifiers = false;
-    }
+    // Clean member name (for PERL & DBG).
+    member_name = gdb->clean_member_name (member_name, strip_qualifiers);
 
     if (member_name.contains("[]", -1))
     {

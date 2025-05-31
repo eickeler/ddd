@@ -859,6 +859,13 @@ public:
 	/* Unused */ (void (value));
     }
 
+    // Clean up member name
+    virtual string clean_member_name (string member_name,
+                                      bool &strip_qualifiers) {
+        strip_qualifiers = true;
+        return member_name;
+    }
+
     // Helpers
     string cmd() const;		// Actual command being executed
     string debugger() const;	// Debugger of command
