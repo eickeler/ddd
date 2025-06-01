@@ -57,4 +57,5 @@ public:
         { return GDBAgent_PERL_settings; }
     string clean_member_name (string member_name,
                               bool &strip_qualifiers) override;
+    void clean_history_line (string &line) override;
 };

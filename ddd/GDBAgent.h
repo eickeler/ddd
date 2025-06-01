@@ -868,6 +868,11 @@ public:
         return member_name;
     }
 
+    // Clean up history line
+    virtual void clean_history_line (string &line) {
+	/* Unused */ (void (line));
+    }
+
     // Helpers
     string cmd() const;		// Actual command being executed
     string debugger() const;	// Debugger of command

@@ -227,3 +227,11 @@ string GDBAgent_PERL::clean_member_name (string member_name,
     return member_name;
 }
 
+void GDBAgent_PERL::clean_history_line (string &line)
+{
+    line = line.after(" -d ");
+    line = line.before('\"');
+    if (line.contains(rxwhite))
+        line = line.before(rxwhite);
+}
+

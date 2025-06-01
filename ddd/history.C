@@ -309,13 +309,7 @@ void load_history(const string& file)
 		if (get_files)
 		{
 		    string arg = line.after(rxwhite);
-		    if (gdb->type() == PERL)
-		    {
-			arg = arg.after(" -d ");
-			arg = arg.before('\"');
-			if (arg.contains(rxwhite))
-			    arg = arg.before(rxwhite);
-		    }
+                    gdb->clean_history_line (arg);
 		    add_to_recent(arg);
 		    added = first_is_file;
 		}
