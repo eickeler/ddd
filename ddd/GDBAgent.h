@@ -192,6 +192,7 @@ protected:
     bool _has_addproc_command;
     bool _has_debug_command;
     bool _is_windriver_gdb;
+    bool _has_unwatch_command;
 
     ProgramLanguage _program_language; // Current program language
 
@@ -437,6 +438,10 @@ public:
     // True if debugger is the Windriver variant of GDB
     bool is_windriver_gdb() const   { return _is_windriver_gdb; }
     bool is_windriver_gdb(bool val) { return _is_windriver_gdb = val; }
+
+    // True if debugger has 'unwatch' command
+    bool has_unwatch_command() const   { return _has_unwatch_command; }
+    bool has_unwatch_command(bool val) { return _has_unwatch_command = val; }
 
     // Current program language
     ProgramLanguage program_language() const   { return _program_language; }

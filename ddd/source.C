@@ -274,7 +274,7 @@ void gdbWatchRefCB(Widget w, XtPointer, XtPointer)
 
 void gdbUnwatchCB(Widget, XtPointer, XtPointer)
 {
-    if (gdb->type() == JDB)
+    if (gdb->has_unwatch_command())
     {
 	// JDB 1.2 has an `unwatch' command
 	string arg = current_arg();
