@@ -27,6 +27,7 @@
 #include "GDBAgent.h"
 #include "GDBAgent_JDB.h"
 #include "regexps.h"
+#include "BreakPoint.h"
 
 char *GDBAgent_JDB_init_commands;
 char *GDBAgent_JDB_settings;
@@ -214,3 +215,9 @@ string GDBAgent_JDB::assign_command(const string& var, const string& expr) const
     return cmd + " " + expr;
 }
 
+// Parse breakpoint info response
+void GDBAgent_JDB::parse_break_info (BreakPoint *bp, string &info) 
+{
+    // Actual parsing code is in BreakPoint
+    bp->process_jdb (info);
+}

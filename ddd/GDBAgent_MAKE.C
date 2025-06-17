@@ -28,6 +28,7 @@
 #include "GDBAgent_MAKE.h"
 #include "regexps.h"
 #include "base/cook.h"
+#include "BreakPoint.h"
 
 char *GDBAgent_MAKE_init_commands;
 char *GDBAgent_MAKE_settings;
@@ -156,3 +157,10 @@ string GDBAgent_MAKE::assign_command(const string& var, const string& expr) cons
     return cmd + " " + expr;
 }
 
+// Parse breakpoint info response
+void GDBAgent_MAKE::parse_break_info (BreakPoint *bp, string &info) 
+{
+    // Actual parsing code is in BreakPoint
+    // Handle this like GDB
+    bp->process_gdb (info);
+}

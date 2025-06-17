@@ -58,4 +58,5 @@ public:
     string clean_member_name (string member_name,
                               bool &strip_qualifiers) override;
     void clean_history_line (string &line) override;
+    void parse_break_info (BreakPoint *bp, string &info) override;
 };

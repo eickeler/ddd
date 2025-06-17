@@ -51,6 +51,8 @@
 
 #include <vector>
 
+class BreakPoint;
+
 //-----------------------------------------------------------------------------
 // Debugger types
 //-----------------------------------------------------------------------------
@@ -888,6 +890,11 @@ public:
     virtual string rewrite_examine_address (string &address, string &fmt) {
 	/* Unused */ (void (address)); (void (fmt));
         return "";
+    }
+
+    // Parse breakpoint info response
+    virtual void parse_break_info (BreakPoint *bp, string &info) {
+        /* Unused */ (void (bp)); (void (info));
     }
 
     // Helpers

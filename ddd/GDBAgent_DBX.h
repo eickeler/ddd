@@ -73,4 +73,5 @@ public:
     string rewrite_examine_address (string &address, string &fmt)
 	{ // x /FMT ADDRESS
 	  return "x " + fmt + " " + address; }
+    void parse_break_info (BreakPoint *bp, string &info) override;
 };

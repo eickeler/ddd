@@ -96,38 +96,7 @@ BreakPoint::BreakPoint(string& info_output, const string& arg,
     if (gdb->type() != PERL)
 	strip_leading_space(info_output);
 
-    switch(gdb->type())
-    {
-    case GDB:
-    case MAKE:
-    case BASH:
-	process_gdb(info_output);
-	break;
-
-    case DBX:
-	process_dbx(info_output);
-	break;
-
-    case XDB:
-	process_xdb(info_output);
-	break;
-
-    case JDB:
-	process_jdb(info_output);
-	break;
-
-    case PYDB:
-	process_pydb(info_output);
-	break;
-
-    case PERL:
-	process_perl(info_output);
-	break;
-
-    case DBG:
-	process_dbg(info_output);
-	break;
-    }
+    gdb->parse_break_info (this, info_output);
 
     // If we found a file name, propagate it to next breakpoint
     file = file_name();

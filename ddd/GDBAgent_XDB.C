@@ -29,6 +29,7 @@
 #include "base/home.h"
 #include "string-fun.h"
 #include "base/cook.h"
+#include "BreakPoint.h"
 
 char *GDBAgent_XDB_init_commands;
 char *GDBAgent_XDB_settings;
@@ -228,3 +229,9 @@ string GDBAgent_XDB::assign_command(const string& var, const string& expr) const
     return cmd + " " + expr;
 }
 
+// Parse breakpoint info response
+void GDBAgent_XDB::parse_break_info (BreakPoint *bp, string &info) 
+{
+    // Actual parsing code is in BreakPoint
+    bp->process_xdb (info);
+}

@@ -30,6 +30,7 @@
 #include "base/cook.h"
 #include "string-fun.h"
 #include "base/isid.h"
+#include "BreakPoint.h"
 
 char *GDBAgent_PERL_init_commands;
 char *GDBAgent_PERL_settings;
@@ -233,5 +234,12 @@ void GDBAgent_PERL::clean_history_line (string &line)
     line = line.before('\"');
     if (line.contains(rxwhite))
         line = line.before(rxwhite);
+}
+
+// Parse breakpoint info response
+void GDBAgent_PERL::parse_break_info (BreakPoint *bp, string &info) 
+{
+    // Actual parsing code is in BreakPoint
+    bp->process_perl (info);
 }
 

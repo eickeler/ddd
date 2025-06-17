@@ -29,6 +29,7 @@
 #include "base/cook.h"
 #include "regexps.h"
 #include "string-fun.h"
+#include "BreakPoint.h"
 
 char *GDBAgent_PYDB_init_commands;
 char *GDBAgent_PYDB_settings;
@@ -190,3 +191,9 @@ string GDBAgent_PYDB::assign_command(const string& var, const string& expr) cons
     return cmd + " " + expr;
 }
 
+// Parse breakpoint info response
+void GDBAgent_PYDB::parse_break_info (BreakPoint *bp, string &info) 
+{
+    // Actual parsing code is in BreakPoint
+    bp->process_pydb (info);
+}

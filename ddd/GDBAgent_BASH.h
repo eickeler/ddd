@@ -53,4 +53,5 @@ public:
         { return GDBAgent_BASH_init_commands; }
     string settings() const override 
         { return GDBAgent_BASH_settings; }
+    void parse_break_info (BreakPoint *bp, string &info) override;
 };

@@ -28,6 +28,7 @@
 #include "GDBAgent_BASH.h"
 #include "regexps.h"
 #include "base/cook.h"
+#include "BreakPoint.h"
 
 char *GDBAgent_BASH_init_commands;
 char *GDBAgent_BASH_settings;
@@ -194,3 +195,10 @@ string GDBAgent_BASH::assign_command(const string& var, const string& expr) cons
     return cmd + " " + expr;
 }
 
+// Parse breakpoint info response
+void GDBAgent_BASH::parse_break_info (BreakPoint *bp, string &info) 
+{
+    // Actual parsing code is in BreakPoint
+    // Handle this like GDB
+    bp->process_gdb (info);
+}

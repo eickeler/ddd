@@ -28,6 +28,7 @@
 #include "GDBAgent_GDB.h"
 #include "regexps.h"
 #include "string-fun.h"
+#include "BreakPoint.h"
 
 // Note:  These target debugger configuration variables are defined 
 // here rather than in the class because they are accessed even when
@@ -281,4 +282,11 @@ string GDBAgent_GDB::assign_command(const string& var, const string& expr) const
     }
 
     return cmd + " " + expr;
+}
+
+// Parse breakpoint info response
+void GDBAgent_GDB::parse_break_info (BreakPoint *bp, string &info) 
+{
+    // Actual parsing code is in BreakPoint
+    bp->process_gdb (info);
 }

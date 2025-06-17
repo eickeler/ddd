@@ -27,6 +27,7 @@
 #include "GDBAgent.h"
 #include "GDBAgent_DBG.h"
 #include "base/cook.h"
+#include "BreakPoint.h"
 
 char *GDBAgent_DBG_init_commands;
 char *GDBAgent_DBG_settings;
@@ -169,3 +170,9 @@ string GDBAgent_DBG::clean_member_name (string member_name,
     return member_name;
 }
 
+// Parse breakpoint info response
+void GDBAgent_DBG::parse_break_info (BreakPoint *bp, string &info) 
+{
+    // Actual parsing code is in BreakPoint
+    bp->process_dbg (info);
+}

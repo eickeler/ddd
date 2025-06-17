@@ -51,4 +51,5 @@ public:
         { return GDBAgent_PYDB_init_commands; }
     string settings() const override 
         { return GDBAgent_PYDB_settings; }
+    void parse_break_info (BreakPoint *bp, string &info) override;
 };

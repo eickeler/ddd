@@ -66,4 +66,5 @@ public:
     string settings() const override 
         { return GDBAgent_XDB_settings; }
     string prompt_start() override { return "("; }
+    void parse_break_info (BreakPoint *bp, string &info) override;
 };

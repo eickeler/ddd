@@ -51,4 +51,5 @@ public:
         { return GDBAgent_JDB_init_commands; }
     string settings() const override 
         { return GDBAgent_JDB_settings; }
+    void parse_break_info (BreakPoint *bp, string &info) override;
 };

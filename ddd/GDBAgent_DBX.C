@@ -30,6 +30,7 @@
 #include "base/cook.h"
 #include "string-fun.h"
 #include "index.h"
+#include "BreakPoint.h"
 
 char *GDBAgent_DBX_init_commands;
 char *GDBAgent_DBX_settings;
@@ -435,4 +436,11 @@ string GDBAgent_DBX::rewrite_examine_format (string &format, string &size)
 
     // Ignore size in all other cases
     return format;
+}
+
+// Parse breakpoint info response
+void GDBAgent_DBX::parse_break_info (BreakPoint *bp, string &info) 
+{
+    // Actual parsing code is in BreakPoint
+    bp->process_dbx (info);
 }
