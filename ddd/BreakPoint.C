@@ -303,8 +303,8 @@ void BreakPoint::process_gdb(string& info_output)
 
     if (mytype == BREAKPOINT && multiple) 
     {
-	if (GDB != gdb->type()) {
-	    post_warning("Detected multiple breakpoint, but this is not GDB");
+	if (!gdb->has_info_multiple_breakpoint()) {
+	    post_warning("Detected multiple breakpoints, but debugger does not support this");
 	    return;
 	}
 	int numlocs = 0;

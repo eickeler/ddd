@@ -197,6 +197,7 @@ protected:
     bool _has_unwatch_command;
     bool _break_info_has_address;
     bool _break_info_has_function;
+    bool _has_info_multiple_breakpoint;
 
     ProgramLanguage _program_language; // Current program language
 
@@ -451,8 +452,13 @@ public:
     bool break_info_has_address() const { return _break_info_has_address; }
     bool break_info_has_address(bool val) { return _break_info_has_address = val; }
 
+    // True if break info comamnd contains function name
     bool break_info_has_function() const { return _break_info_has_function; }
     bool break_info_has_function(bool val) { return _break_info_has_function = val; }
+
+    // True if info break command lists multiple breakpoints
+    bool has_info_multiple_breakpoint() const { return _has_info_multiple_breakpoint; }
+    bool has_info_multiple_breakpoint(bool val) { return _has_info_multiple_breakpoint = val; }
 
     // Current program language
     ProgramLanguage program_language() const   { return _program_language; }

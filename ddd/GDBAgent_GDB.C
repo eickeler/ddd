@@ -55,6 +55,8 @@ GDBAgent_GDB::GDBAgent_GDB (XtAppContext app_context,
         _title = "GDB";
     
     _has_watch_command = WATCH_CHANGE | WATCH_READ | WATCH_WRITE;
+    _has_info_multiple_breakpoint = true;
+
 }
 
 // Return true iff ANSWER ends with primary prompt.
