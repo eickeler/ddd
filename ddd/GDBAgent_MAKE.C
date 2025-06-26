@@ -45,6 +45,7 @@ GDBAgent_MAKE::GDBAgent_MAKE (XtAppContext app_context,
     _has_err_redirection = false;
     _has_examine_command = false;
     _has_attach_command = false;
+    _break_info_has_address = false;
     _program_language = LANGUAGE_MAKE;
 }
 

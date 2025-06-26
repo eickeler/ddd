@@ -195,6 +195,8 @@ protected:
     bool _has_debug_command;
     bool _is_windriver_gdb;
     bool _has_unwatch_command;
+    bool _break_info_has_address;
+    bool _break_info_has_function;
 
     ProgramLanguage _program_language; // Current program language
 
@@ -444,6 +446,13 @@ public:
     // True if debugger has 'unwatch' command
     bool has_unwatch_command() const   { return _has_unwatch_command; }
     bool has_unwatch_command(bool val) { return _has_unwatch_command = val; }
+    
+    // True if break info command contains breakpoint address
+    bool break_info_has_address() const { return _break_info_has_address; }
+    bool break_info_has_address(bool val) { return _break_info_has_address = val; }
+
+    bool break_info_has_function() const { return _break_info_has_function; }
+    bool break_info_has_function(bool val) { return _break_info_has_function = val; }
 
     // Current program language
     ProgramLanguage program_language() const   { return _program_language; }

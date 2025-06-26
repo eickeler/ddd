@@ -177,7 +177,7 @@ void BreakPoint::process_gdb(string& info_output)
     if (mytype == BREAKPOINT && !multiple) 
     {
 	locn.resize(1);
-        if (MAKE != gdb->type() && BASH != gdb->type())
+        if (gdb->break_info_has_address())
 	{
 	    // Read address
 	    locn[0].myaddress = info_output.through(rxalphanum);
@@ -187,7 +187,8 @@ void BreakPoint::process_gdb(string& info_output)
 	    
 	}
 	  
-        if (BASH != gdb->type()) {
+        if (gdb->break_info_has_function())
+        {
 	  if (info_output.contains("in ", 0))
 	  {
 	      // Function name
