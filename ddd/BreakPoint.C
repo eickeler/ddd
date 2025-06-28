@@ -852,7 +852,7 @@ bool BreakPoint::update(string& info_output,
 
     if (!equal(new_bp.commands(), commands()))
     {
-        if (gdb->type() == GDB || gdb->type() == PYDB || gdb->type() == BASH)
+        if (gdb->has_breakpoint_commands())
 	{
 	    undo_commands << "commands " << num << '\n';
 	    for (int i = 0; i < int(commands().size()); i++)
