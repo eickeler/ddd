@@ -361,6 +361,11 @@ bool checkSTL(string& value, DispValueType &type)
         return true;
     }
 
+    if (keyword.contains("::shared_ptr") || keyword.contains("::unique_ptr") || keyword.contains("::weak_ptr"))
+    {
+        type =  Pointer;
+        return true;
+    }
     return false;
 }
 
