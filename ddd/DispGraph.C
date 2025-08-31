@@ -224,7 +224,8 @@ BoxPoint DispGraph::adjust_position (DispNode *new_node,
 				     Widget w,
 				     BoxPoint pos,
 				     const BoxPoint& offset,
-				     BoxPoint grid) const
+				     BoxPoint grid,
+                                     bool horizontal) const
 {
     const GraphGC& graphGC = graphEditGetGraphGC(w);
 
@@ -235,19 +236,18 @@ BoxPoint DispGraph::adjust_position (DispNode *new_node,
     // Leave GRID space around the box
     BoxRegion new_region(pos - (new_size + grid) / 2, new_size + grid);
 
-    // Make sure the new node is fully visible
-    while (new_region.origin()[X] <= 0)
+    if (new_region.origin()[X] <= 0)
     {
-	pos                 += BoxPoint(grid[X], 0);
-	new_region.origin() += BoxPoint(grid[X], 0);
-	// std::clog << "new node now   at " << pos << "\n";
+        int shift = (-new_region.origin()[X] / grid[X] + 1 ) * grid[X];
+        pos[X] += shift;
+        new_region.origin()[X] += shift;
     }
 
-    while (new_region.origin()[Y] <= 0)
+    if (new_region.origin()[Y] <= 0)
     {
-	pos                 += BoxPoint(0, grid[Y]);
-	new_region.origin() += BoxPoint(0, grid[Y]);
-	// std::clog << "new node now   at " << pos << "\n";
+        int shift = (-new_region.origin()[Y] / grid[Y] + 1 ) * grid[Y];
+        pos[Y] += shift;
+        new_region.origin()[Y] += shift;
     }
 
     // Make sure the new node does not obscure existing nodes
@@ -257,8 +257,19 @@ BoxPoint DispGraph::adjust_position (DispNode *new_node,
 	const BoxRegion& region = n->region(graphGC);
 	if (new_region <= region)
 	{
-	    pos                 += offset;
-	    new_region.origin() += offset;
+            int overlapX = std::min(new_region.right(), region.right()) - std::max(new_region.left(), region.left());
+            int overlapY = std::min(new_region.bottom(), region.bottom()) - std::max(new_region.top(), region.top());
+
+            BoxPoint off(0, 0);
+
+            if ((horizontal && 8*overlapY > overlapX) || (!horizontal && 8*overlapX <= overlapY))
+                off[X] = overlapX + grid[X];
+            else
+                off[Y] = overlapY + grid[Y];
+
+            printf("horiz %d  overlapX %d   overlapY %d  off %d %d\n", horizontal, overlapX, overlapY, off[X], off[Y]);
+            pos                 += off;
+            new_region.origin() += off;
 
 	    n = firstVisibleNode();
 	    // std::clog << "new node now   at " << pos << "\n";
@@ -447,7 +458,7 @@ BoxPoint DispGraph::default_pos(DispNode *new_node,
     assert(pos.isValid());
     assert(offset.isValid());
 
-    return adjust_position(new_node, w, pos, offset, grid);
+    return adjust_position(new_node, w, pos, offset, grid, offset[X]!=0);
 }
 
 // Find all hints in edges leading to NODE; store them in HINTS

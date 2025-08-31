@@ -98,6 +98,26 @@ public:
 	return true;
     }
 
+    int left() const
+    {
+        return _origin[X];
+    }
+
+    int top() const
+    {
+        return _origin[Y];
+    }
+
+    int right() const
+    {
+        return _origin[X] + _space[X];
+    }
+
+    int bottom() const
+    {
+        return _origin[Y] + _space[Y];
+    }
+
     // Rectangular intersection of two regions
     BoxRegion operator & (const BoxRegion& r) const;
 

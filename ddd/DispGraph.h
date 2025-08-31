@@ -161,7 +161,8 @@ protected:
 			      Widget w,
 			      BoxPoint pos,
 			      const BoxPoint& offset,
-			      BoxPoint grid) const;
+			      BoxPoint grid,
+                              bool horizontal) const;
 
     // Add a new alias edge
     void add_alias_edge(Widget w, int alias_disp_nr,
