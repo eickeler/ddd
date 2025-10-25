@@ -42,6 +42,7 @@
 #include "base/bool.h"
 #include "GDBAgent.h"
 #include "SourceView.h"
+#include "Command.h"
 
 extern class SourceView *source_view;
 
@@ -260,6 +261,80 @@ public:
                 is_match(source_view->name_of_file(), line));
     }
 };
+
+namespace BP
+{
+  // Return specified breakpoint
+  BreakPoint *get(int num);
+
+  // TODO: Overload select functions
+  // Select breakpoint by line number
+  void select_by_line(int line);
+
+  // Select breakpoint by bp numbers
+  void select_bp(std::vector<int> numbers);
+
+  // Select breakpoint by position
+  void select_bp_by_pos(string pos);
+
+  // Find BP Location by glyph
+  BreakPoint *find_bp_locn_by_glyph(Widget glyph, BreakPointLocn &locn);
+
+  // Count selected breakpoints; return selected breakpoint
+  BreakPoint *count_bps(int &enabled, int &disabled, int &selected);
+
+  // Find breakpoint by source location
+  BreakPoint *find_by_source_loc(const string &arg);
+
+  // Find breakpoint by source line number
+  BreakPoint *find_by_source_line(const int line_nr);
+
+  // Find breakpoint by bp number
+  BreakPoint *find_by_number(const int nr);
+
+  // Find all breakpoints at bp address
+  std::vector<BreakPoint *>find_all_bps_at_address(const string &address);
+
+  // Return the watchpoint at EXPR (0 if none)
+  BreakPoint *find_watchpoint(const string& expr);
+
+  // Return true if NRS contains all breakpoints and
+  // a GDB delete/disable/enable command can be given without args.
+  bool contains_all_bps(const std::vector<int>& nrs);
+
+  // Return all breakpoints/tracepoints in current file
+  std::vector<BreakPoint *> all_bps_in_file();
+
+  // Return all breakpoints/tracepoints at address
+  std::vector<BreakPoint *> all_bps_at_address(const string &address);
+
+  // Return all breakpoint numbers
+  std::vector<int> all_bp_numbers();
+
+  // Return all breakpoint addresses
+  std::vector<string> all_bp_addresses();
+
+  // Process breakpoint message
+  // Return arrays of breakpoints and selected flags
+  void process_breakpoints(string& info_breakpoints_output, string& file,
+                              string breakpoint_list[], bool selected[],
+                              int &count);
+
+  // Remove file paths and argument lists from `where' output
+  void setup_where_line(string& line);
+
+  // Return breakpoint of INFO; 0 if new; -1 if none
+  int breakpoint_number(const string& bp_info, string& file);
+
+  // Process reply on 'info breakpoints'.
+  // Update breakpoints in BP::BAP, adding new ones or deleting existing ones.
+  // Update breakpoint display by calling REFRESH_BP::DISP.
+  // Return true if BP changed.
+  bool process_info_bp (string& info_output, const string& break_arg);
+
+  // Delete all breakpoints
+  void reset_all_bps(OQCProc callback);
+}
 
 #endif // _DDD_BreakPoint_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

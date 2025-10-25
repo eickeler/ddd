@@ -540,7 +540,7 @@ void SourceView::line_popup_set_tempCB (Widget,
 void SourceView::clearBP(XtPointer client_data, XtIntervalId *)
 {
     int bp_nr = (int)(long)client_data;
-    BreakPoint *bp = bp_map.get(bp_nr);
+    BreakPoint *bp = BP::get(bp_nr);
     if (bp != 0)
         delete_bp(bp_nr);
 }
@@ -740,7 +740,7 @@ bool SourceView::move_bp(int bp_nr, const string& a, bool copy)
 
     // std::clog << "Moving breakpoint " << bp_nr << " to " << address << '\n';
 
-    BreakPoint *bp = bp_map.get(bp_nr);
+    BreakPoint *bp = BP::get(bp_nr);
     if (bp == 0)
         return false;                // No such breakpoint
 
@@ -808,7 +808,7 @@ void SourceView::_set_bps_cond(const std::vector<int>& _nrs, const string& cond,
     for (int i = 0; i < int(nrs.size()); i++)
     {
         int bp_nr = nrs[i];
-        BreakPoint *bp = bp_map.get(bp_nr);
+        BreakPoint *bp = BP::get(bp_nr);
         if (bp == 0)
             continue;                // No such breakpoint
 
@@ -881,7 +881,7 @@ void SourceView::bp_popup_disableCB (Widget,
                                      XtPointer)
 {
     int bp_nr = *((int *)client_data);
-    BreakPoint *bp = bp_map.get(bp_nr);
+    BreakPoint *bp = BP::get(bp_nr);
     if (bp != 0)
     {
         if (bp->enabled())
@@ -920,22 +920,7 @@ bool SourceView::all_bps(const std::vector<int>& nrs)
     if ((gdb->type() != GDB && gdb->type() != PYDB) || nrs.size() < 2)
         return false;
 
-    MapRef ref;
-    BreakPoint *bp = 0;
-    for (bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
-    {
-        bool found = false;
-        for (int i = 0; !found && i < int(nrs.size()); i++)
-        {
-            if (bp->number() == nrs[i])
-                found = true;
-        }
-
-        if (!found)
-            return false;
-    }
-
-    return true;
+    return BP::contains_all_bps(nrs);
 }
 
 void SourceView::enable_bps(const std::vector<int>& nrs)
@@ -968,6 +953,7 @@ void SourceView::disable_bps(const std::vector<int>& nrs)
     }
 }
 
+// TODO move to BreakPoint.C
 void SourceView::delete_bps(const std::vector<int>& nrs)
 {
     CommandGroup cg;
@@ -977,7 +963,7 @@ void SourceView::delete_bps(const std::vector<int>& nrs)
         // While recording, prefer commands without explicit numbers.
         for (int i = 0; i < int(nrs.size()); i++)
         {
-            BreakPoint *bp = bp_map.get(nrs[i]);
+            BreakPoint *bp = BP::get(nrs[i]);
             if (bp != 0)
                 for (int j = 0; j < bp->n_locations(); j++)
                     gdb_command(gdb->clear_command(bp->get_location(j).pos()));
@@ -997,7 +983,8 @@ void SourceView::delete_bps(const std::vector<int>& nrs)
     }
 }
 
-// A generic deletion command for breakpoint BP_NR - either `clear' or `delete'
+// TODO move to BreakPoint.C
+// A generic deletion command for breakpoint BP::NR - either `clear' or `delete'
 std::vector<string> SourceView::delete_commands(int bp_nr)
 {
     std::vector<string> cmds;
@@ -1007,7 +994,7 @@ std::vector<string> SourceView::delete_commands(int bp_nr)
     }
     else if (gdb->has_clear_command())
     {
-        BreakPoint *bp = bp_map.get(bp_nr);
+        BreakPoint *bp = BP::get(bp_nr);
         if (bp != 0) {
             for (int j = 0; j < bp->n_locations(); j++)
                 cmds.push_back(gdb->clear_command(bp->get_location(j).pos()));
@@ -1022,7 +1009,7 @@ void SourceView::bp_popup_set_pcCB(Widget w, XtPointer client_data,
                                    XtPointer call_data)
 {
     int bp_nr = *((int *)client_data);
-    BreakPoint *bp = bp_map.get(bp_nr);
+    BreakPoint *bp = BP::get(bp_nr);
     if (bp != 0)
     {
         if (bp->n_locations() > 1)
@@ -1260,7 +1247,8 @@ bool SourceView::base_matches(const string& file1, const string& file2)
 // If this is true, no motion occurred while selecting
 static bool selection_click = false;
 
-static string last_info_output = "";
+// TODO move to BreakPoint
+string last_info_output = "";
 
 void SourceView::set_source_argCB(Widget text_w, 
                                   XtPointer client_data, 
@@ -1382,13 +1370,7 @@ void SourceView::set_source_argCB(Widget text_w,
                 source_arg->set_string(pos);
 
                 // If a breakpoint is here, select this one only
-                MapRef ref;
-                for (BreakPoint* bp = bp_map.first(ref);
-                     bp != 0;
-                     bp = bp_map.next(ref))
-                {
-                    bp->selected() = (bp->is_match(line_nr));
-                }
+                BP::select_by_line(line_nr);
             }
         }
         else if (text_w == code_text_w
@@ -1407,22 +1389,7 @@ void SourceView::set_source_argCB(Widget text_w,
                 source_arg->set_string(pos);
 
                 // If a breakpoint is here, select this one only
-                MapRef ref;
-                for (BreakPoint* bp = bp_map.first(ref);
-                     bp != 0;
-                     bp = bp_map.next(ref))
-                {
-                    int i;
-                    bp->selected() = false;
-                    for (i = 0; i < bp->n_locations(); i++) {
-                        BreakPointLocn &locn = bp->get_location(i);
-                        if (bp->type() == BREAKPOINT && 
-                            compare_address(pos, locn.address()) == 0) {
-                            bp->selected() = true;
-                            break;
-                        }
-                    }
-                }
+                BP::select_bp_by_pos (pos);
             }
         }
 
@@ -1462,88 +1429,12 @@ void SourceView::set_source_argCB(Widget text_w,
 
 BreakPoint *SourceView::breakpoint_at(const string& arg)
 {
-    MapRef ref;
-    for (BreakPoint* bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
-    {
-        if (bp->type() != BREAKPOINT)
-            continue;
-
-        if (arg.matches(rxint))
-        {
-            // Line number for current source given
-            if (bp->is_match(atoi(arg.chars())))
-                return bp;
-        }
-        else
-        {
-            string pos = arg;
-
-            if (!is_file_pos(pos))
-            {
-                // Function given
-                if (bp->arg() == pos)
-                    return bp;
-
-                if (gdb->type() == DBX)
-                    pos = dbx_lookup(arg);
-            }
-            else
-            {
-                // File:line given
-                string file = pos.before(':');
-                string line = pos.after(':');
-
-                if (bp->is_match(file, atoi(line.chars())))
-                    return bp;
-            }
-        }
-    }
-
-    return 0;
+    return BP::find_by_source_loc(arg);
 }
 
 BreakPoint *SourceView::watchpoint_at(const string& expr)
 {
-    for (int trial = 0; trial <= 2; trial++)
-    {
-        MapRef ref;
-        for (BreakPoint* bp = bp_map.first(ref); bp != 0; 
-             bp = bp_map.next(ref))
-        {
-            if (bp->type() != WATCHPOINT)
-                continue;
-
-            switch (trial)
-            {
-            case 0:
-                if (bp->expr() == expr)
-                {
-                    // Expression matches exactly
-                    return bp;
-                }
-                break;
-
-            case 1:
-                if (bp->expr().contains('(') && bp->expr().before('(') == expr)
-                {
-                    // Expr matches EXPR(...)  (e.g. a qualified function name)
-                    return bp;
-                }
-                break;
-
-            case 2:
-                if (bp->expr().contains("`" + expr, -1) ||
-                    bp->expr().contains("::" + expr, -1))
-                {
-                    // Expr matches ...`EXPR (a Sun DBX identifier)
-                    // or ...::EXPR (an SGI DBX identifier)
-                    return bp;
-                }
-            }
-        }
-    }
-
-    return 0;
+    return BP::find_watchpoint(expr);
 }
 
 
@@ -1902,15 +1793,10 @@ void SourceView::refresh_source_bp_disp(bool reset)
         return;
 
     // Find all breakpoints referring to this file
-    MapRef ref;
-    for (BreakPoint* bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
+    std::vector<BreakPoint *> bps_in_file = BP::all_bps_in_file();
+    for (auto bpp = bps_in_file.begin(); bpp != bps_in_file.end(); bpp++)
     {
-        if ((bp->type() == BREAKPOINT || bp->type() == TRACEPOINT) && 
-            bp->is_match())
-        {
-            // ASSUME: multi-location breakpoints all have same source line
-            bps_in_line[bp->line_nr()].push_back(bp->number());
-        }
+        bps_in_line[(*bpp)->line_nr()].push_back((*bpp)->number());
     }
 
     // Show breakpoints in text
@@ -1933,7 +1819,7 @@ void SourceView::refresh_source_bp_disp(bool reset)
             string insert_string = "";
             for (int i = 0; i < int(bps.size()); i++)
             {
-                BreakPoint *bp = bp_map.get(bps[i]);
+                BreakPoint *bp = BP::get(bps[i]);
                 insert_string += bp->symbol();
             }
 
@@ -1989,16 +1875,7 @@ void SourceView::refresh_code_bp_disp(bool reset)
         return;
 
     // Collect all addresses
-    MapRef ref;
-    for (BreakPoint *bp = bp_map.first(ref); bp != 0;
-         bp = bp_map.next(ref))
-    {
-        if (bp->type() != BREAKPOINT)
-            continue;
-
-        for (i = 0; i < bp->n_locations(); i++)
-            bp_addresses.push_back(bp->get_location(i).address());
-    }
+    bp_addresses = BP::all_bp_addresses();
 
     // Process all bp_addresses
     for (i = 0; i < int(bp_addresses.size()); i++)
@@ -2010,13 +1887,10 @@ void SourceView::refresh_code_bp_disp(bool reset)
 
         // Process all breakpoints at ADDRESS
         string insert_string = "";
-        for (BreakPoint *bp = bp_map.first(ref);
-             bp != 0;
-             bp = bp_map.next(ref))
+        std::vector<BreakPoint *> bps_at_address = BP::all_bps_at_address(address);
+        for (auto bpp = bps_at_address.begin(); bpp != bps_at_address.end(); bpp++)
         {
-            for (int j = 0; j < bp->n_locations(); j++)
-                if (bp->get_location(j).address() == address)
-                    insert_string += bp->symbol();
+            insert_string += (*bpp)->symbol();
         }
 
         int indent = indent_amount_code(pos);
@@ -2071,24 +1945,16 @@ bool SourceView::get_line_of_pos (Widget   w,
     {
         // Glyph selected
 
-        MapRef ref;
-        for (BreakPoint *bp = bp_map.first(ref);
-             bp != 0;
-             bp = bp_map.next(ref))
+        BreakPointLocn locn;
+        BreakPoint *bp = BP::find_bp_locn_by_glyph(w, locn);
+        if (bp)
         {
-            for (int i = 0; i < bp->n_locations(); i++)
-            {
-                BreakPointLocn &locn = bp->get_location(i);
-                if (w == locn.source_glyph() || w == locn.code_glyph())
-                {
-                    // Breakpoint glyph found
-                    line_nr = locn.line_nr();
-                    address = locn.address();
-                    in_text = false;
-                    bp_nr   = bp->number();
-                    return true;
-                }
-            }
+           // Breakpoint glyph found
+           line_nr = locn.line_nr();
+           address = locn.address();
+           in_text = false;
+           bp_nr   = bp->number();
+           return true;
         }
     }
 
@@ -2133,7 +1999,7 @@ bool SourceView::get_line_of_pos (Widget   w,
             XmTextPosition bp_disp_pos = sourcecode.pos_of_line(line_nr);
             for (int i = 0; i < int(bps.size()); i++)
             {
-                BreakPoint* bp = bp_map.get(bps[i]);
+                BreakPoint* bp = BP::get(bps[i]);
                 assert(bp != NULL);
 
                 bp_disp_pos += 2; // respect '#' and '_';
@@ -2173,15 +2039,10 @@ bool SourceView::get_line_of_pos (Widget   w,
 
                 std::vector<int> bps;
 
-                MapRef ref;
-                for (BreakPoint *bp = bp_map.first(ref);
-                     bp != 0;
-                     bp = bp_map.next(ref))
-                {
-                    for (int i = 0; i < bp->n_locations(); i++)
-                        if (compare_address(address, bp->get_location(i).address()) == 0)
-                            bps.push_back(bp->number());
-                }
+                std::vector<BreakPoint *> bps_at_addr = BP::all_bps_at_address(address);
+                for (int i = 0; i < (int)bps_at_addr.size(); i++)
+                    bps.push_back(bps_at_addr[i]->number());
+
                 if (bps.size() == 1)
                 {
                     // Return single breakpoint in this line
@@ -2194,7 +2055,7 @@ bool SourceView::get_line_of_pos (Widget   w,
                     XmTextPosition bp_disp_pos = line_pos;
                     for (i = 0; i < int(bps.size()); i++)
                     {
-                        BreakPoint* bp = bp_map.get(bps[i]);
+                        BreakPoint* bp = BP::get(bps[i]);
                         assert(bp != NULL);
                         bp_disp_pos += 2; // respect '#' and '_';
                         bp_disp_pos += itostring(bp->number()).length();
@@ -3152,11 +3013,12 @@ void SourceView::show_position(string position, bool silent)
 //-----------------------------------------------------------------------
 
 // Process reply on 'info breakpoints'.
-// Update breakpoints in BP_BAP, adding new ones or deleting existing ones.
-// Update breakpoint display by calling REFRESH_BP_DISP.
+// Update breakpoints in BP::BAP, adding new ones or deleting existing ones.
+// Update breakpoint display by calling REFRESH_BP::DISP.
 void SourceView::process_info_bp (string& info_output,
                                   const string& break_arg)
 {
+#if 0
     // DEC DBX issues empty lines, which causes trouble
     info_output.gsub("\n\n", "\n");
 
@@ -3253,7 +3115,7 @@ void SourceView::process_info_bp (string& info_output,
         {
             // JDB and Perl have no breakpoint numbers.
             // Check if we already have a breakpoint at this location.
-            bp_nr = breakpoint_number(info_output, file);
+            bp_nr = BP::breakpoint_number(info_output, file);
             if (bp_nr == 0)
                 bp_nr = gdb->max_breakpoint_number_seen + 1;        // new breakpoint
             if (bp_nr < 0)
@@ -3360,7 +3222,7 @@ void SourceView::process_info_bp (string& info_output,
     // Delete all breakpoints not found now
     for (i = 0; i < int(bps_not_read.size()); i++)
     {
-        BreakPoint *bp = bp_map.get(bps_not_read[i]);
+        BreakPoint *bp = BP::get(bps_not_read[i]);
 
         // Older Perl versions only listed breakpoints in the current file
         if (gdb->type() == PERL && !bp->is_match(sourcecode.get_filename()))
@@ -3373,6 +3235,9 @@ void SourceView::process_info_bp (string& info_output,
 
         changed = true;
     }
+#else
+    bool changed = BP::process_info_bp(info_output, break_arg);
+#endif
 
     if (changed)
         refresh_bp_disp();
@@ -3380,7 +3245,9 @@ void SourceView::process_info_bp (string& info_output,
     // Set up breakpoint editor contents
     process_breakpoints(last_info_output);
 
+#if 0
     undo_buffer.add_command(string(undo_commands));
+#endif
 
     // Set up existing panels
     update_properties_panels();
@@ -3579,17 +3446,13 @@ void SourceView::lookup(string s, bool silent)
         int nr = get_positive_nr(nr_str);
         if (nr >= 0)
         {
-            MapRef ref;
-            BreakPoint *bp;
-            for (bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
+            BreakPoint *bp = BP::find_by_number(nr);
+
+            if (bp)
             {
-                if (nr == bp->number())
-                {
-                    add_current_to_history();
-                    show_position(bp->pos());
-                    show_pc(bp->address());
-                    break;
-                }
+                add_current_to_history();
+                show_position(bp->pos());
+                show_pc(bp->address());
             }
 
             if (bp == 0 && !silent)
@@ -4227,7 +4090,8 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
         set_sensitive(bp_popup[BPItms::SetPC].widget,
                        gdb->has_jump_command() || gdb->has_assign_command());
 
-        MString label(bp_map.get(bp_nr)->enabled() ? 
+        BreakPoint *bp = BP::get(bp_nr);
+        MString label(bp->enabled() ?
                       "Disable Breakpoint" : "Enable Breakpoint");
         XtVaSetValues(bp_popup[BPItms::Disable].widget,
                       XmNlabelString, label.xmstring(),
@@ -4429,28 +4293,16 @@ void SourceView::doubleClickAct(Widget w, XEvent *e, String *params,
         std::vector<int> bps;
         if (text_w == source_text_w)
         {
-            MapRef ref;
-            for (BreakPoint* bp = bp_map.first(ref);
-                 bp != 0;
-                 bp = bp_map.next(ref))
-            {
-                if (bp->is_match(line_nr))
-                    bps.push_back(bp->number());
-            }
+            BreakPoint *bp = BP::find_by_source_line(line_nr);
+            if (bp)
+                bps.push_back(bp->number());
         }
         else
         {
-            MapRef ref;
-            for (BreakPoint* bp = bp_map.first(ref);
-                 bp != 0;
-                 bp = bp_map.next(ref))
+            std::vector<BreakPoint *> bps_at_addr = BP::find_all_bps_at_address(address);
+            for (auto bp : bps_at_addr)
             {
-                for (int i = 0; i < bp->n_locations(); i++) {
-                    BreakPointLocn &locn = bp->get_location(i);
-                    if (bp->type() == BREAKPOINT && 
-                        compare_address(address, locn.address()) == 0)
-                        bps.push_back(bp->number());
-                }
+                bps.push_back(bp->number());
             }
         }
 
@@ -4816,7 +4668,7 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
             continue;
         }
 
-        BreakPoint *bp = bp_map.get(info->nrs[i]);
+        BreakPoint *bp = BP::get(info->nrs[i]);
         if (bp == 0)
         {
             // Breakpoint not found -- mark as deleted
@@ -4844,7 +4696,7 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
         return;                        // We cannot update yet
 
     // Use first breakpoint for getting values
-    BreakPoint *bp = bp_map.get(info->nrs[0]);
+    BreakPoint *bp = BP::get(info->nrs[0]);
     assert(bp != 0);
 
     // Set titles
@@ -4938,7 +4790,7 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
 
     for (i = 0; i < int(info->nrs.size()); i++)
     {
-        BreakPoint *bp = bp_map.get(info->nrs[i]);
+        BreakPoint *bp = BP::get(info->nrs[i]);
         if (bp->enabled())
             can_disable = gdb->can_disable();
         else
@@ -5053,7 +4905,7 @@ void SourceView::getBreakpointNumbers(std::vector<int>& breakpoint_nrs)
     // as breakpoint numbers and cause DDD to crash.
     for (int i = 0; i < int(numbers.size()); i++)
     {
-        BreakPoint *bp = bp_map.get(numbers[i]);
+        BreakPoint *bp = BP::get(numbers[i]);
         if (bp != 0)
             breakpoint_nrs.push_back(numbers[i]);
     }
@@ -5086,7 +4938,7 @@ void SourceView::edit_bps(std::vector<int>& breakpoint_nrs)
     sort(breakpoint_nrs);
 
     // Check for first breakpoint
-    BreakPoint *bp = bp_map.get(breakpoint_nrs[0]);
+    BreakPoint *bp = BP::get(breakpoint_nrs[0]);
     if (bp == 0)
         return;                        // No such breakpoint
 
@@ -5456,13 +5308,7 @@ void SourceView::set_bp_commands(std::vector<int>& nrs, const std::vector<string
     for (int i = 0; i < int(nrs.size()); i++)
     {
         // Check for breakpoint
-        MapRef ref;
-        BreakPoint *bp = 0;
-        for (bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
-        {
-            if (bp->number() == nrs[i])
-                break;
-        }
+        BreakPoint *bp = BP::find_by_number(nrs[i]);
         if (bp == 0)
             continue;                // No such breakpoint
 
@@ -5674,7 +5520,7 @@ void SourceView::LookupBreakpointCB(Widget, XtPointer client_data, XtPointer)
     if (breakpoint_nrs.size() == 0)
         return;
 
-    BreakPoint *bp = bp_map.get(breakpoint_nrs[0]);
+    BreakPoint *bp = BP::get(breakpoint_nrs[0]);
     if (bp == 0)
         return;
 
@@ -5712,7 +5558,7 @@ void SourceView::PrintWatchpointCB(Widget, XtPointer client_data, XtPointer)
     if (breakpoint_nrs.size() < 1)
         return;
 
-    BreakPoint *bp = bp_map.get(breakpoint_nrs[0]);
+    BreakPoint *bp = BP::get(breakpoint_nrs[0]);
     if (bp == 0)
         return;
 
@@ -5730,136 +5576,19 @@ void SourceView::PrintWatchpointCB(Widget, XtPointer client_data, XtPointer)
     }
 }
 
-
-// Return breakpoint of BP_INFO; 0 if new; -1 if none
-int SourceView::breakpoint_number(const string& bp_info, string& file)
-{ 
-    int line = 0;
-
-
-    switch (gdb->type())
-    {
-    case JDB:
-    {
-        int colon = bp_info.index(':');
-        if (colon < 0)
-            return -1;                // No breakpoint
-
-        file = bp_info.before(colon);
-        line = get_positive_nr(bp_info.after(colon));
-        break;
-    }
-    case PERL:
-    {
-        string info_output = bp_info;
-
-        // Check for `FILE:' at the beginning
-        if (!info_output.contains(' ', 0))
-        {
-            string first_line;
-            if (info_output.contains('\n'))
-                first_line = info_output.before('\n');
-            else
-                first_line = info_output;
-
-            if (first_line.contains(':', -1))
-            {
-                // Get leading file name
-                file = first_line.before(':');
-                info_output = info_output.after('\n');
-            }
-        }
-
-        line = get_positive_nr(info_output);
-        break;
-    }
-
-    default:
-        return -1;                        // Never reached
-    }
-
-    if (line <= 0)
-        return -1;                // No breakpoint
-
-    // Strip JDB 1.2 info like `breakpoint', etc.
-    strip_space(file);
-    int last_space = file.index(" ", -1);
-    if (last_space > 0)
-        file = file.after(last_space);
-
-    MapRef ref;
-    for (BreakPoint* bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
-        if (bp->is_match(file, line))
-            return bp->number(); // Existing breakpoint
-
-    return 0;                       // New breakpoint
-}
-
-
 // Handle breakpoint info
 void SourceView::process_breakpoints(string& info_breakpoints_output)
 {
     if (breakpoint_list_w == 0)
         return;
 
-    strip_space(info_breakpoints_output);
-    info_breakpoints_output.gsub("\t", "        ");
-    if (info_breakpoints_output.empty())
-    {
-        if (gdb->has_watch_command())
-            info_breakpoints_output = "No breakpoints or watchpoints.";
-        else
-            info_breakpoints_output = "No breakpoints.";
-    }
-
     int count = info_breakpoints_output.freq('\n') + 1;
-
     string *breakpoint_list = new string[count];
     bool *selected          = new bool[count];
-
-    split(info_breakpoints_output, breakpoint_list, count, '\n');
-
-    while (count > 0 && breakpoint_list[count - 1].empty())
-        count--;
-
-    bool select = false;
     string file = sourcecode.current_source_name();
 
-    for (int i = 0; i < count; i++)
-    {
-        string& bp_info = breakpoint_list[i];
-        if (!gdb->has_numbered_breakpoints())
-        {
-            // JDB and Perl have no breakpoint numbers -- insert our own
-            int bp_nr = breakpoint_number(bp_info, file);
-            if (bp_nr > 0)
-            {
-                string s = itostring(bp_nr) + "    ";
-                bp_info.prepend(s.at(0, 4));
-            }
-        }
-
-        // Select number
-        int bp_number = get_positive_nr(bp_info);
-        if (bp_number > 0)
-        {
-            MapRef ref;
-            for (BreakPoint* bp = bp_map.first(ref);
-                 bp != 0;
-                 bp = bp_map.next(ref))
-            {
-                if (bp->number() == bp_number)
-                {
-                    select = bp->selected();
-                    break;
-                }
-            }
-        }
-
-        selected[i] = select;
-        strip_auto_command_prefix(bp_info);
-        setup_where_line(bp_info);
-    }
+    BP::process_breakpoints(info_breakpoints_output, file, breakpoint_list, selected,
+                           count);
 
     setLabelList(breakpoint_list_w, breakpoint_list, selected, count,
                  (gdb->type() == GDB || 
@@ -5884,23 +5613,7 @@ void SourceView::UpdateBreakpointButtonsCB(Widget, XtPointer,
     getBreakpointNumbers(breakpoint_nrs);
 
     // Update selection
-    MapRef ref;
-    BreakPoint *bp;
-    for (bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
-        bp->selected() = false;
-
-    for (int i = 0; i < int(breakpoint_nrs.size()); i++)
-    {
-        int bp_number = breakpoint_nrs[i];
-        for (bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
-        {
-            if (bp->number() == bp_number)
-            {
-                bp->selected() = true;
-                break;
-            }
-        }
-    }
+    BP::select_bp(breakpoint_nrs);
 
 #if 0
     if (call_data != 0)
@@ -5918,19 +5631,7 @@ void SourceView::UpdateBreakpointButtonsCB(Widget, XtPointer,
     int selected          = 0;
     int selected_enabled  = 0;
     int selected_disabled = 0;
-    for (bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
-    {
-        if (bp->selected())
-        {
-            selected_bp = bp;
-            selected++;
-
-            if (bp->enabled())
-                selected_enabled++;
-            else
-                selected_disabled++;
-        }
-    }
+    selected_bp = BP::count_bps(selected_enabled, selected_disabled, selected);
 
     // Update buttons
     set_sensitive(bp_area[BPButtons::NewWP].widget, gdb->has_watch_command());
@@ -6041,6 +5742,7 @@ void SourceView::ViewStackFramesCB(Widget, XtPointer, XtPointer)
     refresh_buttons();
 }
 
+#if 0
 // Remove file paths and argument lists from `where' output
 void SourceView::setup_where_line(string& line)
 {
@@ -6073,6 +5775,7 @@ void SourceView::setup_where_line(string& line)
     if (int(line.length()) < min_width)
         line += replicate(' ', min_width - line.length());
 }
+#endif
 
 // Return current JDB frame; 0 if none
 inline int jdb_frame()
@@ -6129,7 +5832,7 @@ void SourceView::process_where(const string& where_output)
     for (i = 0; i < count; i++)
     {
         selected[i] = false;
-        setup_where_line(frame_list[i]);
+        BP::setup_where_line(frame_list[i]);
     }
 
     // JDB does not report frames above the current one.  Hence, we
@@ -6511,7 +6214,7 @@ void SourceView::process_threads(string& threads_output)
             if (selected[i])
                 thread_list[i] = thread_list[i].after(0);
             strip_leading_space(thread_list[i]);
-            setup_where_line(thread_list[i]);
+            BP::setup_where_line(thread_list[i]);
         }
         break;
     }
@@ -7941,7 +7644,7 @@ MString SourceView::help_on_pos(Widget w, XmTextPosition pos,
 // Return help on a glyph
 MString SourceView::help_on_bp(int bp_nr, bool detailed)
 {
-    BreakPoint *bp = bp_map.get(bp_nr);
+    BreakPoint *bp = BP::get(bp_nr);
     if (bp == 0)
         return MString(0, true);
 
@@ -8130,31 +7833,25 @@ void SourceView::dragGlyphAct(Widget glyph, XEvent *e, String *params,
     unmap_drag_arrow(text_w);
 
     // Check for breakpoint
-    MapRef ref;
-    for (BreakPoint *bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
-    {
-        for (int i = 0; i < bp->n_locations(); i++)
-        {
-            BreakPointLocn &locn = bp->get_location(i);
-            if (glyph == locn.source_glyph() || glyph == locn.code_glyph())
-            {
-                if (glyph == locn.code_glyph() && bp->n_locations() > 1)
-                {
-                    // Cannot drag a breakpoint in code window if it has
-                    // multiple locations.  FIXME: such glyphs should be
-                    // visually distinguished.
-                    current_drag_origin     = NULL;
-                    current_drag_breakpoint = 0;
-                    return;
-                }
-                current_drag_origin     = glyph;
-                current_drag_breakpoint = bp->number();
-                return;
-            }
-        }
-    }
+    BreakPointLocn locn;
+    BreakPoint *bp = BP::find_bp_locn_by_glyph(glyph, locn);
+
     current_drag_origin     = glyph;
     current_drag_breakpoint = 0;
+    if (bp)
+    {
+        if (bp->n_locations() > 1)
+        {
+            // Cannot drag a breakpoint in code window if it has
+            // multiple locations.  FIXME: such glyphs should be
+            // visually distinguished.
+            current_drag_origin     = NULL;
+        }
+        else
+        {
+            current_drag_breakpoint = bp->number();
+        }
+    }
 }
 
 void SourceView::followGlyphAct(Widget glyph, XEvent *e, String *, Cardinal *)
@@ -8399,20 +8096,13 @@ void SourceView::log_glyphs()
 void SourceView::deleteGlyphAct(Widget glyph, XEvent *, String *, Cardinal *)
 {
     std::vector<int> bps;
-    MapRef ref;
-    for (BreakPoint *bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
+    BreakPointLocn locn;
+    BreakPoint *bp = BP::find_bp_locn_by_glyph(glyph, locn);
+
+    // Cannot delete individual locations.
+    if (bp && bp->n_locations() == 1)
     {
-        for (int i = 0; i < bp->n_locations(); i++)
-        {
-            BreakPointLocn &locn = bp->get_location(i);
-            if (glyph == locn.source_glyph() || glyph == locn.code_glyph())
-            {
-                // Cannot delete individual locations.
-                if (glyph == locn.code_glyph() && bp->n_locations() > 1)
-                    continue;
-                bps.push_back(bp->number());
-            }
-        }
+        bps.push_back(bp->number());
     }
 
     delete_bps(bps);
@@ -8849,7 +8539,8 @@ void SourceView::set_all_registers(bool set)
 // Get the position of breakpoint NUM
 string SourceView::bp_pos(int num)
 {
-    BreakPoint *bp = bp_map.get(num);
+// TODO: Move to BreakPoint.C
+    BreakPoint *bp = BP::get(num);
     if (bp == 0)
         return "";
     else {
@@ -8884,9 +8575,7 @@ bool SourceView::get_state(std::ostream& os)
     bool ok = true;
 
     // Restore breakpoints
-    MapRef ref;
-    for (BreakPoint *bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
-        breakpoint_nrs.push_back(bp->number());
+    breakpoint_nrs = BP::all_bp_numbers();
 
     if (breakpoint_nrs.size() > 0)
     {
@@ -8904,7 +8593,7 @@ bool SourceView::get_state(std::ostream& os)
         int num = 1;
         for (int i = 0; i < int(breakpoint_nrs.size()); i++)
         {
-            BreakPoint *bp = bp_map.get(breakpoint_nrs[i]);
+            BreakPoint *bp = BP::get(breakpoint_nrs[i]);
             if (restore_old_numbers)
             {
                 while (num < breakpoint_nrs[i])
@@ -8960,61 +8649,5 @@ void SourceView::reset_done(const string&, void *)
 
 void SourceView::reset()
 {
-    CommandGroup cg;
-
-    bool reset_later = false;
-
-    // Delete all breakpoints
-    if (gdb->has_delete_command())
-    {
-        string del = gdb->delete_command();
-
-        MapRef ref;
-        int n = 0;
-        for (BreakPoint *bp = bp_map.first(ref); bp != 0; 
-             bp = bp_map.next(ref))
-        {
-            n++;
-            del += " " + itostring(bp->number());
-        }
-
-        if (n > 0)
-        {
-            Command c(del);
-            c.verbose  = false;
-            c.prompt   = false;
-            c.check    = true;
-            c.priority = COMMAND_PRIORITY_INIT;
-            c.callback = reset_done;
-            gdb_command(c);
-
-            reset_later = true;
-        }
-    }
-    else if (gdb->has_clear_command())
-    {
-        MapRef ref;
-        for (BreakPoint *bp = bp_map.first(ref); bp != 0; 
-             bp = bp_map.next(ref))
-        {
-            // For gdb we use the delete command.
-            // So if we get here this is a simple breakpoint.
-            Command c(gdb->clear_command(bp->pos()));
-            c.verbose  = false;
-            c.prompt   = false;
-            c.check    = true;
-            c.priority = COMMAND_PRIORITY_INIT;
-
-            if (bp_map.next(ref) == 0)
-            {
-                // Last command
-                c.callback = reset_done;
-                reset_later = true;
-            }
-            gdb_command(c);
-        }
-    }
-
-    if (!reset_later)
-        reset_done("", 0);
+        BP::reset_all_bps(reset_done);
 }

@@ -37,10 +37,12 @@ char BreakPoint_rcsid[] =
 
 #include "BreakPoint.h"
 #include <ctype.h>
+#include <algorithm>
 
 // Misc includes
 #include "assert.h"
 #include "base/cook.h"
+#include "base/misc.h"
 
 // DDD includes
 #include "string-fun.h"
@@ -53,6 +55,9 @@ char BreakPoint_rcsid[] =
 #include "index.h"
 #include "value-read.h"
 #include "post.h"
+#include "CodeCache.h"
+#include "disp-read.h"
+#include "UndoBuffer.h"
 
 #if RUNTIME_REGEX
 static regex rxnl_int ("\n[1-9]");
@@ -61,9 +66,10 @@ static regex rxint_dot_int ("[0-9]+\\.[0-9]+");
 #endif
 
 Map<int, BreakPoint> bp_map;
+extern string last_info_output;
 
 // Create new breakpoint from INFO_OUTPUT
-BreakPoint::BreakPoint(string& info_output, const string& arg, 
+BreakPoint::BreakPoint(string& info_output, const string& arg,
 		       int number, string& file)
     : mynumber(number),
       mytype(BREAKPOINT),
@@ -176,19 +182,18 @@ void BreakPoint::process_gdb(string& info_output)
 	multiple = true;
     }
 
-    if (mytype == BREAKPOINT && !multiple) 
+    if (mytype == BREAKPOINT && !multiple)
     {
 	locn.resize(1);
         if (gdb->break_info_has_address())
 	{
 	    // Read address
 	    locn[0].myaddress = info_output.through(rxalphanum);
-	  
+
 	    info_output = info_output.after(locn[0].myaddress);
 	    strip_leading_space(info_output);
-	    
 	}
-	  
+
         if (gdb->break_info_has_function())
         {
 	  if (info_output.contains("in ", 0))
@@ -303,7 +308,7 @@ void BreakPoint::process_gdb(string& info_output)
 	delete[] lines;
     }
 
-    if (mytype == BREAKPOINT && multiple) 
+    if (mytype == BREAKPOINT && multiple)
     {
 	if (!gdb->has_info_multiple_breakpoint()) {
 	    post_warning("Detected multiple breakpoints, but debugger does not support this");
@@ -494,7 +499,7 @@ void BreakPoint::process_dbx(string& info_output)
 	    myexpr = expr;
 	}
 
-	// Sun DBX 3.0 issues extra characters like 
+	// Sun DBX 3.0 issues extra characters like
 	// (2) stop in main -count 0/10
 	// [3] stop in main -disable
 	string options;
@@ -552,7 +557,7 @@ void BreakPoint::process_xdb(string& info_output)
 
 	myignore_count = atoi(count.chars());
     }
-	    
+
     // Check for `Active' or `Suspended' and strip them
     // Bob Wiegand <robert.e.wiegand.1@gsfc.nasa.gov>
     if (info_output.contains("Active", 0))
@@ -620,7 +625,7 @@ void BreakPoint::process_jdb(string& info_output)
 
 	    // Kill this line
 	    int beginning_of_line = colon;
-	    while (beginning_of_line >= 0 && 
+	    while (beginning_of_line >= 0 &&
 		   info_output[beginning_of_line] != '\n')
 		beginning_of_line--;
 	    beginning_of_line++;
@@ -1087,7 +1092,7 @@ bool BreakPoint::get_state(std::ostream& os, int nr, bool as_dummy,
 			   string pos, string cond)
 {
     if (pos.empty())
-    { 
+    {
 	if (locn[0].line_nr() > 0)
 	    pos = locn[0].file_name() + ":" + itostring(locn[0].line_nr());
 	else
@@ -1130,3 +1135,779 @@ bool BreakPoint::is_match(const string& file, int line)
 
     return false;                // Never reached
 }
+
+namespace BP
+{
+  // Return specified breakpoint
+  BreakPoint *get(int num)
+  {
+      return bp_map.get(num);
+  }
+
+  // Select breakpoint by line number
+  void select_by_line(int line_nr)
+  {
+      MapRef ref;
+      for (BreakPoint* bp = bp_map.first(ref); bp; bp = bp_map.next(ref))
+      {
+          bp->selected() = (bp->is_match(line_nr));
+      }
+  }
+
+  // Select breakpoint by bp numbers
+  void select_bp(std::vector<int> numbers)
+  {
+      // Update selection
+      MapRef ref;
+      BreakPoint *bp;
+      for (bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
+          bp->selected() = false;
+
+      for (int i = 0; i < int(numbers.size()); i++)
+      {
+          int bp_number = numbers[i];
+          for (bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
+          {
+              if (bp->number() == bp_number)
+              {
+                  bp->selected() = true;
+                  break;
+              }
+          }
+      }
+  }
+
+  // TODO: Use find_bp_by_address
+  // Select breakpoint by position
+  void select_bp_by_pos(string pos)
+  {
+      MapRef ref;
+      for (BreakPoint* bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
+      {
+          int i;
+          bp->selected() = false;
+          for (i = 0; i < bp->n_locations(); i++)
+          {
+              BreakPointLocn &locn = bp->get_location(i);
+              if (bp->type() == BREAKPOINT &&
+                  compare_address(pos, locn.address()) == 0)
+              {
+                  bp->selected() = true;
+                  break;
+              }
+          }
+      }
+  }
+
+  // Find BP Location by glyph
+  BreakPoint *find_bp_locn_by_glyph(Widget glyph, BreakPointLocn &locn)
+  {
+      MapRef ref;
+      for (BreakPoint *bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
+      {
+          for (int i = 0; i < bp->n_locations(); i++)
+          {
+              locn = bp->get_location(i);
+              if (glyph == locn.source_glyph() || glyph == locn.code_glyph())
+              {
+                 // Breakpoint glyph found
+                 return bp;
+              }
+          }
+      }
+
+      return 0;
+  }
+
+  // Count selected breakpoints; return selected breakpoint
+  BreakPoint *count_bps(int &enabled, int &disabled, int &selected)
+  {
+      BreakPoint *bp = 0;
+      BreakPoint *selected_bp = 0;
+      MapRef ref;
+      for (bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
+      {
+          if (bp->selected())
+          {
+              selected_bp = bp;
+              selected++;
+
+              if (bp->enabled())
+                  enabled++;
+              else
+                  disabled++;
+          }
+      }
+
+      return selected_bp;
+  }
+
+  // Find breakpoint by source location
+  BreakPoint *find_by_source_loc(const string &arg)
+  {
+      MapRef ref;
+      for (BreakPoint* bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
+      {
+          if (bp->type() != BREAKPOINT)
+              continue;
+
+          if (arg.matches(rxint))
+          {
+              // Line number for current source given
+              if (bp->is_match(atoi(arg.chars())))
+                  return bp;
+          }
+          else
+          {
+              string pos = arg;
+
+              if (!is_file_pos(pos))
+              {
+                  // Function given
+                  if (bp->arg() == pos)
+                      return bp;
+
+                  if (gdb->type() == DBX)
+                      pos = dbx_lookup(arg);
+              }
+              else
+              {
+                  // File:line given
+                  string file = pos.before(':');
+                  string line = pos.after(':');
+
+                  if (bp->is_match(file, atoi(line.chars())))
+                      return bp;
+              }
+          }
+      }
+
+      return 0;
+  }
+
+  // Find breakpoint by source line number
+  BreakPoint *find_by_source_line(const int line_nr)
+  {
+      MapRef ref;
+      for (BreakPoint* bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
+      {
+          if (bp->is_match(line_nr))
+              return bp;
+      }
+
+      return 0;
+  }
+
+  // Find breakpoint by bp number
+  BreakPoint *find_by_number(const int nr)
+  {
+      MapRef ref;
+      BreakPoint *bp;
+
+      for (bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
+      {
+          if (nr == bp->number())
+              return bp;
+      }
+
+      return 0;
+  }
+
+  // Find all breakpoints at bp address
+  std::vector<BreakPoint *>find_all_bps_at_address(const string &address)
+  {
+      MapRef ref;
+      std::vector<BreakPoint *> bps;
+      for (BreakPoint* bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
+      {
+          for (int i = 0; i < bp->n_locations(); i++)
+          {
+              BreakPointLocn &locn = bp->get_location(i);
+              if (bp->type() == BREAKPOINT &&
+                  compare_address(address, locn.address()) == 0)
+                  bps.push_back(bp);
+          }
+      }
+
+      return bps;
+  }
+
+  // Return the watchpoint at EXPR (0 if none)
+  BreakPoint *find_watchpoint(const string& expr)
+  {
+      // TODO:  Why this loop?  Are all cases equivalent?
+      for (int trial = 0; trial <= 2; trial++)
+      {
+          MapRef ref;
+          for (BreakPoint* bp = bp_map.first(ref); bp != 0;
+               bp = bp_map.next(ref))
+          {
+              if (bp->type() != WATCHPOINT)
+                  continue;
+
+              switch (trial)
+              {
+              case 0:
+                  if (bp->expr() == expr)
+                  {
+                      // Expression matches exactly
+                      return bp;
+                  }
+                  break;
+
+              case 1:
+                  if (bp->expr().contains('(') && bp->expr().before('(') == expr)
+                  {
+                      // Expr matches EXPR(...)  (e.g. a qualified function name)
+                      return bp;
+                  }
+                  break;
+
+              case 2:
+                  if (bp->expr().contains("`" + expr, -1) ||
+                      bp->expr().contains("::" + expr, -1))
+                  {
+                      // Expr matches ...`EXPR (a Sun DBX identifier)
+                      // or ...::EXPR (an SGI DBX identifier)
+                      return bp;
+                  }
+              }
+          }
+      }
+
+      return 0;
+  }
+
+  // Return true if NRS contains all breakpoints and
+  // a GDB delete/disable/enable command can be given without args.
+  bool contains_all_bps(const std::vector<int>& nrs)
+  {
+      MapRef ref;
+      BreakPoint *bp = 0;
+      for (bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
+      {
+          bool found = false;
+          for (int i = 0; !found && i < int(nrs.size()); i++)
+          {
+              if (bp->number() == nrs[i])
+                  found = true;
+          }
+
+          if (!found)
+              return false;
+      }
+
+      return true;
+  }
+
+  // Return all breakpoints/tracepoints in current file
+  std::vector<BreakPoint *> all_bps_in_file()
+  {
+      std::vector<BreakPoint *> bps_in_file;
+      MapRef ref;
+      for (BreakPoint* bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
+      {
+          if ((bp->type() == BREAKPOINT || bp->type() == TRACEPOINT) &&
+              bp->is_match())
+          {
+              bps_in_file.push_back(bp);
+          }
+      }
+
+      return bps_in_file;
+  }
+
+  // Return all breakpoints/tracepoints at address
+  std::vector<BreakPoint *> all_bps_at_address(const string &address)
+  {
+      std::vector<BreakPoint *> bps_at_addr;
+      MapRef ref;
+      for (BreakPoint* bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
+      {
+          for (int j = 0; j < bp->n_locations(); j++)
+          {
+              if (bp->get_location(j).address() == address)
+                  bps_at_addr.push_back(bp);
+          }
+      }
+
+      return bps_at_addr;
+  }
+
+
+  // Return all breakpoint numbers
+  std::vector<int> all_bp_numbers()
+  {
+      std::vector<int> bp_numbers;
+      MapRef ref;
+      for (BreakPoint* bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
+          bp_numbers.push_back(bp->number());
+
+      return bp_numbers;
+  }
+
+  // Return all breakpoint addresses
+  std::vector<string> all_bp_addresses()
+  {
+      std::vector<string> bp_addresses;
+      MapRef ref;
+      for (BreakPoint *bp = bp_map.first(ref); bp != 0;
+           bp = bp_map.next(ref))
+      {
+          if (bp->type() != BREAKPOINT)
+              continue;
+
+          for (int i = 0; i < bp->n_locations(); i++)
+              bp_addresses.push_back(bp->get_location(i).address());
+      }
+
+      return bp_addresses;
+  }
+
+  // Return breakpoint of INFO; 0 if new; -1 if none
+  int breakpoint_number(const string& bp_info, string& file)
+  {
+      int line = 0;
+
+      switch (gdb->type())
+      {
+      case JDB:
+      {
+          int colon = bp_info.index(':');
+          if (colon < 0)
+              return -1;                // No breakpoint
+
+          file = bp_info.before(colon);
+          line = get_positive_nr(bp_info.after(colon));
+          break;
+      }
+      case PERL:
+      {
+          string info_output = bp_info;
+
+          // Check for `FILE:' at the beginning
+          if (!info_output.contains(' ', 0))
+          {
+              string first_line;
+              if (info_output.contains('\n'))
+                  first_line = info_output.before('\n');
+              else
+                  first_line = info_output;
+
+              if (first_line.contains(':', -1))
+              {
+                  // Get leading file name
+                  file = first_line.before(':');
+                  info_output = info_output.after('\n');
+              }
+          }
+
+          line = get_positive_nr(info_output);
+          break;
+      }
+
+      default:
+          return -1;                        // Never reached
+      }
+
+      if (line <= 0)
+          return -1;                // No breakpoint
+
+      // Strip JDB 1.2 info like `breakpoint', etc.
+      strip_space(file);
+      int last_space = file.index(" ", -1);
+      if (last_space > 0)
+          file = file.after(last_space);
+
+      MapRef ref;
+      for (BreakPoint* bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
+          if (bp->is_match(file, line))
+              return bp->number(); // Existing breakpoint
+
+      return 0;                       // New breakpoint
+  }
+
+  // Process breakpoint message
+  // Return arrays of breakpoints and selected flags
+  void process_breakpoints(string& info_breakpoints_output, string& file,
+                              string breakpoint_list[], bool selected[],
+                              int &count)
+  {
+      strip_space(info_breakpoints_output);
+      info_breakpoints_output.gsub("\t", "        ");
+      if (info_breakpoints_output.empty())
+      {
+          if (gdb->has_watch_command())
+              info_breakpoints_output = "No breakpoints or watchpoints.";
+          else
+              info_breakpoints_output = "No breakpoints.";
+      }
+
+      split(info_breakpoints_output, breakpoint_list, count, '\n');
+
+      while (count > 0 && breakpoint_list[count - 1].empty())
+          count--;
+
+      bool select = false;
+      // string file = SourceView::sourcecode.current_source_name();
+
+      for (int i = 0; i < count; i++)
+      {
+          string& bp_info = breakpoint_list[i];
+          if (!gdb->has_numbered_breakpoints())
+          {
+              // JDB and Perl have no breakpoint numbers -- insert our own
+              int bp_nr = breakpoint_number(bp_info, file);
+              if (bp_nr > 0)
+              {
+                  string s = itostring(bp_nr) + "    ";
+                  bp_info.prepend(s.at(0, 4));
+              }
+          }
+
+          // Select number
+          int bp_number = get_positive_nr(bp_info);
+          if (bp_number > 0)
+          {
+              MapRef ref;
+              for (BreakPoint* bp = bp_map.first(ref);
+                   bp != 0;
+                   bp = bp_map.next(ref))
+              {
+                  if (bp->number() == bp_number)
+                  {
+                      select = bp->selected();
+                      break;
+                  }
+              }
+          }
+
+          selected[i] = select;
+          strip_auto_command_prefix(bp_info);
+          setup_where_line(bp_info);
+      }
+  }
+
+  // Remove file paths and argument lists from `where' output
+  void setup_where_line(string& line)
+  {
+      if (gdb->type() != JDB)
+      {
+          // Remove file paths (otherwise line can be too long for DBX)
+          //   ... n.b. with templates, line can still be rather long
+  #if RUNTIME_REGEX
+          static regex rxfilepath("[^\"\'` /]*/");
+  #endif
+          line.gsub(rxfilepath, "");
+      }
+
+      if (gdb->type() != JDB)
+      {
+          // Shorten argument lists `(a = 1, b = 2, ...)' to `()'
+  #if RUNTIME_REGEX
+          static regex rxarglist("[(][^0-9][^)]*[)]");
+  #endif
+          int start = index(line, rxarglist, "(", -1); // fix bug #33350: Threads window discards function name
+          if (start > 0)
+          {
+              int end = line.index(')', -1);
+              if (end > start)
+                  line = line.through(start) + line.from(end);
+          }
+      }
+
+      const int min_width = 40;
+      if (int(line.length()) < min_width)
+          line += replicate(' ', min_width - line.length());
+  }
+
+  // Process reply on 'info breakpoints'.
+  // Update breakpoints in BP::BAP, adding new ones or deleting existing ones.
+  // Update breakpoint display by calling REFRESH_BP::DISP.
+  // Return true if BP changed.
+  bool process_info_bp (string& info_output, const string& break_arg)
+  {
+          // DEC DBX issues empty lines, which causes trouble
+    info_output.gsub("\n\n", "\n");
+
+    // SGI DBX issues `Process PID' before numbers
+#if RUNTIME_REGEX
+    static regex rxprocess1("Process[ \t]+[0-9]+:[ \t]*");
+#endif
+    info_output.gsub(rxprocess1, "");
+
+    last_info_output = info_output;
+    string keep_me = "";
+
+    switch (gdb->type())
+    {
+    case GDB:
+    case BASH:
+    case MAKE:
+    case PYDB:
+        // If there is no breakpoint info, process it as GDB message.
+        if (!info_output.contains("Num", 0) &&
+            !info_output.contains("No breakpoints", 0))
+            SourceView::check_remainder(info_output);
+        break;
+
+    case DBG:
+    case DBX:
+    case XDB:
+    case JDB:
+    case PERL:
+        break;
+    }
+
+    std::vector<int> bps_not_read;
+    MapRef ref;
+    int i;
+    for (i = bp_map.first_key(ref); i != 0; i = bp_map.next_key(ref))
+        bps_not_read.push_back(i);
+
+    bool changed = false;
+    bool added   = false;
+    std::ostringstream undo_commands;
+    string file = SourceView::name_of_file();
+
+    while (!info_output.empty())
+    {
+        int bp_nr = -1;
+        switch(gdb->type())
+        {
+        case BASH:
+        case DBG:
+        case GDB:
+        case MAKE:
+        case PYDB:
+            if (!has_nr(info_output))
+            {
+                // Skip this line
+                info_output = info_output.after('\n');
+                continue;
+            }
+            bp_nr = get_positive_nr (info_output);
+            break;
+
+        case DBX:
+           {
+                // SGI IRIX DBX issues `Process PID: '
+                // before status lines.
+#if RUNTIME_REGEX
+                static regex rxprocess2("Process[ \t]+[0-9]+:");
+#endif
+                if (info_output.contains(rxprocess2, 0))
+                    info_output = info_output.after(':');
+                strip_leading_space(info_output);
+
+                if (!info_output.contains('(', 0)
+                    && !info_output.contains('[', 0)
+                    && !info_output.contains('#', 0))
+                {
+                    // No breakpoint info - skip this line
+                    info_output = info_output.after('\n');
+                    continue;
+                }
+                string bp_nr_s = info_output.after(0);
+                bp_nr = get_positive_nr (bp_nr_s);
+            }
+            break;
+
+        case XDB:
+            bp_nr = get_positive_nr(info_output);
+            break;
+
+        case PERL:
+        case JDB:
+        {
+            // JDB and Perl have no breakpoint numbers.
+            // Check if we already have a breakpoint at this location.
+            bp_nr = breakpoint_number(info_output, file);
+            if (bp_nr == 0)
+                bp_nr = gdb->max_breakpoint_number_seen + 1;        // new breakpoint
+            if (bp_nr < 0)
+            {
+                // Not a breakpoint
+                string line = info_output.before('\n');
+                if (!line.contains("Current breakpoints set"))
+                    keep_me += line;
+
+                // Skip this line
+                info_output = info_output.after('\n');
+                continue;
+            }
+            break;
+        }
+        }
+
+        if (bp_nr <= 0)
+        {
+            info_output = info_output.after('\n');
+            continue;
+        }
+
+        if (bp_map.contains (bp_nr))
+        {
+            // Update existing breakpoint
+            //bps_not_read -= bp_nr;
+            bps_not_read.erase(std::remove(bps_not_read.begin(), bps_not_read.end(), bp_nr), bps_not_read.end());
+            BreakPoint *bp = bp_map.get(bp_nr);
+
+            std::ostringstream old_state;
+            undo_buffer.add_breakpoint_state(old_state, bp);
+
+            std::ostringstream local_commands;
+            bool need_total_undo = false;
+
+            bool bp_changed =
+                bp->update(info_output, local_commands, need_total_undo);
+
+            if (bp_changed)
+            {
+                if (bp->position_changed() || bp->enabled_changed())
+                {
+                    changed = true;
+                }
+
+                if (need_total_undo)
+                {
+                    // To undo this change, we must delete the old
+                    // breakpoint and create a new one.
+                    std::vector<string> delcmds =
+                        SourceView::delete_commands(bp->number());
+                    for (unsigned i = 0; i < delcmds.size(); i++)
+                        undo_commands << delcmds[i] << "\n";
+                    undo_commands << string(old_state);
+                }
+                else
+                {
+                    // A simple command suffices to undo this change.
+                    undo_commands << string(local_commands);
+                }
+            }
+        }
+        else
+        {
+            // New breakpoint
+            changed = true;
+            BreakPoint *new_bp =
+                new BreakPoint(info_output, break_arg, bp_nr, file);
+            bp_map.insert(bp_nr, new_bp);
+
+            if (gdb->has_delete_command())
+            {
+                const string num = "@" + itostring(bp_nr) + "@";
+                undo_commands << gdb->delete_command(num) << '\n';
+            }
+            else
+            {
+                std::vector<string> delcmds = SourceView::delete_commands(bp_nr);
+                for (unsigned i = 0; i < delcmds.size(); i++)
+                    undo_commands << delcmds[i] << '\n';
+            }
+
+            if (!added)
+            {
+                added = true;
+                // Select this breakpoint only
+                MapRef ref;
+                for (BreakPoint* bp = bp_map.first(ref);
+                     bp != 0;
+                     bp = bp_map.next(ref))
+                {
+                    bp->selected() = false;
+                }
+            }
+            new_bp->selected() = true;
+        }
+
+        gdb->max_breakpoint_number_seen = max(gdb->max_breakpoint_number_seen, bp_nr);
+    }
+
+    // Keep this stuff for further processing
+    info_output = keep_me;
+
+    // Delete all breakpoints not found now
+    for (i = 0; i < int(bps_not_read.size()); i++)
+    {
+        BreakPoint *bp = bp_map.get(bps_not_read[i]);
+        // Older Perl versions only listed breakpoints in the current file
+        if (gdb->type() == PERL && !bp->is_match(SourceView::name_of_file()))
+            continue;
+
+        // Delete it
+        undo_buffer.add_breakpoint_state(undo_commands, bp);
+        delete bp;
+        bp_map.del(bps_not_read[i]);
+
+        changed = true;
+    }
+
+    undo_buffer.add_command(string(undo_commands));
+
+    return changed;
+  }
+
+  // Delete all breakpoints
+  void reset_all_bps(OQCProc callback)
+  {
+    CommandGroup cg;
+
+    bool reset_later = false;
+
+    // Delete all breakpoints
+    if (gdb->has_delete_command())
+    {
+        string del = gdb->delete_command();
+
+        MapRef ref;
+        int n = 0;
+        for (BreakPoint *bp = bp_map.first(ref); bp != 0;
+             bp = bp_map.next(ref))
+        {
+            n++;
+            del += " " + itostring(bp->number());
+        }
+
+        if (n > 0)
+        {
+            Command c(del);
+            c.verbose  = false;
+            c.prompt   = false;
+            c.check    = true;
+            c.priority = COMMAND_PRIORITY_INIT;
+            c.callback = callback;
+            gdb_command(c);
+
+            reset_later = true;
+        }
+    }
+    else if (gdb->has_clear_command())
+    {
+        MapRef ref;
+        for (BreakPoint *bp = bp_map.first(ref); bp != 0;
+             bp = bp_map.next(ref))
+        {
+            // For gdb we use the delete command.
+            // So if we get here this is a simple breakpoint.
+            Command c(gdb->clear_command(bp->pos()));
+            c.verbose  = false;
+            c.prompt   = false;
+            c.check    = true;
+            c.priority = COMMAND_PRIORITY_INIT;
+
+            if (bp_map.next(ref) == 0)
+            {
+                // Last command
+                c.callback = callback;
+                reset_later = true;
+            }
+            gdb_command(c);
+        }
+    }
+
+    if (!reset_later)
+        callback("", 0);
+  }
+
+} // End namespace BP
