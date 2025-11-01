@@ -1440,8 +1440,7 @@ PDF_IMAGES = $(addprefix $(buildpicdir)/,$(addsuffix .pdf,$(DOC_IMAGES)))
 
 FIG_IMAGES = $(addprefix $(picdir)/,$(addsuffix .fig,$(DOC_IMAGES)))
 
-JPG_IMAGES := $(addprefix $(buildpicdir)/,$(addsuffix .jpg,$(DOC_IMAGES))) \
-	$(picdir)/dddlogo.jpg
+JPG_IMAGES := $(addprefix $(buildpicdir)/,$(addsuffix .jpg,$(DOC_IMAGES)))
 
 PNG_IMAGES := $(addprefix $(picdir)/,$(addsuffix .png,$(DOC_IMAGES))) \
 	$(picdir)/ddd-drag1.png			\
