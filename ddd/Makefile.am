@@ -51,7 +51,8 @@ SUFFIXES = .C .c .Y .L .txt .xbm .xbmxx .xpm .xpmxx \
 # Shared data installation
 dddrootdir    = $(pkgdatadir)-@VERSION@
 dddappdir     = $(pkgdatadir)-@VERSION@/@ddd@
-desktopdir    = $(datadir)/applications
+desktopdir    = /usr/share/applications
+iconsdir      = /usr/share/pixmaps
 ddddocdir     = $(dddrootdir)/doc
 infodir       = $(dddrootdir)/info
 
@@ -1552,7 +1553,7 @@ DIST_STUFF = $(srcdir)/header.ps $(srcdir)/trailer.ps \
 	     $(builddocdir)/ddd-themes.pdf \
 	     $(htmldir)/ddd.html $(srcdir)/ad2c.sed \
 	     style.css $(srcdir)/fix-html.sed \
-	     $(srcdir)/unumlaut.sed ddd.desktop \
+	     $(srcdir)/unumlaut.sed $(srcdir)/ddd.desktop $(srcdir)/../icons/ddd.png \
 	     $(srcdir)/../doc/ANNOUNCE $(srcdir)/../doc/AUTHORS  \
 	     $(srcdir)/../doc/COPYING  $(srcdir)/../doc/COPYING.DOC  \
 	     $(srcdir)/../doc/COPYING.LESSER  $(srcdir)/../doc/CREDITS  \
@@ -1600,7 +1601,9 @@ diststuff: $(EXTRA_DIST)
 progstuff: $(PROG_STUFF)
 
 
-desktop_DATA = ddd.desktop
+desktop_DATA = $(srcdir)/ddd.desktop
+
+icons_DATA = $(srcdir)/../icons/ddd.png
 
 ddddoc_DATA = $(srcdir)/../doc/NEWS $(srcdir)/../doc/COPYING \
 	      $(srcdir)/../doc/CREDITS $(builddocdir)/ddd.info.txt
