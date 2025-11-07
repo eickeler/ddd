@@ -322,8 +322,10 @@ int config_set_app_data(const char *filename)
         // Extract configuration info from setting file.
         // Check that setting file version matches DDD version.
         res = cfg.get("version");
-        if (strcmp (res, DDD_VERSION) != 0)
-            return ERR_CONFIG_INCORRECT_VERSION;  
+
+        // ignore version
+        // if (strcmp (res, DDD_VERSION) != 0)
+        //     return ERR_CONFIG_INCORRECT_VERSION;
 
         // Set app_data from settings file
         // Parse configuration settings and initialize app_data
