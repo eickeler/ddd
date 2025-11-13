@@ -193,7 +193,6 @@ char ddd_rcsid[] =
 #include "motif/MakeMenu.h"
 #include "PlotAgent.h"
 #include "SourceView.h"
-#include "x11/Swallower.h"
 #include "motif/TextSetS.h"
 #include "agent/TimeOut.h"
 #include "UndoBuffer.h"

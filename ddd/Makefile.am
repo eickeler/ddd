@@ -159,10 +159,6 @@ XSTUFF_SRC = \
 	x11/events.h     \
 	x11/findParent.C \
 	x11/findParent.h \
-	x11/findWindow.C \
-	x11/findWindow.h \
-	x11/fileSBF.C    \
-	x11/fileSBF.h    \
 	x11/frame.C      \
 	x11/frame.h      \
 	x11/longName.C   \
@@ -185,9 +181,6 @@ XSTUFF_SRC = \
 	x11/InitImage.h  \
 	x11/OnOff.h      \
 	x11/Sash.h       \
-	x11/Swallower.C  \
-	x11/Swallower.h  \
-	x11/SwallowerP.h \
 	x11/Widget.h     \
 	x11/Xpm.h        \
 	x11/XErrorB.C    \

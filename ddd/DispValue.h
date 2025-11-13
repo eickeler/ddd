@@ -99,13 +99,13 @@ class DispValue {
 
     // Plotting stuff
     bool getGnuplotType(string expr, string &gdbtype, string &gnuplottype, string &sizestr) const;
-    bool _plot(PlotAgent *plotter) const;
-    bool plot1d(PlotAgent *plotter) const;
-    bool plot2d(PlotAgent *plotter) const;
-    bool plot3d(PlotAgent *plotter) const;
-    bool plotVector(PlotAgent *plotter) const;
-    bool plotImage(PlotAgent *plotter) const;
-    bool plotCVMat(PlotAgent *plotter) const;
+    bool _plot(PlotAgent *&plotter) const;
+    bool plot1d(PlotAgent *&plotter) const;
+    bool plot2d(PlotAgent *&plotter) const;
+    bool plot3d(PlotAgent *&plotter) const;
+    bool plotVector(PlotAgent *&plotter) const;
+    bool plotImage(PlotAgent *&plotter) const;
+    bool plotCVMat(PlotAgent *&plotter) const;
     bool can_plot1d() const;
     bool can_plot2d() const;
     bool can_plot3d() const;

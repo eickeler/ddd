@@ -1789,19 +1789,28 @@ void DispValue::plot() const
     plotter()->plot_2d_settings = app_data.plot_2d_settings;
     plotter()->plot_3d_settings = app_data.plot_3d_settings;
 
-    bool res = _plot(plotter());
+    bool res = _plot(m_plotter);
+
+    // The plotter may be deleted asynchronously. After each interaction with
+    // GDB we need to check whether PlotWindow deleted it in the meantime.
+    if (m_plotter==nullptr)
+        return;
 
     if (res==false)
     {
-        delete_plotter(plotter());
+        delete_plotter(m_plotter);
         MUTABLE_THIS(DispValue *)->m_plotter = nullptr;
         return;
     }
 
+    // check if plotter was deleted in the meantime
+    if (m_plotter==nullptr)
+        return;
+
     plotter()->flush();
 }
 
-bool DispValue::_plot(PlotAgent *plotter) const
+bool DispValue::_plot(PlotAgent *&plotter) const
 {
     if (can_plotImage())
         return plotImage(plotter);
@@ -1850,7 +1859,7 @@ string DispValue::num_value() const
 }
 
 
-bool DispValue::plot1d(PlotAgent *plotter) const
+bool DispValue::plot1d(PlotAgent *&plotter) const
 {
     PlotElement &eldata = plotter->start_plot(make_title(full_name()));
     eldata.plottype = PlotElement::DATA_1D;
@@ -1864,7 +1873,7 @@ bool DispValue::plot1d(PlotAgent *plotter) const
     return true;
 }
 
-bool DispValue::plot2d(PlotAgent *plotter) const
+bool DispValue::plot2d(PlotAgent *&plotter) const
 {
     if (type() == Array)
     {
@@ -1892,6 +1901,10 @@ bool DispValue::plot2d(PlotAgent *plotter) const
             answer = gdb_question("print sizeof(" + gdbtype + ")");
             string sizestr = answer.after("=");
             strip_space(sizestr);
+
+            // check if plotter was deleted in the meantime
+            if (plotter==nullptr)
+                return false;
 
             // write memory block to file
             string question = "dump binary memory " + eldata.file + " " + address + " " + address + "+" + length + "*" + sizestr;
@@ -1952,7 +1965,7 @@ bool DispValue::plot2d(PlotAgent *plotter) const
     return true;
 }
 
-bool DispValue::plot3d(PlotAgent *plotter) const
+bool DispValue::plot3d(PlotAgent *&plotter) const
 {
     PlotElement &eldata = plotter->start_plot(make_title(full_name()));
     eldata.plottype = PlotElement::DATA_3D;
@@ -1979,6 +1992,10 @@ bool DispValue::plot3d(PlotAgent *plotter) const
         answer = gdb_question("print sizeof(" + gdbtype + ")");
         string sizestr = answer.after("=");
         strip_space(sizestr);
+
+        // check if plotter was deleted in the meantime
+        if (plotter==nullptr)
+            return false;
 
         // write memory block to file
         string question = "dump binary memory " + eldata.file + " " + address + " " + address + "+" + ydim + "*" + xdim + "*"  + sizestr;
@@ -2034,7 +2051,7 @@ bool DispValue::plot3d(PlotAgent *plotter) const
     return true;
 }
 
-bool DispValue::plotVector(PlotAgent *plotter) const
+bool DispValue::plotVector(PlotAgent *&plotter) const
 {
     PlotElement &eldata = plotter->start_plot(make_title(full_name()));
     eldata.plottype = PlotElement::DATA_2D;
@@ -2060,6 +2077,9 @@ bool DispValue::plotVector(PlotAgent *plotter) const
     string length = answer.after("=");
     strip_space(length);
 
+    if (plotter==nullptr)
+        return false;
+
     // write memory block to file
     string question = "dump binary memory " + eldata.file + " " + address + " " + address + "+" + length + "*" + sizestr;
     answer = gdb_question(question);
@@ -2069,6 +2089,9 @@ bool DispValue::plotVector(PlotAgent *plotter) const
         return false;
     }
 
+    if (plotter==nullptr)
+        return false;
+
     eldata.xdim = length;
     eldata.gdbtype = gdbtype;
     eldata.binary = true;
@@ -2076,7 +2099,7 @@ bool DispValue::plotVector(PlotAgent *plotter) const
     return true;
 }
 
-bool DispValue::plotImage(PlotAgent *plotter) const
+bool DispValue::plotImage(PlotAgent *&plotter) const
 {
     auto child = std::find_if(m_children.begin(), m_children.end(), [&](const DispValue *child)
             { return matchMemberVariable(child->m_print_name, {"cdim", "channels", "spectrum"}); });
@@ -2110,7 +2133,6 @@ bool DispValue::plotImage(PlotAgent *plotter) const
     {
         // pixmap is a container -> get addres of first element
         string answer = gdb_question("print /x  &(" + m_full_name + "." + pixmapname + "[0])");
-printf("answer %s\n", answer.chars());
         address = answer.after("=");
         strip_space(address);
     }
@@ -2137,6 +2159,9 @@ printf("answer %s\n", answer.chars());
     string sizestr = answer.after("=");
     strip_space(sizestr);
 
+    if (plotter==nullptr)
+        return false;
+
     string question = "dump binary memory " + eldata.file + " " + address + " " + address + "+" + xdimstr + "*" + ydimstr + "*" + cdimstr + "*" + sizestr;
     answer = gdb_question(question);
     if (answer.contains("Cannot") || answer.contains("Invalid"))
@@ -2144,6 +2169,9 @@ printf("answer %s\n", answer.chars());
         set_status(answer);
         return false;
     }
+
+    if (plotter==nullptr)
+        return false;
 
     eldata.xdim = xdimstr;
     eldata.ydim = ydimstr;
@@ -2193,7 +2221,7 @@ printf("answer %s\n", answer.chars());
     return true;
 }
 
-bool DispValue::plotCVMat(PlotAgent *plotter) const
+bool DispValue::plotCVMat(PlotAgent *&plotter) const
 {
     auto child = std::find_if(m_children.begin(), m_children.end(), [&](const DispValue *child) { return child->m_print_name == "dims"; });
     if (child == m_children.end())
@@ -2287,6 +2315,9 @@ bool DispValue::plotCVMat(PlotAgent *plotter) const
         return false;
     }
 
+    if (plotter==nullptr)
+        return false;
+
     if (colorchannels==3)
         eldata.plottype = PlotElement::BGRIMAGE;
     else
@@ -2309,7 +2340,6 @@ void DispValue::PlotterDiedHP(Agent *source, void *client_data, void *)
     PlotAgent *agent = dv->m_plotter;
 //    assert(source == dv->plotter());
 
-//     dv->plotter()->removeHandler(Died, PlotterDiedHP, (void *)dv);
     agent->removeHandler(Died, PlotterDiedHP, (void *)dv);
     dv->m_plotter = 0;
 }

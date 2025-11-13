@@ -37,7 +37,6 @@ char plotter_rcsid[] =
 #include "ddd.h"
 #include "exit.h"
 #include "x11/findParent.h"
-#include "x11/findWindow.h"
 #include "file.h"
 #include "filetype.h"
 #include "fonts.h"
@@ -58,7 +57,6 @@ char plotter_rcsid[] =
 #include "x11/DeleteWCB.h"
 #include "HelpCB.h"
 #include "motif/MakeMenu.h"
-#include "x11/Swallower.h"
 #include "DispValue.h"
 #include "DataDisp.h"
 #include "x11/DestroyCB.h"
@@ -82,22 +80,6 @@ char plotter_rcsid[] =
 #include <Xm/TextF.h>
 #include <Xm/ToggleB.h>
 
-extern "C" {
-#if HAVE_RANDOM && !HAVE_RANDOM_DECL && !defined(random)
-long int random();
-#endif
-#if HAVE_SRANDOM && !HAVE_SRANDOM_DECL && !defined(srandom)
-void srandom(unsigned int seed);
-#endif
-#if HAVE_RAND && !HAVE_RAND_DECL && !defined(rand)
-int rand();
-#endif
-#if HAVE_SRAND && !HAVE_SRAND_DECL && !defined(srand)
-void srand(unsigned int seed);
-#endif
-}
-
-
 static void TraceInputHP (Agent *source, void *, void *call_data);
 static void TraceOutputHP(Agent *source, void *, void *call_data);
 static void TraceErrorHP (Agent *source, void *, void *call_data);
@@ -118,37 +100,18 @@ static void SetStyleCB(Widget, XtPointer, XtPointer);
 static void SetContourCB(Widget, XtPointer, XtPointer);
 
 struct PlotWindowInfo {
-    DispValue *source;		// The source we depend upon
-    string window_name;		// The window name
-    PlotAgent *plotter;		// The current Gnuplot instance
-    Widget shell;		// The shell we're in
-    Widget working_dialog;	// The working dialog
-    Widget swallower;		// The Gnuplot window
-    Widget command;		// Command widget
-    Widget command_dialog;      // Command dialog
-    Widget export_dialog;       // Export dialog
-    bool active;		// True if popped up
-    XtIntervalId swallow_timer;	// Wait for Window creation
+    DispValue *source = nullptr;            // The source we depend upon
+    string window_name = "";                // The window name
+    PlotAgent *plotter = nullptr;	    // The current Gnuplot instance
+    Widget shell = 0;	                    // The shell we're in
+    Widget gnuplot = 0;                     // The Gnuplot window
+    Widget command = 0;                     // Command widget
+    Widget command_dialog = 0;              // Command dialog
 
-    string settings;		 // Plot settings
-    XtIntervalId settings_timer; // Wait for settings
-    string settings_file;	 // File to get settings from
-    StatusDelay *settings_delay; // Delay while getting settings
-
-    int num_tries = 0;           // number of tries to swallow gnuplot widget
-
-    // Constructor - just initialize
-    PlotWindowInfo()
-	: source(0), window_name(""),
-	  plotter(0), shell(0), working_dialog(0), swallower(0),
-	  command(0), command_dialog(0),
-	  export_dialog(0), active(false), swallow_timer(0),
-	  settings(""), settings_timer(0), settings_file(""), settings_delay(0)
-    {}
-
-private:
-    PlotWindowInfo(const PlotWindowInfo&);
-    PlotWindowInfo& operator=(const PlotWindowInfo&);
+    string settings = "";                   // Plot settings
+    XtIntervalId settings_timer = 0;        // Wait for settings
+    string settings_file = "";              // File to get settings from
+    StatusDelay *settings_delay = nullptr;  // Delay while getting settings
 };
 
 
@@ -164,7 +127,6 @@ static MMDesc file_menu[] =
     { "print",   MMPush, { SelectAndPrintPlotCB, 0 }, 0, 0, 0, 0 },
     MMSep,
     { "close",   MMPush, { CancelPlotCB, 0 }, 0, 0, 0, 0 },
-//    { "exit",    MMPush, { DDDExitCB, XtPointer(EXIT_SUCCESS) }, 0, 0, 0, 0},  // disable exit in plotter window, since it exits dddd
     MMEnd
 };
 
@@ -295,7 +257,7 @@ static void GetPlotSettingsCB(XtPointer client_data, XtIntervalId *id)
 	configure_plot(plot);
 
 	delete plot->settings_delay;
-	plot->settings_delay = 0;
+	plot->settings_delay = nullptr;
     }
     else
     {
@@ -399,8 +361,7 @@ static void configure_plot(PlotWindowInfo *plot)
 	// No settings yet
 	if (plot->settings_timer == 0)
 	{
-	    plot->settings_delay = 
-		new StatusDelay("Retrieving Plot Settings");
+	    plot->settings_delay = new StatusDelay("Retrieving Plot Settings");
 
 	    // Save settings...
 	    plot->settings_file = tempfile();
@@ -445,89 +406,18 @@ static void configure_plot(PlotWindowInfo *plot)
 // Start plot
 static void popup_plot_shell(PlotWindowInfo *plot)
 {
-    if (!plot->active && plot->plotter != 0)
-    {
-	// We have the plot
-	plot->plotter->removeHandler(Died, PlotterNotFoundHP, 
-				     (void *)plot);
+    // Fetch plot settings
+    configure_plot(plot);
 
-	// Fetch plot settings
-	configure_plot(plot);
+    // Command and export dialogs are not needed (yet)
+    if (plot->command_dialog != 0)
+        XtUnmanageChild(plot->command_dialog);
 
-	// Command and export dialogs are not needed (yet)
-	if (plot->command_dialog != 0)
-	    XtUnmanageChild(plot->command_dialog);
-	if (plot->export_dialog != 0)
-	    XtUnmanageChild(plot->export_dialog);
-
-	// Pop down working dialog
-	if (plot->working_dialog != 0)
-	    XtUnmanageChild(plot->working_dialog);
-
-	// Pop up shell
-	XtSetSensitive(plot->shell, True);
-	XtPopup(plot->shell, XtGrabNone);
-	wait_until_mapped(plot->shell);
-
-	plot->active = true;
-    }
+    // Pop up shell
+    XtSetSensitive(plot->shell, True);
+    XtPopup(plot->shell, XtGrabNone);
+    wait_until_mapped(plot->shell);
 }
-
-// Swallow new GNUPLOT window; search from root window (expensive).
-static void SwallowTimeOutCB(XtPointer client_data, XtIntervalId *id)
-{
-    PlotWindowInfo *plot = (PlotWindowInfo *)client_data;
-    assert(*id == plot->swallow_timer);
-    plot->swallow_timer = 0;
-
-    Window root = RootWindowOfScreen(XtScreen(plot->swallower));
-    Window window = None;
-    Display *display = XtDisplay(plot->swallower);
-
-    // Try the capitalized name.  Gnuplot does this.
-    if (window == None) {
-        const string s1 = capitalize(plot->window_name);
-        window = findWindow(display, root, s1.chars());
-    }
-
-    // Try the exact name as given
-    if (window == None)
-        window = findWindow(display, root, plot->window_name.chars());
-
-    if (window == None)
-    {
-	// Try again later
-        plot->num_tries++;
-
-        if (plot->num_tries<8)
-            plot->swallow_timer =
-                XtAppAddTimeOut(XtWidgetToApplicationContext(plot->swallower),
-                                app_data.plot_window_delay,
-                                SwallowTimeOutCB, XtPointer(plot));
-
-        return;
-    }
-
-    XtVaSetValues(plot->swallower, XtNwindow, window, XtPointer(0));
-
-    popup_plot_shell(plot);
-}
-
-// Swallow again after window has gone.  This happens while printing.
-static void SwallowAgainCB(Widget swallower, XtPointer client_data, XtPointer)
-{
-    PlotWindowInfo *plot = (PlotWindowInfo *)client_data;
-    assert(plot->swallower == swallower);
-
-    if (plot->swallow_timer != 0)
-	XtRemoveTimeOut(plot->swallow_timer);
-
-    plot->swallow_timer = 
-	XtAppAddTimeOut(XtWidgetToApplicationContext(plot->swallower),
-			app_data.plot_window_delay, 
-			SwallowTimeOutCB, XtPointer(plot));
-}
-
 
 // Cancel plot
 static void popdown_plot_shell(PlotWindowInfo *plot)
@@ -539,12 +429,8 @@ static void popdown_plot_shell(PlotWindowInfo *plot)
     entered = true;
 
     // Manage dialogs
-    if (plot->working_dialog != nullptr)
-	XtUnmanageChild(plot->working_dialog);
     if (plot->command_dialog != nullptr)
 	XtUnmanageChild(plot->command_dialog);
-    if (plot->export_dialog != nullptr)
-	XtUnmanageChild(plot->export_dialog);
 
     if (plot->shell != nullptr && XtWindow(plot->shell)!=0)
     {
@@ -567,16 +453,14 @@ static void popdown_plot_shell(PlotWindowInfo *plot)
 	unlink(plot->settings_file.chars());
     }
 
-    if (plot->settings_delay != 0)
+    if (plot->settings_delay != nullptr)
     {
 	plot->settings_delay->outcome = "canceled";
 	delete plot->settings_delay;
-	plot->settings_delay = 0;
+	plot->settings_delay = nullptr;
     }
 
     plot->settings = "";
-
-    plot->active = false;
 
     entered = false;
 }
@@ -591,18 +475,6 @@ static void CancelPlotCB(Widget, XtPointer client_data, XtPointer)
 
     PlotWindowInfo *plot = (PlotWindowInfo *)client_data;
     popdown_plot_shell(plot);
-
-    if (plot->swallower != 0)
-    {
-	// Don't wait for window to swallow
-	XtRemoveAllCallbacks(plot->swallower, XtNwindowGoneCallback);
-    }
-
-    if (plot->swallow_timer != 0)
-    {
-	XtRemoveTimeOut(plot->swallow_timer);
-	plot->swallow_timer = 0;
-    }
 
     if (plot->plotter != 0)
     {
@@ -623,8 +495,9 @@ static void DeletePlotterCB(XtPointer client_data, XtIntervalId *)
 
 static void DeletePlotterHP(Agent *plotter, void *client_data, void *)
 {
-    // Plotter has died - delete memory
-    XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 0, 
+    // Defer deletion to the Xt event loop (0 ms timeout) so that DispValue is notified
+    // and can clear its plotter pointer before the plotter is actually destroyed.
+    XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 0,
 		    DeletePlotterCB, XtPointer(plotter));
 
     plotter->removeHandler(Died, DeletePlotterHP, client_data);
@@ -663,9 +536,6 @@ static void PlotterNotFoundHP(Agent *plotter, void *client_data, void *)
     manage_and_raise(dialog);
 }
 
-
-#define SWALLOWER_NAME "swallower"
-
 static std::vector<PlotWindowInfo*> plot_infos;
 
 static PlotWindowInfo *new_decoration(const string& name)
@@ -694,8 +564,6 @@ static PlotWindowInfo *new_decoration(const string& name)
 	XtSetArg(args[arg], XmNallowShellResize, True);       arg++;
 	XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
 
-	// Mark shell as `used'
-	XtSetArg(args[arg], XmNuserData, XtPointer(True)); arg++;
 	plot->shell = verify(XtCreateWidget("plot", topLevelShellWidgetClass,
 					    find_shell(), args, arg));
 
@@ -717,20 +585,14 @@ static PlotWindowInfo *new_decoration(const string& name)
 	MMaddCallbacks(simple_help_menu);
 	MMaddHelpCallback(menubar, ImmediateHelpCB);
 
-	arg = 0;
-	XtSetArg(args[arg], XmNscrollingPolicy, XmAPPLICATION_DEFINED); arg++;
-	XtSetArg(args[arg], XmNvisualPolicy,    XmVARIABLE);            arg++;
-	Widget scroll = 
-	    XmCreateScrolledWindow(main_window, XMST("scroll"), args, arg);
-	XtManageChild(scroll);
-
         setColorMode(main_window, app_data.dark_mode);
 
-	// Create work window
-        // x11 type - swallow Gnuplot window
-	arg = 0;
-        plot->swallower =
-            XtCreateManagedWidget(SWALLOWER_NAME, swallowerWidgetClass, scroll, args, arg);
+        // Create work window
+        plot->gnuplot = XtVaCreateManagedWidget("plotArea", xmDrawingAreaWidgetClass, main_window,
+                                                  XmNwidth, 640,
+                                                  XmNheight, 480,
+                                                  NULL);
+        XtManageChild(plot->gnuplot);
 
 	Delay::register_shell(plot->shell);
 	InstallButtonTips(plot->shell);
@@ -743,24 +605,6 @@ static PlotWindowInfo *new_decoration(const string& name)
 		  XmNtitle, title.chars(),
 		  XmNiconName, title.chars(),
 		  XtPointer(0));
-
-    if (plot->swallower != 0)
-    {
-
-	XtRemoveAllCallbacks(plot->swallower, XtNwindowGoneCallback);
-	XtAddCallback(plot->swallower, XtNwindowGoneCallback, 
-		      SwallowAgainCB, XtPointer(plot));
-
-	if (plot->swallow_timer != 0)
-	    XtRemoveTimeOut(plot->swallow_timer);
-
-	plot->swallow_timer = 
-	    XtAppAddTimeOut(XtWidgetToApplicationContext(plot->swallower),
-			    app_data.plot_window_delay, SwallowTimeOutCB, 
-			    XtPointer(plot));
-    }
-
-    plot->active = false;
 
     return plot;
 }
@@ -798,48 +642,29 @@ void delete_plotter(PlotAgent *plotter)
 // Create a new plot window
 PlotAgent *new_plotter(const string& name, DispValue *source)
 {
-    static bool seed_initialized = false;
-
-    if (seed_initialized == false)
-    {
-        time_t tm;
-        time(&tm);
-
-#if HAVE_SRAND
-        srand((int)tm);
-#elif HAVE_SRANDOM
-        srandom((int)tm);
-#endif
-        seed_initialized = true;
-    }
-
-#if HAVE_RAND
-    int randomnumber = rand() % 0xffffff;
-#else /* HAVE_RANDOM */
-    int randomnumber = random() % 0xffffff;
-#endif
-
-    char hexid[20];
-    snprintf(hexid, sizeof(hexid), "%06x", randomnumber);
-
-    string cmd = app_data.plot_command;
-    cmd.gsub("@FONT@", make_xftfont(app_data, FixedWidthDDDFont));
-
-    string window_name = ddd_NAME "plot";
-    window_name += hexid;
-    if (cmd.contains("@NAME@"))
-        cmd.gsub("@NAME@", window_name);
-    else
-        cmd += " -name " + window_name;
-
     // Create shell
     PlotWindowInfo *plot = new_decoration(name);
     if (plot == 0)
         return 0;
 
+    popup_plot_shell(plot);
+    string cmd = app_data.plot_command;
+    cmd.gsub("@FONT@", make_xftfont(app_data, FixedWidthDDDFont));
+
+    string window_name = ddd_NAME "plot";
+    if (cmd.contains("@NAME@"))
+        cmd.gsub("@NAME@", window_name);
+    else
+        cmd += " -name " + window_name;
+
+    Window win = XtWindow(plot->gnuplot);   // Must be valid (widget realized)
+    char hex[32];
+    snprintf(hex, sizeof(hex), "%lx", (unsigned long)win);
+
+    cmd.gsub("@X_ID@", hex);
+
     plot->source      = source;
     plot->window_name = window_name;
-    XtVaSetValues(plot->shell, XmNuserData, XtPointer(True), XtPointer(0));
 
     // Invoke plot process
     PlotAgent *plotter = 
@@ -859,8 +684,7 @@ PlotAgent *new_plotter(const string& name, DispValue *source)
     plotter->addHandler(Died, PlotterNotFoundHP, (void *)plot);
     plotter->addHandler(Died, DeletePlotterHP,   (void *)plot);
 
-    string init = "set term x11\n";
-    init += app_data.plot_init_commands;
+    string init = app_data.plot_init_commands;
 
     if (!init.empty() && !init.contains('\n', -1))
 	init += '\n';
@@ -1101,16 +925,6 @@ static void SetStatusHP(Agent *, void *client_data, void *call_data)
     PlotWindowInfo *plot = (PlotWindowInfo *)client_data;
     DataLength* dl = (DataLength *) call_data;
     string s(dl->data, dl->length);
-
-    (void) plot;		// Use it
-#if 0
-    if (!plot->active)
-    {
-	// Probably an invocation problem
-	post_gdb_message(s);
-	return;
-    }
-#endif
 
     if (plot->command != 0)
     {
