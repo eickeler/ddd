@@ -6715,6 +6715,9 @@ static void popup_splash_screen(Widget parent, const string& color_key)
     XtSetArg(args[arg], XmNborderWidth, 0);          arg++;
     XtSetArg(args[arg], XmNdeleteResponse, XmUNMAP); arg++;
 
+    // prevent splash screen from appearing in taskbar
+    XtSetArg(args[arg], XmNoverrideRedirect, True); arg++;
+
     XtSetArg(args[arg], XmNmwmDecorations, MWM_DECOR_BORDER); arg++;
     XtSetArg(args[arg], XmNmwmFunctions,   MWM_FUNC_CLOSE); arg++;
     splash_shell = verify(
